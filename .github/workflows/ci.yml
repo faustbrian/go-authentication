@@ -1,0 +1,268 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GOFLAGS: -mod=readonly
+
+jobs:
+  test:
+    name: Test ${{ matrix.module }} (Go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - .
+          - jwt
+          - oidc
+          - authotel
+        go:
+          - 1.26.x
+          - stable
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - working-directory: ${{ matrix.module }}
+        run: go mod download
+      - working-directory: ${{ matrix.module }}
+        run: go test ./...
+
+  quality:
+    name: Format, vet, boundaries, and examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - run: ./scripts/check-format.sh
+      - run: ./scripts/check-boundaries.sh
+      - run: |
+          for module in . jwt oidc authotel; do
+            (cd "$module" && go vet ./...)
+          done
+      - run: ./scripts/check-examples.sh
+
+  coverage:
+    name: Exact coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - run: ./scripts/check-coverage.sh
+
+  race:
+    name: Race detector
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - run: |
+          for module in . jwt oidc authotel; do
+            (cd "$module" && go test -race ./...)
+          done
+
+  fuzz:
+    name: Fuzz smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+      - env:
+          FUZZ_TIME: 10s
+        run: ./scripts/check-fuzz.sh
+
+  benchmarks:
+    name: Benchmark smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+      - run: ./scripts/check-benchmarks.sh
+
+  lint:
+    name: Lint ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - .
+          - jwt
+          - oidc
+          - authotel
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.11
+          working-directory: ${{ matrix.module }}
+
+  vulnerability:
+    name: Vulnerability scan ${{ matrix.module }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - .
+          - jwt
+          - oidc
+          - authotel
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - working-directory: ${{ matrix.module }}
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+
+  api:
+    name: API compatibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: |
+            go.sum
+            jwt/go.sum
+            oidc/go.sum
+            authotel/go.sum
+      - run: ./scripts/check-api.sh
+
+  jwt-matrix:
+    name: JWT dependencies (${{ matrix.version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - v3.1.1
+          - latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: jwt/go.sum
+      - working-directory: jwt
+        env:
+          GOFLAGS: -mod=mod
+        run: |
+          go get github.com/lestrrat-go/jwx/v3@${{ matrix.version }}
+          go test ./...
+
+  oidc-matrix:
+    name: OIDC dependencies (${{ matrix.version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - v3.20.0
+          - latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: oidc/go.sum
+      - working-directory: oidc
+        env:
+          GOFLAGS: -mod=mod
+        run: |
+          go get github.com/coreos/go-oidc/v3@${{ matrix.version }}
+          go test ./...
+
+  telemetry-matrix:
+    name: OpenTelemetry API (${{ matrix.version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - v1.44.0
+          - latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+          cache-dependency-path: authotel/go.sum
+      - working-directory: authotel
+        env:
+          GOFLAGS: -mod=mod
+        run: |
+          go get go.opentelemetry.io/otel@${{ matrix.version }}
+          go test ./...
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/dependency-review-action@v4
