@@ -1,8 +1,8 @@
 github.com/coreos/go-oidc/v3 v3.20.0 h1:EtE0WIBHk03N+DqGkY4+UONzzZHk7amKt6IyNd7OsZE=
 github.com/coreos/go-oidc/v3 v3.20.0/go.mod h1:DYCf24+ncYi+XkIH97GY1+dqoRlbaSI26KVTCI9SrY4=
-github.com/faustbrian/go-authentication v1.0.0 h1:fH3oRfY9cX3n8b5yScsNLvSCyhfaPNc31COR+BsREEA=
+github.com/faustbrian/go-authentication v1.0.0 h1:mKeHbxT8jPSww2gNlpCo9S5q9qJ3CAmUGCaoBvilbgo=
 github.com/faustbrian/go-authentication v1.0.0/go.mod h1:cLbyMCC4LxGQvUuB+Rx/lbnVvYiBN23mLn7z5TwMRNQ=
-github.com/faustbrian/go-clock v1.0.0 h1:epaYb4WObVwF7YaeXZvfiyJ3/wrinKASY3GUKI1rJsw=
+github.com/faustbrian/go-clock v1.0.0 h1:S98Gi1KHv2N6ZFV+3VlloP11zcMBFGnaAabBaG7+CtU=
 github.com/faustbrian/go-clock v1.0.0/go.mod h1:WKZ5p79IKGNTZGDp2L81cYjbsEjv3+9U0be7uwS8t6Y=
 github.com/go-jose/go-jose/v4 v4.1.4 h1:moDMcTHmvE6Groj34emNPLs/qtYXRVcd6S7NHbHz3kA=
 github.com/go-jose/go-jose/v4 v4.1.4/go.mod h1:x4oUasVrzR7071A4TnHLGSPpNOm2a21K9Kf04k1rs08=
