@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
+	authentication "github.com/faustbrian/go-authentication"
 )
 
 func FuzzPrincipalClaims(f *testing.F) {

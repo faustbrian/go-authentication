@@ -12,8 +12,8 @@ import (
 	"time"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
-	authoidc "github.com/faustbrian/golib/pkg/authentication/oidc"
+	"github.com/faustbrian/go-authentication/authtest"
+	authoidc "github.com/faustbrian/go-authentication/oidc"
 )
 
 func BenchmarkValidateBearer(b *testing.B) {

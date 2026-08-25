@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authtest"
 )
 
 type instrumenterFunc func(context.Context, authentication.CredentialKind) (context.Context, func(authentication.Event))

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
+	authentication "github.com/faustbrian/go-authentication"
 )
 
 func TestPrincipalCopiesIdentityData(t *testing.T) {

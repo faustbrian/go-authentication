@@ -25,8 +25,8 @@ import (
 	"unicode/utf8"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	clockpkg "github.com/faustbrian/golib/pkg/clock"
+	authentication "github.com/faustbrian/go-authentication"
+	clockpkg "github.com/faustbrian/go-clock"
 )
 
 const defaultMaxTokenBytes = 16 * 1024

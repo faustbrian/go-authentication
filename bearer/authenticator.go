@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
+	authentication "github.com/faustbrian/go-authentication"
 )
 
 const defaultMaxTokenBytes = 8 * 1024

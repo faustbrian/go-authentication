@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	authoidc "github.com/faustbrian/golib/pkg/authentication/oidc"
-	clockpkg "github.com/faustbrian/golib/pkg/clock"
+	authoidc "github.com/faustbrian/go-authentication/oidc"
+	clockpkg "github.com/faustbrian/go-clock"
 )
 
 func TestKeycloakProviderIssuedIDToken(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authhttp"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authhttp"
 )
 
 type extractorFunc func(*http.Request) (authentication.Credential, error)

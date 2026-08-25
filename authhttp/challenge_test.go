@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authhttp"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authhttp"
 )
 
 func TestFormatChallengeSortsAndEscapesParameters(t *testing.T) {

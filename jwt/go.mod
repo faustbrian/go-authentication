@@ -1,10 +1,10 @@
-module github.com/faustbrian/golib/pkg/authentication/jwt
+module github.com/faustbrian/go-authentication/jwt
 
 go 1.26.6
 
 require (
-	github.com/faustbrian/golib/pkg/authentication v0.0.0
-	github.com/faustbrian/golib/pkg/clock v0.0.0
+	github.com/faustbrian/go-authentication v1.0.0
+	github.com/faustbrian/go-clock v1.0.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/lestrrat-go/httprc/v3 v3.0.5
 	github.com/lestrrat-go/jwx/v3 v3.1.1

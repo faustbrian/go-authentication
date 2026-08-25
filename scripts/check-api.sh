@@ -38,4 +38,4 @@ check() {
 	trap - EXIT HUP INT TERM
 }
 
-check . github.com/faustbrian/golib/pkg/authentication api/root.txt
+check . github.com/faustbrian/go-authentication api/root.txt

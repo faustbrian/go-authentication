@@ -17,7 +17,7 @@ validation are deliberately excluded.
 ## Install
 
 ```sh
-go get github.com/faustbrian/golib/pkg/authentication/oidc
+go get github.com/faustbrian/go-authentication/oidc
 ```
 
 ## Setup
@@ -191,7 +191,7 @@ The stable interpretation and defensive-policy register is in
 
 ## Adoption and compatibility
 
-The module is pre-v1. Pin a reviewed version, configure an explicit algorithm
+The module follows stable v1 compatibility. Pin a reviewed version, configure an explicit algorithm
 set, enable nonce consumption for browser flows, and exercise provider metadata
 and key rotation before rollout. `NewWithKeySet` supports callers that already
 own standards-compliant key retrieval; those callers also own all key-cache,

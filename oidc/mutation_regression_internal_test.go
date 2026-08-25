@@ -14,7 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
+	"github.com/faustbrian/go-authentication/authtest"
 	jose "github.com/go-jose/go-jose/v4"
 )
 

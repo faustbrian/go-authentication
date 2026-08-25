@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authotel"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authotel"
 	metricnoop "go.opentelemetry.io/otel/metric/noop"
 	tracenoop "go.opentelemetry.io/otel/trace/noop"
 )

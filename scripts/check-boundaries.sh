@@ -2,8 +2,8 @@
 set -eu
 
 unexpected_modules=$(go list -m all | awk '
-	$1 != "github.com/faustbrian/golib/pkg/authentication" &&
-	$1 != "github.com/faustbrian/golib/pkg/clock" { print $1 }
+	$1 != "github.com/faustbrian/go-authentication" &&
+	$1 != "github.com/faustbrian/go-clock" { print $1 }
 ')
 if [ -n "$unexpected_modules" ]; then
 	printf 'root module has forbidden dependencies:\n%s\n' \
@@ -12,7 +12,7 @@ if [ -n "$unexpected_modules" ]; then
 fi
 
 dependencies=$(cd authotel && go list -deps .)
-for forbidden in go.opentelemetry.io/otel/sdk github.com/faustbrian/golib/pkg/telemetry; do
+for forbidden in go.opentelemetry.io/otel/sdk github.com/faustbrian/go-telemetry; do
 	if printf '%s\n' "$dependencies" | grep -Eq "^${forbidden}(/|$)"; then
 		printf 'authotel has forbidden production dependency: %s\n' "$forbidden" >&2
 		exit 1
@@ -22,9 +22,9 @@ done
 for module in . jwt oidc authotel; do
 	dependencies=$(cd "$module" && go list -deps ./...)
 	for forbidden in \
-		github.com/faustbrian/golib/pkg/service \
-		github.com/faustbrian/golib/pkg/http-client \
-		github.com/faustbrian/golib/pkg/authorization
+		github.com/faustbrian/go-service \
+		github.com/faustbrian/go-http-client \
+		github.com/faustbrian/go-authorization
 	do
 		if printf '%s\n' "$dependencies" | grep -Eq "^${forbidden}(/|$)"; then
 			printf '%s has forbidden production dependency: %s\n' \

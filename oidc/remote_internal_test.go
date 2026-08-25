@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authtest"
 	jose "github.com/go-jose/go-jose/v4"
 )
 

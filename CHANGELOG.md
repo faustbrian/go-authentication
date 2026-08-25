@@ -5,6 +5,8 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-08-25
+
 ### Documentation
 
 - Replace obsolete standalone-repository links and workflow claims with
@@ -30,6 +32,7 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Publish the module from its standalone `github.com/faustbrian/go-authentication` identity while preserving its documented API and behavior.
 - Replace obsolete owned-module pseudo-version pins with the monorepo's local
   `v0.0.0` source-proxy coordinates; release tooling continues to emit exact
   `v1.0.0` dependency versions.
@@ -84,4 +87,5 @@ this project follows Semantic Versioning.
   enforce explicit parameter and field bounds.
 - Query credential constructors are deprecated for new designs.
 
-[Unreleased]: https://github.com/faustbrian/golib/commits/main/pkg/authentication
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.0.0

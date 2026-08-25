@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
+	authentication "github.com/faustbrian/go-authentication"
 )
 
 // CredentialExtractor extracts one typed credential from an HTTP request.

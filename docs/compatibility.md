@@ -17,7 +17,7 @@ changing the root dependency graph.
 
 ## API stability
 
-Before v1, incompatible API changes may occur in a minor release and must be
+Incompatible API changes require a new major release and must be
 documented with migration guidance. At v1, exported identifiers and behavioral
 contracts follow Semantic Versioning. Adding a new failure kind, credential
 kind, algorithm requirement, default bound, or stricter parser behavior is a

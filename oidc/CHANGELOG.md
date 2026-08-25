@@ -4,6 +4,8 @@ All notable changes to this module are documented here.
 
 ## Unreleased
 
+## 1.0.0 - 2026-08-25
+
 ### Documentation
 
 - Link the package README to the repository-wide Golib documentation portal.
@@ -57,6 +59,7 @@ All notable changes to this module are documented here.
 
 ### Changed
 
+- Publish the module from its standalone `github.com/faustbrian/go-authentication/oidc` identity while preserving its documented API and behavior.
 - Refresh local `v0.0.0` owned-module checksums after dependency manifests and
   release notes were normalized; runtime behavior and public APIs are
   unchanged.

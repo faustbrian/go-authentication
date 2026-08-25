@@ -1,7 +1,7 @@
 # authotel
 
 `authotel` is the optional OpenTelemetry adapter for
-[`authentication`](https://pkg.go.dev/github.com/faustbrian/golib/pkg/authentication).
+[`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication).
 It turns completed authentication attempts into bounded traces and metrics. It
 does not authenticate credentials, make authorization decisions, configure an
 SDK, or own exporters.
@@ -48,7 +48,7 @@ original context is preserved.
 ## Telemetry convention
 
 The instrumentation scope is
-`github.com/faustbrian/golib/pkg/authentication/authotel`. The adapter telemetry
+`github.com/faustbrian/go-authentication/authotel`. The adapter telemetry
 convention documented below is version `1.0.0`. That convention is not a
 published OpenTelemetry schema and is therefore not written to
 `InstrumentationScope.Version` or `SchemaURL`; those fields are reserved for
@@ -81,7 +81,7 @@ Convention `1.x` preserves signal names, units, meanings, and existing
 attribute values. Additive closed values require a minor convention version and
 a changelog entry. Renames, removals, unit changes, or meaning changes require
 a new major convention version and migration guidance. The module remains
-pre-v1, so consumers should pin an exact module version independently of the
+stable at v1, so consumers should pin an exact module version independently of the
 telemetry convention version.
 
 ## Privacy and security
@@ -218,7 +218,7 @@ Supply `trace/noop.NewTracerProvider()` and `metric/noop.NewMeterProvider()`.
 From the repository root, run the affected module contract with:
 
 ```sh
-make check MODULES=pkg/authentication/authotel
+make check MODULES=authotel
 ```
 
 The module requires exact statement coverage and exact viable-mutant kills in

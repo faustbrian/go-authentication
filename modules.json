@@ -1,0 +1,705 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-authentication",
+  "go_version": "1.26.6",
+  "modules": [
+    {
+      "directory": ".",
+      "module_path": "github.com/faustbrian/go-authentication",
+      "go_version": "1.26.6",
+      "packages": [
+        {
+          "module_directory": ".",
+          "directory": ".",
+          "name": "authentication",
+          "import_path": "github.com/faustbrian/go-authentication",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "apikey",
+          "name": "apikey",
+          "import_path": "github.com/faustbrian/go-authentication/apikey",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "authhttp",
+          "name": "authhttp",
+          "import_path": "github.com/faustbrian/go-authentication/authhttp",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "authlog",
+          "name": "authlog",
+          "import_path": "github.com/faustbrian/go-authentication/authlog",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "authtest",
+          "name": "authtest",
+          "import_path": "github.com/faustbrian/go-authentication/authtest",
+          "kind": "test support",
+          "production": false,
+          "executable": true,
+          "coverage_required": false,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "basic",
+          "name": "basic",
+          "import_path": "github.com/faustbrian/go-authentication/basic",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "bearer",
+          "name": "bearer",
+          "import_path": "github.com/faustbrian/go-authentication/bearer",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        }
+      ],
+      "purpose": "`authentication` is a production-oriented authentication library for Go services. It turns Basic credentials, opaque bearer tokens, API keys, JWTs, or OIDC ID tokens into an immutable principal. It does not decide whether that principal may perform an action.",
+      "lifecycle": "stable",
+      "kind": "public library",
+      "releasable": true,
+      "family": "service-edge",
+      "family_label": "Service Edge",
+      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
+      "family_order": 2,
+      "version": "v1.0.0",
+      "tag_prefix": "v",
+      "owned_dependencies": [
+        "github.com/faustbrian/go-clock"
+      ],
+      "reverse_owned_dependencies": [
+        "github.com/faustbrian/go-authentication/authotel",
+        "github.com/faustbrian/go-authentication/jwt",
+        "github.com/faustbrian/go-authentication/oidc",
+        "github.com/faustbrian/go-authorization/integration/contracts",
+        "github.com/faustbrian/go-http-middleware/integration/siblings",
+        "github.com/faustbrian/go-queue-control-plane",
+        "github.com/faustbrian/go-service/compatibility",
+        "github.com/faustbrian/go-service/integration/reference-http"
+      ],
+      "external_runtime_dependencies": [],
+      "required_services": [],
+      "build_tags": [],
+      "test_tags": [],
+      "interoperability_tools": [],
+      "specifications": [
+        "RFC 7617 Basic HTTP Authentication",
+        "RFC 6750 OAuth 2.0 Bearer Token Usage",
+        "RFC 9110 HTTP Authentication Framework"
+      ],
+      "conformance_corpora": [
+        "RFC 7617 Sections 2 and 2.1 credential vectors",
+        "RFC 6750 Section 2.1 bearer b64token vector"
+      ],
+      "provenance": [
+        "specification/manifest.tsv"
+      ],
+      "goal_files": [
+        ".ai/GOAL.md",
+        ".ai/GOAL_HARDEN.md",
+        ".ai/GOAL_POLISH.md"
+      ],
+      "goal_status": "implementation-evidence-inventoried",
+      "goal_evidence": [
+        {
+          "file": ".ai/GOAL.md",
+          "requirements_sha256": "acd48ab5a6972c2a6dec2d5bef8def1dc1283b7d0c56d0c5644eb3febcc16e18",
+          "implementation_evidence": [
+            "CHANGELOG.md",
+            "README.md",
+            "docs/api.md",
+            "docs/compatibility.md",
+            "docs/performance.md",
+            "docs/security/findings.md",
+            "docs/security/threat-model.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        },
+        {
+          "file": ".ai/GOAL_HARDEN.md",
+          "requirements_sha256": "263c8a11fdc4b9b8c3d2ab147e4b7b2a3fbf416ec0e00963e6a47db8698f0fff",
+          "implementation_evidence": [
+            "CHANGELOG.md",
+            "README.md",
+            "docs/api.md",
+            "docs/compatibility.md",
+            "docs/performance.md",
+            "docs/security/findings.md",
+            "docs/security/threat-model.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        },
+        {
+          "file": ".ai/GOAL_POLISH.md",
+          "requirements_sha256": "bb57e69c64510bd619fefb908b0529936f5902c29d76032a9f4cbc0caea010d9",
+          "implementation_evidence": [
+            "CHANGELOG.md",
+            "README.md",
+            "docs/api.md",
+            "docs/compatibility.md",
+            "docs/performance.md",
+            "docs/security/findings.md",
+            "docs/security/threat-model.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        }
+      ],
+      "gates": {
+        "api_compatibility": true,
+        "benchmarks": true,
+        "conformance": true,
+        "coverage": true,
+        "documentation": true,
+        "fuzz": true,
+        "lint": true,
+        "mutation": true,
+        "race": true,
+        "security": true,
+        "tests": true
+      }
+    },
+    {
+      "directory": "authotel",
+      "module_path": "github.com/faustbrian/go-authentication/authotel",
+      "go_version": "1.26.6",
+      "packages": [
+        {
+          "module_directory": "authotel",
+          "directory": ".",
+          "name": "authotel",
+          "import_path": "github.com/faustbrian/go-authentication/authotel",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        }
+      ],
+      "purpose": "`authotel` is the optional OpenTelemetry adapter for [`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication). It turns completed authentication attempts into bounded traces and metrics. It does not authenticate credentials, make authorization decisions, configure an SDK, or own exporters.",
+      "lifecycle": "stable",
+      "kind": "public library",
+      "releasable": true,
+      "family": "service-edge",
+      "family_label": "Service Edge",
+      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
+      "family_order": 2,
+      "version": "v1.0.0",
+      "tag_prefix": "authotel/v",
+      "owned_dependencies": [
+        "github.com/faustbrian/go-authentication",
+        "github.com/faustbrian/go-clock"
+      ],
+      "reverse_owned_dependencies": [],
+      "external_runtime_dependencies": [
+        "go.opentelemetry.io/otel",
+        "go.opentelemetry.io/otel/metric",
+        "go.opentelemetry.io/otel/sdk",
+        "go.opentelemetry.io/otel/sdk/metric",
+        "go.opentelemetry.io/otel/trace"
+      ],
+      "required_services": [],
+      "build_tags": [],
+      "test_tags": [],
+      "interoperability_tools": [],
+      "specifications": [],
+      "conformance_corpora": [],
+      "provenance": [],
+      "goal_files": [
+        "authotel/.ai/GOAL.md",
+        "authotel/.ai/GOAL_HARDEN.md"
+      ],
+      "goal_status": "implementation-evidence-inventoried",
+      "goal_evidence": [
+        {
+          "file": "authotel/.ai/GOAL.md",
+          "requirements_sha256": "cb6dfb02c33498a456b6dff276898ce91e4a11bc5286ab07e122a4d86d04e0b5",
+          "implementation_evidence": [
+            "authotel/CHANGELOG.md",
+            "authotel/README.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        },
+        {
+          "file": "authotel/.ai/GOAL_HARDEN.md",
+          "requirements_sha256": "7b824c0b437c4276c2ad3f25404f870b887b25933d99769fa760336100a49b5c",
+          "implementation_evidence": [
+            "authotel/CHANGELOG.md",
+            "authotel/README.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        }
+      ],
+      "gates": {
+        "api_compatibility": true,
+        "benchmarks": true,
+        "conformance": false,
+        "coverage": true,
+        "documentation": true,
+        "fuzz": true,
+        "lint": true,
+        "mutation": true,
+        "race": true,
+        "security": true,
+        "tests": true
+      }
+    },
+    {
+      "directory": "jwt",
+      "module_path": "github.com/faustbrian/go-authentication/jwt",
+      "go_version": "1.26.6",
+      "packages": [
+        {
+          "module_directory": "jwt",
+          "directory": ".",
+          "name": "jwt",
+          "import_path": "github.com/faustbrian/go-authentication/jwt",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        }
+      ],
+      "purpose": "`jwt` validates signed compact JWTs at the authentication boundary. It owns JWT/JWS parsing, signature and claim policy, static JWK sets, and a bounded remote JWKS cache. It does not extract HTTP credentials, discover OIDC providers, issue tokens, manage sessions, or make authorization decisions.",
+      "lifecycle": "stable",
+      "kind": "public library",
+      "releasable": true,
+      "family": "service-edge",
+      "family_label": "Service Edge",
+      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
+      "family_order": 2,
+      "version": "v1.0.0",
+      "tag_prefix": "jwt/v",
+      "owned_dependencies": [
+        "github.com/faustbrian/go-authentication",
+        "github.com/faustbrian/go-clock"
+      ],
+      "reverse_owned_dependencies": [],
+      "external_runtime_dependencies": [
+        "github.com/golang-jwt/jwt/v5",
+        "github.com/lestrrat-go/httprc/v3",
+        "github.com/lestrrat-go/jwx/v3"
+      ],
+      "required_services": [],
+      "build_tags": [],
+      "test_tags": [],
+      "interoperability_tools": [
+        "golang-jwt/jwt v5.3.1",
+        "lestrrat-go/jwx v3.1.1"
+      ],
+      "specifications": [
+        "RFC 7515 JSON Web Signature",
+        "RFC 7517 JSON Web Key",
+        "RFC 7518 JSON Web Algorithms",
+        "RFC 7519 JSON Web Token",
+        "RFC 8259 JSON",
+        "RFC 8725 JSON Web Token Best Current Practices",
+        "RFC 9110 HTTP Semantics",
+        "RFC 9111 HTTP Caching"
+      ],
+      "conformance_corpora": [
+        "RFC 7515 Appendix A.2 RS256 compact JWS",
+        "RFC 7520 Figure 5 HMAC JWK and Section 4.4 compact JWS",
+        "Specification-derived algorithm, claim, serialization, and remote-boundary matrices"
+      ],
+      "provenance": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "goal_files": [
+        "jwt/.ai/GOAL.md",
+        "jwt/.ai/GOAL_HARDEN.md"
+      ],
+      "goal_status": "implementation-evidence-inventoried",
+      "goal_evidence": [
+        {
+          "file": "jwt/.ai/GOAL.md",
+          "requirements_sha256": "f2b8dafe3904e29726eb104b11056e3f79d87d38fbcf9488978f3cdfbc840f3c",
+          "implementation_evidence": [
+            "jwt/CHANGELOG.md",
+            "jwt/README.md",
+            "jwt/docs/api.md",
+            "jwt/docs/hardening.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        },
+        {
+          "file": "jwt/.ai/GOAL_HARDEN.md",
+          "requirements_sha256": "023f5d82bbe76023d9665cb9b79e5c89da1b3712f051d50df5a8f0afd95b7e26",
+          "implementation_evidence": [
+            "jwt/CHANGELOG.md",
+            "jwt/README.md",
+            "jwt/docs/api.md",
+            "jwt/docs/hardening.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        }
+      ],
+      "gates": {
+        "api_compatibility": true,
+        "benchmarks": true,
+        "conformance": true,
+        "coverage": true,
+        "documentation": true,
+        "fuzz": true,
+        "lint": true,
+        "mutation": true,
+        "race": true,
+        "security": true,
+        "tests": true
+      }
+    },
+    {
+      "directory": "oidc",
+      "module_path": "github.com/faustbrian/go-authentication/oidc",
+      "go_version": "1.26.6",
+      "packages": [
+        {
+          "module_directory": "oidc",
+          "directory": ".",
+          "name": "oidc",
+          "import_path": "github.com/faustbrian/go-authentication/oidc",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        }
+      ],
+      "purpose": "`oidc` discovers an OpenID Provider and validates signed OpenID Connect ID tokens. It owns the authentication trust boundary only: applications retain OAuth authorization flows, redirects, sessions, cookies, middleware, nonce storage, and authorization policy.",
+      "lifecycle": "stable",
+      "kind": "public library",
+      "releasable": true,
+      "family": "service-edge",
+      "family_label": "Service Edge",
+      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
+      "family_order": 2,
+      "version": "v1.0.0",
+      "tag_prefix": "oidc/v",
+      "owned_dependencies": [
+        "github.com/faustbrian/go-authentication",
+        "github.com/faustbrian/go-clock"
+      ],
+      "reverse_owned_dependencies": [],
+      "external_runtime_dependencies": [
+        "github.com/coreos/go-oidc/v3",
+        "github.com/go-jose/go-jose/v4"
+      ],
+      "required_services": [],
+      "build_tags": [],
+      "test_tags": [
+        "integration"
+      ],
+      "interoperability_tools": [
+        "Google, Keycloak, and Dex provider metadata profiles",
+        "Keycloak 26.3.2 provider-issued ID token via immutable OCI image"
+      ],
+      "specifications": [
+        "OpenID Connect Core 1.0 incorporating errata set 2",
+        "OpenID Connect Discovery 1.0 incorporating errata set 2",
+        "RFC 7515 JSON Web Signature",
+        "RFC 7517 JSON Web Key",
+        "RFC 7518 JSON Web Algorithms",
+        "RFC 7519 JSON Web Token",
+        "RFC 8259 JSON",
+        "RFC 9110 HTTP Semantics",
+        "RFC 9111 HTTP Caching"
+      ],
+      "conformance_corpora": [
+        "OpenID Connect Core 1.0 Section 2 ID-token claim vector",
+        "Specification-derived discovery, JOSE, ID-token, nonce, time, error, and option matrices"
+      ],
+      "provenance": [
+        "oidc/specification/manifest.tsv"
+      ],
+      "goal_files": [
+        "oidc/.ai/GOAL.md",
+        "oidc/.ai/GOAL_HARDEN.md"
+      ],
+      "goal_status": "implementation-evidence-inventoried",
+      "goal_evidence": [
+        {
+          "file": "oidc/.ai/GOAL.md",
+          "requirements_sha256": "605322fd930835382dab2fd1178eeb20fecc31d145af302a6edd91fe0606c481",
+          "implementation_evidence": [
+            "oidc/CHANGELOG.md",
+            "oidc/README.md",
+            "oidc/docs/hardening.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        },
+        {
+          "file": "oidc/.ai/GOAL_HARDEN.md",
+          "requirements_sha256": "8ef6d81bad586eef5726d80042c8c5c399dabadcfe7fef7c75b301a17fc602bd",
+          "implementation_evidence": [
+            "oidc/CHANGELOG.md",
+            "oidc/README.md",
+            "oidc/docs/hardening.md"
+          ],
+          "verification_gates": [
+            "format-check",
+            "tidy-check",
+            "safety",
+            "vet",
+            "test",
+            "race",
+            "coverage",
+            "lint",
+            "staticcheck",
+            "vulnerability",
+            "secrets",
+            "licenses",
+            "sbom",
+            "fuzz",
+            "mutation",
+            "nilaway",
+            "docs",
+            "api",
+            "conformance",
+            "interoperability",
+            "benchmark"
+          ],
+          "implementation_status": "implemented-requires-fresh-verification"
+        }
+      ],
+      "gates": {
+        "api_compatibility": true,
+        "benchmarks": true,
+        "conformance": true,
+        "coverage": true,
+        "documentation": true,
+        "fuzz": true,
+        "lint": true,
+        "mutation": true,
+        "race": true,
+        "security": true,
+        "tests": true
+      }
+    }
+  ]
+}

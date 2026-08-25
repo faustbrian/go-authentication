@@ -3,7 +3,7 @@
 Install the optional module:
 
 ```sh
-go get github.com/faustbrian/golib/pkg/authentication/oidc
+go get github.com/faustbrian/go-authentication/oidc
 ```
 
 Use `oidc.New` for discovery or `oidc.NewWithKeySet` for a supplied upstream

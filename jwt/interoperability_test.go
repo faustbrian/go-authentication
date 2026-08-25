@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
-	authjwt "github.com/faustbrian/golib/pkg/authentication/jwt"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authtest"
+	authjwt "github.com/faustbrian/go-authentication/jwt"
 	golangjwt "github.com/golang-jwt/jwt/v5"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"

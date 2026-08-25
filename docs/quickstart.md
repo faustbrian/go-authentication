@@ -1,6 +1,6 @@
 # Five-minute quickstart
 
-1. Install the root module with `go get github.com/faustbrian/golib/pkg/authentication`.
+1. Install the root module with `go get github.com/faustbrian/go-authentication`.
 2. Choose exactly the credential sources the endpoint accepts.
 3. Construct the matching authenticator.
 4. Wrap the handler with `authhttp.NewMiddleware`.

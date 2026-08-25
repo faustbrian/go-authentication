@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/clock/manual"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-clock/manual"
 )
 
 // Epoch is the default deterministic authentication time used by fixtures.

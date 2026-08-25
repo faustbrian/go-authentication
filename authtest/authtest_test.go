@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authtest"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authtest"
 )
 
 func TestPrincipalAndResultFixturesAreDeterministic(t *testing.T) {

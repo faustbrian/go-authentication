@@ -16,8 +16,8 @@ import (
 	"time"
 	"unicode/utf8"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	clockpkg "github.com/faustbrian/golib/pkg/clock"
+	authentication "github.com/faustbrian/go-authentication"
+	clockpkg "github.com/faustbrian/go-clock"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	upstreamjwt "github.com/lestrrat-go/jwx/v3/jwt"

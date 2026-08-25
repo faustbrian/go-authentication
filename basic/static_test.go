@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/basic"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/basic"
 )
 
 func TestStaticAuthenticatesConfiguredBasicCredential(t *testing.T) {

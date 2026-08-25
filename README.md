@@ -1,5 +1,15 @@
 # authentication
 
+[![CI](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-100%25_required-blue)](CONTRIBUTING.md#verification)
+[![Mutation](https://img.shields.io/badge/mutation-100%25_required-blue)](CONTRIBUTING.md#verification)
+[![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
+[![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-authentication.svg)](https://pkg.go.dev/github.com/faustbrian/go-authentication)
+[![Release](https://img.shields.io/github/v/release/faustbrian/go-authentication?sort=semver)](https://github.com/faustbrian/go-authentication/releases)
+[![Go](https://img.shields.io/badge/go-1.26.6-00ADD8?logo=go)](https://go.dev/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 `authentication` is a production-oriented authentication library for Go
 services. It turns Basic credentials, opaque bearer tokens, API keys, JWTs, or
 OIDC ID tokens into an immutable principal. It does not decide whether that
@@ -21,15 +31,15 @@ graphs are opt-in.
 ## Install
 
 ```sh
-go get github.com/faustbrian/golib/pkg/authentication
+go get github.com/faustbrian/go-authentication
 ```
 
 Add an optional module only when needed:
 
 ```sh
-go get github.com/faustbrian/golib/pkg/authentication/jwt
-go get github.com/faustbrian/golib/pkg/authentication/oidc
-go get github.com/faustbrian/golib/pkg/authentication/authotel
+go get github.com/faustbrian/go-authentication/jwt
+go get github.com/faustbrian/go-authentication/oidc
+go get github.com/faustbrian/go-authentication/authotel
 ```
 
 ## Five-minute quickstart

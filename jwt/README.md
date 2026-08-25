@@ -162,9 +162,9 @@ inventorying issuers, audiences, algorithms, key IDs, clock skew, and required
 claims; then configure the narrowest observed policy and reject legacy tokens
 that do not satisfy it.
 
-The module is pre-v1. Public API compatibility is checked against
-`api/baseline.txt`, but minor releases may still require an intentional
-migration. The package follows the pinned JWX algorithm registry; review that
+The module follows stable v1 compatibility. Public API compatibility is checked
+against `api/baseline.txt`; breaking changes require a new major release and
+explicit migration guidance. The package follows the pinned JWX algorithm registry; review that
 dependency and this algorithm list when upgrading it.
 
 The RFC-derived acceptance, remote-boundary, and error matrix is recorded in

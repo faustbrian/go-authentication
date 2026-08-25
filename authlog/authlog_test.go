@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authlog"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authlog"
 )
 
 func TestInstrumenterLogsOnlyBoundedMetadata(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
-	"github.com/faustbrian/golib/pkg/authentication/authhttp"
-	"github.com/faustbrian/golib/pkg/authentication/bearer"
+	authentication "github.com/faustbrian/go-authentication"
+	"github.com/faustbrian/go-authentication/authhttp"
+	"github.com/faustbrian/go-authentication/bearer"
 )
 
 func ExampleNewMiddleware() {

@@ -9,14 +9,14 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	authentication "github.com/faustbrian/golib/pkg/authentication"
+	authentication "github.com/faustbrian/go-authentication"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/trace"
 )
 
-const instrumentationName = "github.com/faustbrian/golib/pkg/authentication/authotel"
+const instrumentationName = "github.com/faustbrian/go-authentication/authotel"
 
 // Config supplies caller-owned providers. Both providers are required and
 // their synchronous construction and recording operations must be bounded.

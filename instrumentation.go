@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	clockpkg "github.com/faustbrian/golib/pkg/clock"
+	clockpkg "github.com/faustbrian/go-clock"
 )
 
 // Outcome is the bounded authentication outcome reported to instrumentation.

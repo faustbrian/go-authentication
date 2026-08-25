@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-authentication",
+  "packages": [
+    {
+      "module_directory": ".",
+      "directory": ".",
+      "name": "authentication",
+      "import_path": "github.com/faustbrian/go-authentication",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "apikey",
+      "name": "apikey",
+      "import_path": "github.com/faustbrian/go-authentication/apikey",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "authhttp",
+      "name": "authhttp",
+      "import_path": "github.com/faustbrian/go-authentication/authhttp",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "authlog",
+      "name": "authlog",
+      "import_path": "github.com/faustbrian/go-authentication/authlog",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": "authotel",
+      "directory": ".",
+      "name": "authotel",
+      "import_path": "github.com/faustbrian/go-authentication/authotel",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "authtest",
+      "name": "authtest",
+      "import_path": "github.com/faustbrian/go-authentication/authtest",
+      "kind": "test support",
+      "production": false,
+      "executable": true,
+      "coverage_required": false,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "basic",
+      "name": "basic",
+      "import_path": "github.com/faustbrian/go-authentication/basic",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "bearer",
+      "name": "bearer",
+      "import_path": "github.com/faustbrian/go-authentication/bearer",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": "jwt",
+      "directory": ".",
+      "name": "jwt",
+      "import_path": "github.com/faustbrian/go-authentication/jwt",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": "oidc",
+      "directory": ".",
+      "name": "oidc",
+      "import_path": "github.com/faustbrian/go-authentication/oidc",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    }
+  ]
+}

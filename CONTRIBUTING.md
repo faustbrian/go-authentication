@@ -1,48 +1,55 @@
 # Contributing
 
-Contributions must preserve the boundary: this project authenticates; it does
-not own users, roles, permissions, or policy decisions.
+## Before Editing
 
-## Development
+1. Read [`AGENTS.md`](AGENTS.md) and the affected module's goals and docs.
+2. Run `make inventory` and the narrow baseline gate for the module.
+3. Identify owned dependencies and reverse dependants in `modules.json`.
+4. Preserve unrelated work and generated/corpus provenance.
 
-Use Go 1.26 or newer and run the complete local gate:
+## Changes
 
-```sh
-./scripts/check-all.sh
+Keep commits focused and conventional. Update every affected changelog with
+the behavior and migration impact. Public API changes require compatibility
+evidence and documentation. Specification behavior requires a decision record,
+fixture coverage, and interoperability evidence.
+
+New direct dependencies and dependency updates must follow the
+[dependency governance policy](docs/dependency-governance.md). Package-local
+update bots are forbidden; the root policy owns every module and action update.
+
+Specification-backed changes must follow the
+[specification governance contract](docs/specification-governance.md), update
+the affected stable decision entries, and complete the Specification Decisions
+section of the pull request template. An unresolved interpretation or stale
+source pin is release-blocking; peer behavior cannot silently select policy.
+
+Do not add package-local workflows, permanent replacements, machine-specific
+paths, bypass flags, broad mutation exclusions, or aggregate quality metrics
+that hide a failing package.
+
+## Verification
+
+Run during development:
+
+```bash
+make inventory
+make specification-decisions
+make check MODULES=pkg/<library>
 ```
 
-The repository contains four modules. Changes to `jwt`, `oidc`, or `authotel`
-must run their module-specific tests and tidy checks as well as the root suite.
+Before submitting a repository-wide change:
 
-## Design rules
+```bash
+make ci-changed BASE=origin/main
+```
 
-- Keep the root module free of external dependencies.
-- Make credential sources, anonymous policy, algorithms, issuers, audiences,
-  and network ownership explicit.
-- Bound every retained collection, body, token, cache, refresh, and wait.
-- Return stable classified failures without rendering secrets.
-- Record new ambiguities and interpretation changes in the
-  [specification decision register](docs/specification-decisions.md).
-- Copy principal data at construction and access boundaries.
-- Do not add authorization, account lifecycle, token issuance, or framework
-  container behavior.
-- Every background goroutine must have an owner, cancellation, and join. Prefer
-  synchronous work where the lifecycle cost is not justified.
+The full scheduled and release gate is `make ci`. Report every unavailable or
+failing command; do not describe partial results as release-ready.
 
-## Tests and documentation
+## Adding A Module
 
-Behavior changes use red-green-refactor and preserve meaningful 100% statement
-coverage. Concurrency changes need race tests; parser and configuration changes
-need fuzz seeds; hot paths need allocation-aware benchmarks. Update runnable
-examples, guides, compatibility notes, and `CHANGELOG.md` for user-visible
-changes.
-
-Use focused conventional commits with a body explaining why. Pull requests
-should report exact unit, race, fuzz, coverage, vet, lint, vulnerability, API,
-and documentation results.
-
-## Releases
-
-Maintainers create annotated SemVer tags. Automation verifies every module,
-extracts the matching changelog section, creates a deterministic source
-archive and checksum, and publishes the GitHub release.
+Follow [module lifecycle procedures](docs/module-lifecycle.md). New modules
+require an explicit purpose, ownership boundary, dependency review, package
+catalog entry, full quality gates, documentation, changelog, license, security
+policy, compatibility plan, and release dry-run.

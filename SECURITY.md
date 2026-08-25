@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Before v1, security fixes are applied to the latest minor release. After v1,
+Security fixes are applied to the latest stable v1 release.
 the latest major release receives fixes unless a longer window is announced.
 
 | Version | Supported |
