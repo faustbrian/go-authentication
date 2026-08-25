@@ -1,6 +1,6 @@
 github.com/coreos/go-oidc/v3 v3.20.0 h1:EtE0WIBHk03N+DqGkY4+UONzzZHk7amKt6IyNd7OsZE=
 github.com/coreos/go-oidc/v3 v3.20.0/go.mod h1:DYCf24+ncYi+XkIH97GY1+dqoRlbaSI26KVTCI9SrY4=
-github.com/faustbrian/go-authentication v1.0.0 h1:mKeHbxT8jPSww2gNlpCo9S5q9qJ3CAmUGCaoBvilbgo=
+github.com/faustbrian/go-authentication v1.0.0 h1:C6nSkMI2Z4CWHW7M8x02tS1KkU7a1/Q8nOROrFbgUXw=
 github.com/faustbrian/go-authentication v1.0.0/go.mod h1:cLbyMCC4LxGQvUuB+Rx/lbnVvYiBN23mLn7z5TwMRNQ=
 github.com/faustbrian/go-clock v1.0.0 h1:S98Gi1KHv2N6ZFV+3VlloP11zcMBFGnaAabBaG7+CtU=
 github.com/faustbrian/go-clock v1.0.0/go.mod h1:WKZ5p79IKGNTZGDp2L81cYjbsEjv3+9U0be7uwS8t6Y=
