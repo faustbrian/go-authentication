@@ -12,6 +12,8 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Upgrade JWT cryptographic dependencies to their current secure releases.
+
 - Exclude intentional nested modules from root local-proxy archives so local,
   bootstrap, CI, and public module checksums describe the same source
   boundary.
