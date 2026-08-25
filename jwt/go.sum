@@ -3,7 +3,7 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 h1:5RVFMOWjMyRy8cARdy79nAmgYw3hK/4HUq48LQ6Wwqo=
 github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1/go.mod h1:ZXNYxsqcloTdSy/rNShjYzMhyjf0LaoftYK0p+A3h40=
-github.com/faustbrian/go-authentication v1.0.0 h1:zZ01CEdrUP2aym8dRvGkHMloLK5eflWYa6RAACabuJo=
+github.com/faustbrian/go-authentication v1.0.0 h1:oAQ80R0d5/SzkJ5g++7jEeYWjz9yMKU72fK4uxSNHfA=
 github.com/faustbrian/go-authentication v1.0.0/go.mod h1:cLbyMCC4LxGQvUuB+Rx/lbnVvYiBN23mLn7z5TwMRNQ=
 github.com/faustbrian/go-clock v1.0.0 h1:BDQU8PRggT3j32J3HJdtxnJQHoBY5zosRYjMJrJX4f4=
 github.com/faustbrian/go-clock v1.0.0/go.mod h1:WKZ5p79IKGNTZGDp2L81cYjbsEjv3+9U0be7uwS8t6Y=
