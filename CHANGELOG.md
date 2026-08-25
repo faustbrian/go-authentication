@@ -5,6 +5,11 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+### Fixed
+
+- Run OIDC Keycloak interoperability through the repository-owned standalone
+  script instead of a removed monorepo-relative path.
+
 ### Changed
 
 - Exclude intentional nested modules from root local-proxy archives so local,
