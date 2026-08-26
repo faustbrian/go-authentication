@@ -17,10 +17,10 @@ validation are deliberately excluded.
 ## Install
 
 ```sh
-go get github.com/faustbrian/go-authentication/oidc
+go get github.com/faustbrian/go-authentication/oidc@v1
 ```
 
-## Setup
+## Quick start
 
 ```go
 validator, err := oidc.New(ctx, oidc.Config{
@@ -44,183 +44,26 @@ principal, err := validator.ValidateIDToken(ctx, rawIDToken, oidc.TokenBinding{
 })
 ```
 
-`New` reads
-`<issuer>/.well-known/openid-configuration`, validates the returned issuer and
-metadata, and eagerly fetches the initial JWKS. An issuer with a path follows
-the Discovery append rule; the configured and returned issuer strings and the
-token `iss` claim must match exactly.
+The compiling examples in this module contain complete imports and setup.
 
-`ValidateBearer` validates an ID token without front-channel hash inputs.
-`ValidateIDToken` additionally validates `at_hash` and `c_hash` for each
-non-empty `TokenBinding` field. Hash binding is supported for the `*256`,
-`*384`, and `*512` families; an `EdDSA` token with a requested binding is
-rejected because that algorithm name defines no OIDC half-hash selection.
-`Authenticate` adapts the same validation to the parent authentication
-package's bearer-credential contract.
+## Guarantees and limitations
 
-## Configuration
+The [complete guide](docs/reference.md) defines ownership, failure semantics,
+bounds, concurrency, security, and unsupported behavior. Do not infer
+additional guarantees beyond the documented module boundary.
 
-Configuration is copied into a `Validator`; later changes to slices or to the
-`Config` value do not change it. Caller-supplied collaborators (`Clock`,
-`NonceValidator`, and an `HTTPClient` transport) must themselves be safe for
-concurrent use and must not be mutated after construction.
+## Documentation
 
-Important options and defaults:
+- [Documentation index](docs/README.md)
+- [Complete technical guide](docs/reference.md)
+- [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/oidc)
+- [Parent package documentation](../docs/README.md)
 
-| Option | Meaning | Default |
-| --- | --- | --- |
-| `Issuer` | Exact provider issuer and discovery base | required |
-| `ClientID` | Required audience and `azp` value | required |
-| `TrustedAudiences` | Additional audience values allowed beside the client ID | none |
-| `Algorithms` | Explicit asymmetric ID-token algorithm allowlist | required |
-| `ClockSkew` | Symmetric temporal tolerance | 5 minutes |
-| `MaxTokenBytes` | Compact-token size limit | 16 KiB |
-| `MaxClaims`, `MaxClaimDepth` | JSON member and nesting limits | authentication package limits |
-| `MaxHTTPBodyBytes` | Decompressed discovery/JWKS body limit | 1 MiB |
-| `DiscoveryTimeout` | Initialization discovery/JWKS deadline | 10 seconds |
-| `MaxKeys` | JWKS key-count limit | 64 |
-| `MinRefreshInterval`, `MaxRefreshInterval` | Refresh and cache bounds | 1 minute / 1 hour |
-| `MaxRefreshWaiters` | Concurrent callers admitted to a refresh | 64 |
+## Compatibility and support
 
-Configuration also enforces hard ceilings of 1 MiB per token, 16 MiB per HTTP
-body, 4,096 keys, 4,096 refresh waiters, five minutes for initialization, and
-24 hours for refresh intervals. A supplied HTTP client may shorten the request
-timeout but cannot extend the module's 30-second per-request ceiling when its
-transport honors request-context cancellation. Custom transports own that
-cancellation guarantee.
+This module follows Semantic Versioning. Report vulnerabilities through the
+[parent security policy](../SECURITY.md).
 
-HTTPS is required for the issuer and provider endpoints. `InsecureHTTP` is a
-loopback-only development exception; non-loopback HTTP is rejected and it is
-not a production downgrade switch.
+## License
 
-## Nonce ownership
-
-Nonce generation and replay storage remain caller-owned. Supplying a
-`NonceValidator` means every otherwise accepted token is passed to that
-callback after signature, token-hash, and claim validation. The callback
-receives the validation context and the raw nonce, and should atomically consume
-a single-use value.
-An empty, unknown, expired, replayed, or otherwise invalid nonce should return
-an error. The validator does not retain the nonce. Callback errors and panics
-are converted to a credential rejection and their text is not exposed;
-callback cancellation is authentication unavailability and retains the context
-sentinel.
-
-## Validation policy
-
-Validation requires:
-
-- a permitted signature algorithm and a matching public JWK;
-- one exact JSON response media type, unique and correctly typed metadata/JWK
-  members, a non-empty operation policy when `key_ops` is present, and a `kid`
-  whenever multiple permitted signature keys remain after unrelated encryption
-  keys are ignored;
-- RSA public keys between 2,048 and 8,192 bits, or the exact curve/key shape
-  required by the configured ECDSA or EdDSA algorithm;
-- exact issuer equality;
-- a non-empty ASCII subject no longer than 255 bytes;
-- the client ID in `aud`, no duplicate audience, and no audience outside
-  `ClientID` plus `TrustedAudiences`;
-- `azp` equal to the client ID whenever present, and present for multiple
-  audiences;
-- required `iat` and `exp`, with optional `nbf` and `auth_time` checked using
-  the configured clock and skew without discarding fractional seconds;
-- correctly typed standard JOSE headers and optional protocol claims, and no
-  unsupported distributed-claim protocol fields;
-- the caller-owned nonce check when configured; and
-- `at_hash` and `c_hash` when their corresponding binding values are supplied.
-
-Registered protocol claims, configured scope claims, and configured tenant
-claims are not copied into the principal's arbitrary claim map. Scope and
-tenant values are exposed through the principal's typed accessors.
-
-## Discovery, cache, and rotation
-
-Initialization is synchronous and fails closed unless both valid provider
-metadata and a valid non-empty JWKS are available. Redirects are disabled.
-Response bodies are bounded after transport decompression, HTTP requests have
-a client timeout, and the initialization context has its own deadline.
-
-Metadata and keys share one synchronized refresh. Once the cached freshness
-deadline is reached, one admitted caller re-discovers metadata and conditionally
-fetches the current JWKS; other admitted callers wait with their own contexts.
-Provider cache headers are clamped to the configured refresh bounds. Positive
-freshness windows are refreshed early with per-instance jitter to spread fleet
-load. After the minimum refresh interval, an unknown key ID triggers one
-synchronized rotation probe even while known keys remain fresh. A rotated
-`jwks_uri` clears validators associated with the former URL.
-
-Key material removed by a successful refresh is retired for the lifetime of
-the validator and cannot be reintroduced by a later provider rollback. This
-history is process-local and bounded; reconstructing the validator resets it.
-
-Known keys remain usable only while the cache is fresh. A provider outage after
-expiry fails closed, including for a formerly known key. The failed refresh is
-cached until the minimum refresh interval, preventing a local retry storm; no
-provider response text is surfaced. The module starts no goroutines and owns no
-closeable lifetime beyond each synchronous call.
-
-## Concurrency, cancellation, and errors
-
-`Validator` is immutable after construction and safe for concurrent use.
-Construction and every validation operation accept `context.Context`.
-Cancellation interrupts discovery, JWKS retrieval, refresh ownership, refresh
-waiting, and nonce validation where the collaborator honors the context.
-
-Errors use the parent authentication package's stable classifications:
-malformed or missing credentials are invalid, cryptographic or claim failures
-are rejected, and provider/refresh/cancellation failures are unavailable.
-Errors never include tokens, claims, nonce values, keys, credentials, or
-arbitrary provider bodies. Applications must preserve that property in their
-own logs and callbacks.
-
-Successful discovery and JWKS representations must use `application/json` or
-`application/jwk-set+json`; representation-free `304 Not Modified` responses
-need no media type. Standard `*http.Transport` values are cloned with a 64 KiB
-response-header parsing ceiling. Returned headers and decompressed bodies are
-also bounded, and rejected bodies are closed. Custom transports must impose
-their own pre-allocation header ceiling. HTTPS JWKS endpoints may be
-cross-origin as allowed by Discovery; deployments that do not trust
-provider-directed egress must enforce origin, DNS, address, and port policy in
-the supplied `HTTPClient` transport.
-
-The complete requirement and evidence matrices are in
-[`docs/hardening.md`](docs/hardening.md).
-The stable interpretation and defensive-policy register is in
-[`docs/specification-decisions.md`](docs/specification-decisions.md).
-
-## Adoption and compatibility
-
-The module follows stable v1 compatibility. Pin a reviewed version, configure an explicit algorithm
-set, enable nonce consumption for browser flows, and exercise provider metadata
-and key rotation before rollout. `NewWithKeySet` supports callers that already
-own standards-compliant key retrieval; those callers also own all key-cache,
-rotation, outage, and transport policy.
-
-When migrating from a permissive verifier, review exact issuer spelling,
-additional audiences, `azp`, required `iat`, provider-advertised algorithms,
-HTTPS endpoints, and nonce behavior. Tokens previously accepted through issuer
-aliases, untrusted extra audiences, stale keys, or omitted nonce checks may be
-rejected intentionally.
-
-## FAQ
-
-**Does this start an authorization request or exchange a code?** No. Supply the
-resulting ID token and, when available, its access token and authorization code.
-
-**Does this validate an access token?** No. An access token is accepted only as
-an opaque input for `at_hash` binding.
-
-**Can stale keys be allowed during an outage?** Only until their cache freshness
-deadline. There is no serve-stale override.
-
-**Can HTTP be enabled for one production endpoint?** No. `InsecureHTTP` applies
-to the issuer and discovered endpoints and is intended for isolated development.
-
-**Who deletes replayed nonces?** The caller's `NonceValidator`, atomically with
-successful validation.
-
-## Ecosystem
-
-See the root [documentation index](../docs/README.md) for package integration
-and operations guidance.
+MIT. See [LICENSE](LICENSE).
