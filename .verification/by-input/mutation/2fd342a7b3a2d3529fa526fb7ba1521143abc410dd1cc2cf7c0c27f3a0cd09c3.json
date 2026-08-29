@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-authentication",
+  "module": "oidc",
+  "package": ".",
+  "gate": "mutation",
+  "input_digest": "sha256:2fd342a7b3a2d3529fa526fb7ba1521143abc410dd1cc2cf7c0c27f3a0cd09c3",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:e5f89094b17fa5a9df3e971d27f52a759de2fa95264e4f65087d64e9995ea19e",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.26.6",
+    "evidence_origin": "approved_legacy_checkpoint"
+  },
+  "completed_at": "2026-08-29T03:30:11.942932Z"
+}

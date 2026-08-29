@@ -27,10 +27,11 @@ profiles, not copied provider snapshots or claims of certification against a
 live provider version.
 
 The interoperability gate also starts Keycloak 26.3.2 from the immutable OCI
-image digest pinned in `.golib/versions.env`, imports the checksummed realm
-fixture, obtains an ephemeral provider-issued ID token, and validates it against
-that instance's real discovery document and JWKS. The token is deleted with the
-task-owned temporary directory and is not an interoperability fixture.
+image digest pinned in `scripts/test-oidc-keycloak-interoperability.sh`, imports
+the checksummed realm fixture, obtains an ephemeral provider-issued ID token,
+and validates it against that instance's real discovery document and JWKS. The
+token is deleted with the task-owned temporary directory and is not an
+interoperability fixture.
 
 The dated Google metadata fixture was fetched from Google's public discovery
 endpoint on 2026-08-09. It is immutable interoperability evidence for that

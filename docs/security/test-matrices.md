@@ -29,13 +29,13 @@ sources are `authhttp/interoperability_test.go`,
 
 | Gate | Command |
 | --- | --- |
-| Format, vet, tests, boundaries, examples, API | `./scripts/check-all.sh` |
-| Exact statement coverage | `./scripts/check-coverage.sh` |
-| Race detector | `go test -race ./...` in every module |
-| Fuzz smoke | `FUZZ_TIME=10s ./scripts/check-fuzz.sh` |
-| Vulnerabilities | `govulncheck ./...` in every module |
-| Static analysis | `golangci-lint run ./...` in every module |
-| Workflow and shell syntax | `actionlint` and `shellcheck scripts/*.sh` |
+| Format, vet, tests, boundaries, examples, API | `make check` |
+| Exact statement coverage | `make check` |
+| Race detector | `make check` |
+| Fuzz smoke | `make check` |
+| Vulnerabilities | `make check` |
+| Static analysis | `make check` |
+| Workflow and shell syntax | `make ci` |
 | Reproducible archive | build twice and compare SHA-256 output |
 
 Benchmarks in the repository cover static authentication, extraction, JWT,

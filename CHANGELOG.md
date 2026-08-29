@@ -5,6 +5,11 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+### Changed
+
+- Replace copied repository tooling with the pinned `go-library-tools` v1.0.4
+  contract while retaining package-owned policy and verification evidence.
+
 ### Documentation
 
 - Replace archived monorepo links with a package-owned documentation index.

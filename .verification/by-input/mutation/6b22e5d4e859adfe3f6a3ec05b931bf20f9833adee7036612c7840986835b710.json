@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "repository": "github.com/faustbrian/go-authentication",
+  "module": "jwt",
+  "package": ".",
+  "gate": "mutation",
+  "input_digest": "sha256:6b22e5d4e859adfe3f6a3ec05b931bf20f9833adee7036612c7840986835b710",
+  "verifier_digest": "sha256:9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+  "result": "passed",
+  "report_digest": "sha256:5830e846c8ee09a1c25403441c4f811126727209c00143d4d995f467862650ae",
+  "environment": {
+    "CGO_ENABLED": "1",
+    "GOARCH": "arm64",
+    "GOOS": "darwin",
+    "GOVERSION": "go1.26.6",
+    "evidence_origin": "approved_legacy_checkpoint"
+  },
+  "completed_at": "2026-08-29T03:30:10.368247Z"
+}
