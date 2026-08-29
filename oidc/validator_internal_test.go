@@ -90,6 +90,10 @@ func TestInspectJSONObjectRejectsHostileJSONShapes(t *testing.T) {
 	if err := inspectJSONValue(decoder, 0, authentication.MaxClaims, authentication.MaxClaimDepth, false); err == nil {
 		t.Fatal("inspectJSONValue(unexpected closing delimiter) error = nil")
 	}
+	decoder = json.NewDecoder(strings.NewReader("{]"))
+	if err := inspectJSONValue(decoder, 0, authentication.MaxClaims, authentication.MaxClaimDepth, false); err == nil {
+		t.Fatal("inspectJSONValue(mismatched closing delimiter) error = nil")
+	}
 }
 
 func TestInspectJSONObjectAcceptsExactDepthAndMemberBounds(t *testing.T) {

@@ -38,6 +38,6 @@ credential or make the client authenticate successfully.
 
 ## Coverage falls below 100%
 
-Run `./scripts/check-coverage.sh` to identify the module and function. Add a
-behavioral test or remove a branch that is proven unreachable by an upstream
-contract; do not exclude production files or round the percentage.
+Run `make check` to identify the failing module and package. Add a behavioral
+test or remove a branch that is proven unreachable by an upstream contract; do
+not exclude production files or round the percentage.

@@ -30,6 +30,11 @@ Do not add package-local workflows, permanent replacements, machine-specific
 paths, bypass flags, broad mutation exclusions, or aggregate quality metrics
 that hide a failing package.
 
+Repository verification is provided by the pinned released `go-library-tools`
+workflow and CLI. Use `make inventory`, `make check`, and `make ci` for the
+repository contract; keep package-specific fixtures and typed verification
+operations in this repository rather than copying shared tooling.
+
 ## Verification
 
 Run during development:

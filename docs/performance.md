@@ -3,7 +3,7 @@
 Benchmarks live beside the hot paths and run with allocation reporting:
 
 ```sh
-./scripts/check-benchmarks.sh
+make check
 ```
 
 Static Basic and API-key validation hash incoming values once and compare fixed

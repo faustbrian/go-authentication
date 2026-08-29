@@ -1,0 +1,208 @@
+schema_version: 1
+tool_version: v1.0.4
+tool_checksums_sha256: 6c1ee70e3fa7aa333d12420dc78d7740f4de78717d1979eeb8a5f70a2a124ba0
+manifest:
+  modules: modules.json
+  packages: packages.json
+evidence:
+  root: ".verification"
+mutation:
+  root: ".verification/mutation"
+  imports:
+  - module: "."
+    archive: ".verification/mutation/bootstrap/root.zip"
+    ledger: ".verification/mutation/migration-ledger.json"
+  - module: "authotel"
+    archive: ".verification/mutation/bootstrap/authotel.zip"
+    ledger: ".verification/mutation/migration-ledger.json"
+  - module: "jwt"
+    archive: ".verification/mutation/bootstrap/jwt.zip"
+    ledger: ".verification/mutation/migration-ledger.json"
+  - module: "oidc"
+    archive: ".verification/mutation/bootstrap/oidc.zip"
+    ledger: ".verification/mutation/migration-ledger.json"
+api:
+  baselines:
+  - module: "."
+    mode: apidiff
+    path: api/root.txt
+  - module: "authotel"
+    mode: apidiff
+    path: api/authotel.txt
+  - module: "jwt"
+    mode: apidiff
+    path: api/jwt.txt
+  - module: "oidc"
+    mode: apidiff
+    path: api/oidc.txt
+operations:
+- module: "."
+  gate: conformance
+  steps:
+  - type: make
+    makefile: verification/package.mk
+    target: conformance
+    timeout: 20m
+- module: "."
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzPrincipalClaims$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["./authhttp"]
+    fuzz: '^FuzzAuthorizationExtraction$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["./authhttp"]
+    fuzz: '^FuzzCredentialHeaderSet$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["./authhttp"]
+    fuzz: '^FuzzChallengeFormatting$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["./authhttp"]
+    fuzz: '^FuzzBearerQueryExtraction$'
+    budget: 10000x
+    timeout: 2m
+- module: "."
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages: ["./..."]
+    benchmark: "."
+    budget: 100ms
+    timeout: 20m
+- module: "authotel"
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInstrumenterLifecycle$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInstrumenterWithHostileProviders$'
+    budget: 10000x
+    timeout: 2m
+- module: "authotel"
+  gate: benchmark
+  steps:
+  - type: make
+    makefile: Makefile
+    target: benchmark
+    timeout: 20m
+- module: "jwt"
+  gate: conformance
+  steps:
+  - type: make
+    makefile: Makefile
+    target: conformance
+    timeout: 20m
+- module: "jwt"
+  gate: interoperability
+  steps:
+  - type: make
+    makefile: Makefile
+    target: interoperability
+    timeout: 20m
+- module: "jwt"
+  gate: docs
+  steps:
+  - type: make
+    makefile: Makefile
+    target: docs
+    timeout: 20m
+- module: "jwt"
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInspectCompactJWT$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzValidateSignedPayload$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzCacheLifetimeHeaders$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzRemoteJWKResponseBoundary$'
+    budget: 10000x
+    timeout: 2m
+- module: "jwt"
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages: ["./..."]
+    benchmark: "."
+    budget: 100ms
+    timeout: 20m
+- module: "oidc"
+  gate: conformance
+  steps:
+  - type: make
+    makefile: Makefile
+    target: conformance
+    timeout: 20m
+- module: "oidc"
+  gate: interoperability
+  steps:
+  - type: make
+    makefile: Makefile
+    target: interoperability
+    timeout: 20m
+- module: "oidc"
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInspectCompactToken$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzRemoteURL$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzProviderMetadata$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzValidateBearer$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzJWKSetResponse$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzNumericDate$'
+    budget: 10000x
+    timeout: 2m
+- module: "oidc"
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages: ["./..."]
+    benchmark: "."
+    budget: 100ms
+    timeout: 20m

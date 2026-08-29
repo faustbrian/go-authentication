@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## Unreleased
 
+### Documentation
+
+- Move detailed module guidance behind a concise README and documentation index.
+- Use human-oriented section names and package-owned documentation links.
+
 ## 1.0.0 - 2026-08-25
 
 ### Security
@@ -44,7 +49,7 @@ All notable changes to this module are documented here.
 
 ### Documentation
 
-- Link the package README to the repository-wide Golib documentation portal.
+- Link the package README to package-owned documentation.
 
 - Add the stable JWT, JOSE, JSON, remote-JWKS, cache, lifecycle, and diagnostic
   specification decision register with executable evidence links.
