@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "JWT-DEC-001",
+      "digests": [
+        "c34ccac9c82afd4da8c871bee6fe821ccff46c8c9060c7f41fc5e9bd3e196d0e"
+      ]
+    },
+    {
+      "id": "JWT-DEC-002",
+      "digests": [
+        "6c294c0a2a0b8bd8b9161252fd65db343376a0f7f3132b6b19af8948599ea2a5",
+        "a628f9aed40bc1de1261c54fd349c6166e71bc1112e350010cd920eef1ed16bb"
+      ]
+    },
+    {
+      "id": "JWT-DEC-003",
+      "digests": [
+        "960a82f9867e893c1836832ab451920ef744abed1b98f7ade602004afc0433ca",
+        "2f1485ce6dc9f018d99605a8748c711f465d40e775b582d7809f75e00a54856b",
+        "56a3c44633d83c6fc83fa27e1c7ba4da3243e50152d96801aa11c4137e472170"
+      ]
+    },
+    {
+      "id": "JWT-DEC-004",
+      "digests": [
+        "0ac983e3acb7fd3cb5d1422d02c798362106ddd9b75827714dae42f5988ba81d"
+      ]
+    },
+    {
+      "id": "JWT-DEC-005",
+      "digests": [
+        "138331f4ce5cbab2cfde49f71d6c3fd540de840a7d4a277037b44bb3179adc5c",
+        "5ec36b6e11978d45f1f01028c6db35b084aae3fea4ae18d3cf2f64a45d388d6f",
+        "bde6c358f9d04236bda3385afc90b3397cbe7da8858248e2d0239af1c7e13bb3",
+        "f6914acc21328190b95498f72e60fd12a9ff21a6973c513f9a4eab290cf3536e"
+      ]
+    },
+    {
+      "id": "JWT-DEC-006",
+      "digests": [
+        "d5c41ddbb6ac37f114e997d2ef9d4553dda87a4f1cb3dfde03aa6d55f1bddaee"
+      ]
+    },
+    {
+      "id": "JWT-DEC-007",
+      "digests": [
+        "6b9626f8957a1655bf42fe94dd71971b74fdd12571ba64dee57363e9f1dbc8d2",
+        "1e7d38dc50c0551b9cf20942cdc9e32b5bc99b1ca497b62fd9efa8a33fd2cd46"
+      ]
+    },
+    {
+      "id": "JWT-DEC-008",
+      "digests": [
+        "98b9d6b25d9f48a94a884fe358947c5a80b1b1b03ad16d0ca3e3a7ec9a12f295"
+      ]
+    },
+    {
+      "id": "JWT-DEC-009",
+      "digests": [
+        "ab5495c596db42bf31c283a6fbb43fa2bfbafb77a5e1574bc4f8a0c47c00f3f9"
+      ]
+    },
+    {
+      "id": "JWT-DEC-010",
+      "digests": [
+        "01dd4afda845e628c1323922793cfc05adf8ea1ccb73f0cd89a3b364a400ac6c"
+      ]
+    },
+    {
+      "id": "JWT-DEC-011",
+      "digests": [
+        "de8687c3208a013ccf524091f08a6b87491c9982c4457da7e5de4cedddae7ce4"
+      ]
+    },
+    {
+      "id": "JWT-DEC-012",
+      "digests": [
+        "b1618ad8d71a7d46b12e2df0c8d52b001baa3abbaf7c08de7ff2cf5f48abe48c"
+      ]
+    },
+    {
+      "id": "JWT-DEC-013",
+      "digests": [
+        "e615831f9bf926e4ca9e65d51e1164f2b372ff5a042c678fd194b5368b00ef47"
+      ]
+    },
+    {
+      "id": "JWT-DEC-014",
+      "digests": [
+        "0e45ac787af263eb7b848968a9ed01c1f03ad5a7a1b5ce5383c5b0defdbbbf49"
+      ]
+    },
+    {
+      "id": "JWT-DEC-015",
+      "digests": [
+        "be343023ac0ba642b4d7775a190bb8e31489f545db7ee0395c8ff94f5651c9b5"
+      ]
+    }
+  ]
+}

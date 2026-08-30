@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "change_control": {
+    "readme": "README.md",
+    "conformance": "specification/README.md",
+    "compatibility": "docs/compatibility.md",
+    "contribution": "CONTRIBUTING.md",
+    "changelog": "CHANGELOG.md",
+    "pull_request_template": ".github/pull_request_template.md"
+  },
+  "decisions": [
+    {
+      "id": "AUTH-DEC-001",
+      "title": "Authentication scheme recognition",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "ambiguity",
+      "decision_scope": "defensive",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Authentication Scheme](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.1) and [Credentials](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.4)",
+      "requirement_strength": "not specified",
+      "issue": "Scheme names are case-insensitive, but one extractor can enable several schemes and can encounter an unsupported scheme. Treating an unsupported scheme as malformed would prevent another enabled source from recognizing it; accepting flexible whitespace would exceed the credentials grammar.",
+      "interpretations": [
+        "Match scheme bytes exactly; parse every scheme in one source; reject unknown schemes; or let each source ignore other schemes while enforcing its own grammar exactly."
+      ],
+      "peer_behavior": "HTTP middleware varies between first-match routing, permissive whitespace splitting, and rejection of every unrecognized Authorization value. Those defaults do not determine this package contract.",
+      "selected_behavior": "Basic and Bearer scheme names compare case-insensitively. A source treats another scheme as absent so another explicitly enabled source can recognize it. A recognized scheme requires exactly one ASCII space and one non-empty credential value; tabs, extra whitespace, and embedded whitespace are invalid. A naked recognized scheme is invalid, while a naked unknown scheme is absent.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Strict separators prevent parser differentials across proxies and applications. Authorization values remain byte-bounded by the selected source.",
+      "resource_consequences": "Strict separators prevent parser differentials across proxies and applications. Authorization values remain byte-bounded by the selected source.",
+      "compatibility_consequences": "Scheme casing is interoperable. Requests depending on tab separators, repeated spaces, or an unknown scheme being treated as malformed are not accepted under this profile.",
+      "wire_consequences": "Scheme casing is interoperable. Requests depending on tab separators, repeated spaces, or an unknown scheme being treated as malformed are not accepted under this profile.",
+      "executable_evidence": [
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestBearerAuthorizationExtractionEnforcesGrammarAndBounds"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.BasicAuthorization`, `authhttp.BearerAuthorization`, `authhttp.Extractor`, and `FailureInvalid` versus `FailureAbsent`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 9110 supersedes the authentication framework previously published in RFC 7235. No package-specific erratum changes this interpretation.",
+      "reconsider_when": "HTTP authentication grammar changes or a new package-owned scheme requires materially different dispatch semantics."
+    },
+    {
+      "id": "AUTH-DEC-002",
+      "title": "Basic user-password octets and delimiters",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "application-policy",
+      "specification": "RFC 7617 Basic HTTP Authentication",
+      "version": "RFC 7617",
+      "source_authority": "rfc7617-source",
+      "section": "RFC 7617 [The Basic Authentication Scheme](https://www.rfc-editor.org/rfc/rfc7617.html#section-2) and [`charset` authentication parameter](https://www.rfc-editor.org/rfc/rfc7617.html#section-2.1)",
+      "requirement_strength": "not specified",
+      "issue": "RFC 7617 separates user-id and password at the first colon, forbids a colon in the user-id, and leaves the default encoding undefined unless a challenge advertises UTF-8. Go strings can preserve arbitrary bytes, but silently transcoding or normalizing them would change credentials.",
+      "interpretations": [
+        "Require UTF-8 always; assume ISO-8859-1; normalize Unicode; split at the last colon; or preserve decoded octets and split at the first colon without claiming a charset."
+      ],
+      "peer_behavior": "Basic implementations differ on default encodings and Unicode normalization. The official examples prove specific byte sequences, not a universal default charset.",
+      "selected_behavior": "Decode canonical padded Base64 strictly, split at the first colon, require a non-empty user-id, and preserve all remaining password bytes including later colons. The extractor does not transcode or normalize. Control octets are rejected. A caller may construct a `charset=\"UTF-8\"` challenge, but extraction does not infer that challenge state or validate UTF-8 implicitly.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "Decoded credentials have an inclusive byte limit and reject controls before storage or authentication. Exact bytes avoid normalization-based credential aliases. TLS remains mandatory deployment policy.",
+      "resource_consequences": "Decoded credentials have an inclusive byte limit and reject controls before storage or authentication. Exact bytes avoid normalization-based credential aliases. TLS remains mandatory deployment policy.",
+      "compatibility_consequences": "RFC examples and UTF-8 bytes round-trip. Invalid UTF-8 octets remain representable in a Go string for legacy interoperability; applications requiring UTF-8 must enforce it in their credential policy.",
+      "wire_consequences": "RFC examples and UTF-8 bytes round-trip. Invalid UTF-8 octets remain representable in a Go string for legacy interoperability; applications requiring UTF-8 must enforce it in their credential policy.",
+      "executable_evidence": [
+        "TestRFC7617BasicCredentialVectors",
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestBasicAuthorizationPreservesOctetsAndPasswordColons"
+      ],
+      "fixture_evidence": [
+        "specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "interoperability_evidence": [
+        "specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`authhttp.BasicAuthorization`, `authentication.BasicCredential`, `basic.NewStatic`, and `authentication.NewChallenge`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7617 deliberately leaves the default encoding compatibility-sensitive and defines UTF-8 only through the challenge parameter.",
+      "reconsider_when": "A supported application profile mandates one encoding or the package gains a stateful challenge-to-request negotiation API."
+    },
+    {
+      "id": "AUTH-DEC-003",
+      "title": "Bearer token grammar and legacy pipe extension",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "extension-specific",
+      "specification": "RFC 6750 OAuth 2.0 Bearer Token Usage",
+      "version": "RFC 6750",
+      "source_authority": "rfc6750-source",
+      "section": "RFC 6750 [Authorization Request Header Field](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1)",
+      "requirement_strength": "not specified",
+      "issue": "RFC 6750 defines `b64token`, including trailing `=` padding, but some existing opaque-token contracts use a pipe delimiter that the grammar excludes. Globally relaxing the grammar would make default compliance misleading.",
+      "interpretations": [
+        "Accept any non-whitespace token; enforce `token68`; enforce `b64token`; or expose a narrow opt-in extension without changing defaults."
+      ],
+      "peer_behavior": "Bearer middleware frequently accepts arbitrary strings or JWT-shaped values. Neither behavior is the RFC 6750 `b64token` contract.",
+      "selected_behavior": "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header, query, and cookie sources.",
+      "rationale": "The base specification excludes this extension, so keeping it explicit and opt-in preserves the normative default.",
+      "security_consequences": "Syntax is checked before a validator receives the bounded token. The extension cannot be enabled globally or implicitly.",
+      "resource_consequences": "Syntax is checked before a validator receives the bounded token. The extension cannot be enabled globally or implicitly.",
+      "compatibility_consequences": "Strict mode interoperates with RFC 6750 tokens. Pipe-bearing credentials require explicit source configuration and are not described as RFC-compliant.",
+      "wire_consequences": "Strict mode interoperates with RFC 6750 tokens. Pipe-bearing credentials require explicit source configuration and are not described as RFC-compliant.",
+      "executable_evidence": [
+        "TestRFC6750BearerHeaderVector",
+        "TestBearerAuthorizationExtractionEnforcesGrammarAndBounds",
+        "TestBearerAuthorizationPipeRequiresExplicitOptIn",
+        "TestPrivateTokenAndNameBoundaries"
+      ],
+      "fixture_evidence": [
+        "specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "interoperability_evidence": [
+        "specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`authhttp.BearerAuthorization`, `authhttp.BearerQuery`, `authhttp.BearerCookie`, `authhttp.WithBearerPipe`, and `authhttp.WithBearerMaxBytes`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "The extension is package-owned and is not an RFC 6750 erratum or extension.",
+      "reconsider_when": "The legacy pipe contract is retired or a versioned external profile defines a different bearer grammar."
+    },
+    {
+      "id": "AUTH-DEC-004",
+      "title": "Bearer transport locations",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "application-policy",
+      "specification": "RFC 6750 OAuth 2.0 Bearer Token Usage",
+      "version": "RFC 6750",
+      "source_authority": "rfc6750-source",
+      "section": "RFC 6750 [Authorization header](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1), [form body](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.2), and [URI query](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.3)",
+      "requirement_strength": "not specified",
+      "issue": "RFC 6750 defines three transmission methods, discourages URI query use, and forbids using more than one method per request. Generic middleware cannot safely read or replace arbitrary request bodies. Cookies are common application transport but are not an RFC 6750 bearer method.",
+      "interpretations": [
+        "Implement all RFC methods; accept any named location automatically; support only Authorization; or expose hazardous and non-standard locations explicitly while keeping body access out of authentication middleware."
+      ],
+      "peer_behavior": "Frameworks vary between header-only defaults and automatic header, query, form, or cookie fallback. Automatic fallback obscures credential precedence and retention risk.",
+      "selected_behavior": "Authorization is the recommended default. Query extraction is explicit, caller-named, and deprecated for new designs. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "Query credentials can be retained before this package sees them; callers must provide TLS, end-to-end log suppression, short lifetimes, and RFC 6750 cache controls. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
+      "resource_consequences": "Query credentials can be retained before this package sees them; callers must provide TLS, end-to-end log suppression, short lifetimes, and RFC 6750 cache controls. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
+      "compatibility_consequences": "Header use is RFC-aligned. Query use can implement `access_token` when explicitly named. Cookie use and custom query names are package profiles, not RFC 6750 compliance claims.",
+      "wire_consequences": "Header use is RFC-aligned. Query use can implement `access_token` when explicitly named. Cookie use and custom query names are package profiles, not RFC 6750 compliance claims.",
+      "executable_evidence": [
+        "TestBearerQueryAndCookieAreExplicitSources",
+        "TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues",
+        "TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzBearerQueryExtraction"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.BearerAuthorization`, `authhttp.BearerQuery`, `authhttp.BearerCookie`, `authhttp.Extractor`, and `authhttp.NewMiddleware`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 6750 has no cookie transmission method. Cookie support is retained only as an explicit application-owned extension.",
+      "reconsider_when": "The package adopts a separate form parser, removes query support, or standardizes a versioned cookie profile with CSRF semantics."
+    },
+    {
+      "id": "AUTH-DEC-005",
+      "title": "API-key profile and source shape",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "omission",
+      "decision_scope": "application-policy",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Authentication Scheme Registry](https://www.rfc-editor.org/rfc/rfc9110.html#section-16.4.1); no general API-key authentication scheme or wire format is standardized there",
+      "requirement_strength": "not specified",
+      "issue": "“API key” describes many incompatible one-field and two-field conventions. Pretending one convention is standard would hide identifier, rotation, routing, and secret-handling assumptions.",
+      "interpretations": [
+        "Use one Authorization scheme; accept one secret header; infer an identifier from the secret; or require caller-named identifier and secret fields under an explicit location."
+      ],
+      "peer_behavior": "APIs use proprietary headers, query parameters, cookies, and Authorization schemes with incompatible semantics. OpenAPI descriptions model locations but do not define authentication behavior.",
+      "selected_behavior": "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header, query, or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Query and cookie risks remain caller-owned as documented for bearer transport.",
+      "resource_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Query and cookie risks remain caller-owned as documented for bearer transport.",
+      "compatibility_consequences": "Integrations can map their existing two-field contract without global names. One-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile.",
+      "wire_consequences": "Integrations can map their existing two-field contract without global names. One-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile.",
+      "executable_evidence": [
+        "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
+        "TestAPIKeySourcesRejectMalformedQueriesAndBoundedValues",
+        "TestStaticAuthenticatesKeyByDeterministicID",
+        "TestStaticRotationAtomicallyReplacesActiveKeys",
+        "TestStaticRejectsDuplicateKeyConfiguration"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzCredentialHeaderSet"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.APIKeyHeader`, `authhttp.APIKeyQuery`, `authhttp.APIKeyCookie`, `authentication.APIKeyCredential`, `apikey.New`, and `apikey.NewStatic`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "No IANA-registered generic API-key scheme defines this package profile.",
+      "reconsider_when": "A supported external profile standardizes one wire format or a separate package adds a named proprietary scheme."
+    },
+    {
+      "id": "AUTH-DEC-006",
+      "title": "Credential multiplicity and proxy separation",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "ambiguity",
+      "decision_scope": "defensive",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Credentials](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.4), [Proxy-Authorization](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.7.2), and RFC 6750 [Authenticated Requests](https://www.rfc-editor.org/rfc/rfc6750.html#section-2)",
+      "requirement_strength": "not specified",
+      "issue": "Duplicate fields, repeated named values, multiple enabled sources, and origin versus proxy credentials can produce different first-value or last-value interpretations across components.",
+      "interpretations": [
+        "First source wins; last value wins; prefer Authorization over query or cookie; merge partial API keys; or reject every competing credential while separating proxy authentication."
+      ],
+      "peer_behavior": "Frameworks often expose only one parsed value or apply undocumented source precedence. Proxies and origin servers have distinct authentication contexts.",
+      "selected_behavior": "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated query or cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Rejecting ambiguity prevents request smuggling between components with different precedence. Proxy credentials cannot accidentally authenticate to the origin application. All source counts are bounded by request parsing and configured source count.",
+      "resource_consequences": "Rejecting ambiguity prevents request smuggling between components with different precedence. Proxy credentials cannot accidentally authenticate to the origin application. All source counts are bounded by request parsing and configured source count.",
+      "compatibility_consequences": "Clients must send one origin credential using one configured method. Deployments relying on precedence must migrate to an explicit caller-owned adapter rather than depend on ordering.",
+      "wire_consequences": "Clients must send one origin credential using one configured method. Deployments relying on precedence must migrate to an explicit caller-owned adapter rather than depend on ordering.",
+      "executable_evidence": [
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
+        "TestExtractorSeparatesOriginAndProxyCredentials"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzCredentialHeaderSet"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.Extractor`, every built-in `Source`, `ErrAmbiguousCredentials`, and `ErrCredentialsInvalid`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "This is a stricter defensive profile where HTTP permits extensible authentication schemes but does not define application source precedence.",
+      "reconsider_when": "A versioned protocol profile requires deterministic multi-credential composition and defines downgrade-safe semantics."
+    },
+    {
+      "id": "AUTH-DEC-007",
+      "title": "Challenge serialization and mandatory 401 challenges",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "transport-specific",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [WWW-Authenticate](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.6.1), [Challenge and Response](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.3), and [401 Unauthorized](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.2)",
+      "requirement_strength": "not specified",
+      "issue": "HTTP permits token or quoted auth-parameter values and multiple challenges, while map ordering is unstable. More importantly, every 401 response must contain at least one applicable challenge, but a generic authenticator might return no valid challenge.",
+      "interpretations": [
+        "Emit map order; combine challenges into one field; omit malformed challenges; emit 401 without a challenge; invent a generic scheme; or treat missing challenge metadata as server unavailability."
+      ],
+      "peer_behavior": "Middleware often emits one combined field, several fields, or a bare 401. A bare 401 is not compliant with RFC 9110.",
+      "selected_behavior": "`FormatChallenge` validates bounded token names and values, quotes every value, escapes quote and backslash, and sorts parameter names bytewise. Middleware emits each applicable challenge as its own `WWW-Authenticate` field value, preferring failure-specific challenges over configured fallbacks. If a classified credential failure has no valid challenge, middleware emits 503 instead of a non-compliant 401 and does not invent a scheme.",
+      "rationale": "The cited protocol text does not fully determine the transport mapping, so the package records the mapping separately from base-protocol conformance.",
+      "security_consequences": "Controls, CRLF, oversized values, excessive parameters, and invalid challenges cannot reach response fields. The 503 path exposes a configuration/provider defect without downgrading to an unauthenticated request.",
+      "resource_consequences": "Controls, CRLF, oversized values, excessive parameters, and invalid challenges cannot reach response fields. The 503 path exposes a configuration/provider defect without downgrading to an unauthenticated request.",
+      "compatibility_consequences": "Valid 401 responses always carry at least one challenge. Existing deployments that relied on bare 401 responses must configure `WithChallenges` or return valid challenges from their authenticator. Parameter ordering is stable but not a semantic precedence signal.",
+      "wire_consequences": "Valid 401 responses always carry at least one challenge. Existing deployments that relied on bare 401 responses must configure `WithChallenges` or return valid challenges from their authenticator. Parameter ordering is stable but not a semantic precedence signal.",
+      "executable_evidence": [
+        "TestFormatChallengeSortsAndEscapesParameters",
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestMiddlewareUsesChallengeFromFailure",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzChallengeFormatting"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authentication.NewChallenge`, `authhttp.FormatChallenge`, `authhttp.WithChallenges`, `authhttp.NewMiddleware`, and HTTP status/header behavior"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 9110 requires at least one challenge on 401 and does not define a universal fallback scheme.",
+      "reconsider_when": "Middleware gains a typed extractor-to-challenge contract that can guarantee a scheme-specific fallback at construction."
+    },
+    {
+      "id": "AUTH-DEC-008",
+      "title": "HTTP failure mapping and anonymous access",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "transport-specific",
+      "specification": "RFC 6750 OAuth 2.0 Bearer Token Usage",
+      "version": "RFC 6750",
+      "source_authority": "rfc6750-source",
+      "section": "RFC 9110 [401 Unauthorized](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.2), [403 Forbidden](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.4), and RFC 6750 [Error Codes](https://www.rfc-editor.org/rfc/rfc6750.html#section-3.1)",
+      "requirement_strength": "not specified",
+      "issue": "Missing, malformed, rejected, ambiguous, and unavailable credentials have different operational meaning. Optional routes must not turn malformed credentials into anonymous access, and authentication middleware must not emit authorization decisions such as insufficient scope.",
+      "interpretations": [
+        "Map every failure to 401; expose provider errors; allow anonymous fallback after any failure; use 403 for rejected credentials; or separate credential failures, provider failures, and absent-only anonymity."
+      ],
+      "peer_behavior": "Frameworks differ on 401 versus 403 and often make “optional authentication” ignore invalid credentials. That can hide attacks and stale client configuration.",
+      "selected_behavior": "Absent, invalid, rejected, and ambiguous credentials map to 401 only when a valid challenge is available. Unavailable, unclassified, invalid-result, and missing-challenge failures map to a secret-safe 503. `WithOptionalAnonymous` permits anonymous access only for `ErrCredentialsAbsent`; any supplied invalid or rejected credential still fails. The package never emits 403 or `insufficient_scope` because authorization owns those decisions.",
+      "rationale": "The cited protocol text does not fully determine the transport mapping, so the package records the mapping separately from base-protocol conformance.",
+      "security_consequences": "Optional routes cannot be downgraded by malformed credentials. Provider details, tokens, and causes never enter the response body. Unavailability is distinguishable for retries and operations.",
+      "resource_consequences": "Optional routes cannot be downgraded by malformed credentials. Provider details, tokens, and causes never enter the response body. Unavailability is distinguishable for retries and operations.",
+      "compatibility_consequences": "Clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. Authorization middleware remains responsible for 403.",
+      "wire_consequences": "Clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. Authorization middleware remains responsible for 403.",
+      "executable_evidence": [
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestOptionalMiddlewareAllowsOnlyAbsentCredentials",
+        "TestMiddlewareRejectsInvalidConfigurationAndResult",
+        "TestMiddlewarePropagatesRequestCancellation",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzChallengeFormatting"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`FailureKind`, exported sentinel errors, `authhttp.WithOptionalAnonymous`, `authhttp.NewMiddleware`, and HTTP response behavior"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 6750 `insufficient_scope` applies to authorization and is intentionally outside this package boundary.",
+      "reconsider_when": "The package introduces a distinct transport adapter with a different standardized error mapping."
+    },
+    {
+      "id": "AUTH-DEC-009",
+      "title": "Composite authenticator fallback",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "omission",
+      "decision_scope": "application-policy",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "No HTTP authentication specification defines in-process composition across several validators for one credential kind; this package-owned policy is constrained by the [RFC 9110 authentication framework](https://www.rfc-editor.org/rfc/rfc9110.html#section-11) and [RFC 6750 bearer error taxonomy](https://www.rfc-editor.org/rfc/rfc6750.html#section-3.1)",
+      "requirement_strength": "not specified",
+      "issue": "During rotation or migration, several authenticators can recognize the same credential kind. Falling through after malformed input, provider outage, cancellation, or an unclassified error can convert a terminal failure into acceptance by a weaker validator.",
+      "interpretations": [
+        "First authenticator always decides; fall through after every error; race all validators; or fall through only after an explicit credential rejection while making every other outcome terminal."
+      ],
+      "peer_behavior": "Authentication chains vary between first-success, first-result, and exception-driven fallback. Those models do not share this package's typed failure contract.",
+      "selected_behavior": "Bindings are grouped by credential kind and evaluated in declaration order. Only `ErrCredentialsRejected` falls through. Absent, invalid, ambiguous, unavailable, cancellation, and unclassified errors are terminal; unclassified errors become unavailable. A successful result must contain an authenticated principal. If all validators reject, their valid challenges are retained in declaration order.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "A stronger validator's outage or parser rejection cannot downgrade to a weaker fallback. Work is bounded by the configured binding count and remains synchronous and context-aware.",
+      "resource_consequences": "A stronger validator's outage or parser rejection cannot downgrade to a weaker fallback. Work is bounded by the configured binding count and remains synchronous and context-aware.",
+      "compatibility_consequences": "Declaration order is observable only among validators for the same kind. Rotation chains must return rejection only when another validator is genuinely safe to try.",
+      "wire_consequences": "Declaration order is observable only among validators for the same kind. Rotation chains must return rejection only when another validator is genuinely safe to try.",
+      "executable_evidence": [
+        "TestCompositeFallsThroughOnlyRejectedAuthenticators",
+        "TestCompositeStopsOnNonRejectedFailure",
+        "TestCompositeCombinesRejectedChallenges",
+        "TestCompositeRejectsInvalidConfigurationAndResults"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authentication.Binding`, `authentication.Composite`, `authentication.NewComposite`, `FailureKind`, and challenge aggregation"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "This policy is intentionally package-owned and does not claim to extend RFC 9110.",
+      "reconsider_when": "A separate versioned composition profile defines parallel validation, quorum, or another downgrade-safe strategy."
+    },
+    {
+      "id": "AUTH-DEC-010",
+      "title": "Static secret matching and rotation snapshots",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "application-policy",
+      "specification": "RFC 7617 Basic HTTP Authentication",
+      "version": "RFC 7617",
+      "source_authority": "rfc7617-source",
+      "section": "No wire specification defines in-memory credential storage or rotation; [RFC 7617 security considerations](https://www.rfc-editor.org/rfc/rfc7617.html#section-4) and [RFC 6750 security threats](https://www.rfc-editor.org/rfc/rfc6750.html#section-5.1) require protection appropriate to reusable credentials but leave server implementation policy to the application",
+      "requirement_strength": "not specified",
+      "issue": "Direct string lookup leaks representation and can expose timing differences between known and unknown identifiers. In-place rotation can expose partial sets or revoke the previous set after a failed update.",
+      "interpretations": [
+        "Store plaintext map keys; compare until first match; hash only secrets; mutate sets in place; or publish complete validated digest snapshots and compare every candidate."
+      ],
+      "peer_behavior": "Static middleware often uses map lookup plus direct equality. That is simple but does not provide this package's fixed-size comparison and atomic replacement contract.",
+      "selected_behavior": "Static Basic, bearer, and API-key authenticators derive per-instance HMAC-SHA-256 digests with random keys and compare the complete bounded candidate snapshot in constant work relative to entry count. Duplicate credentials and invalid principals reject configuration. Bearer and API-key replacement validates a complete new snapshot before atomic publication; failed replacement leaves the previous snapshot active. Basic rotation uses construction and deployment of a new immutable authenticator.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "Raw configured secrets are not retained as lookup keys, comparisons use fixed-size digests, and active-set size is bounded. This reduces but does not claim to eliminate all process-level timing or memory-observation risk.",
+      "resource_consequences": "Raw configured secrets are not retained as lookup keys, comparisons use fixed-size digests, and active-set size is bounded. This reduces but does not claim to eliminate all process-level timing or memory-observation risk.",
+      "compatibility_consequences": "Credential bytes remain exact. Rotation overlap and removal are explicit; no hidden expiry, persistence, remote refresh, or background goroutine exists.",
+      "wire_consequences": "Credential bytes remain exact. Rotation overlap and removal are explicit; no hidden expiry, persistence, remote refresh, or background goroutine exists.",
+      "executable_evidence": [
+        "TestStaticAuthenticatesConfiguredBasicCredential",
+        "TestStaticRejectsUnsafeConfiguration",
+        "TestStaticAcceptsExactEntryLimitAndKeepsEarlierMatch",
+        "TestStaticRotatesBoundedBearerKeysAtomically",
+        "TestStaticBearerRotationIsRaceSafe",
+        "TestStaticBearerFailedReplacementKeepsPreviousSet",
+        "TestStaticAuthenticatesKeyByDeterministicID",
+        "TestStaticRotationAtomicallyReplacesActiveKeys",
+        "TestStaticRotationIsRaceSafe",
+        "TestStaticRejectsDuplicateKeyConfiguration"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`basic.NewStatic`, `bearer.NewStatic`, `bearer.Static.Replace`, `apikey.NewStatic`, and `apikey.Static.Replace`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "This is package-owned implementation policy rather than a protocol conformance claim.",
+      "reconsider_when": "A vetted secret-storage primitive replaces the digest snapshots or rotation moves behind a durable provider contract."
+    },
+    {
+      "id": "AUTH-DEC-011",
+      "title": "One request uses one bearer-token transmission method",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "normative",
+      "specification": "RFC 6750 OAuth 2.0 Bearer Token Usage",
+      "version": "RFC 6750",
+      "source_authority": "rfc6750-source",
+      "section": "RFC 6750 [Section 2](https://www.rfc-editor.org/rfc/rfc6750.html#section-2)",
+      "requirement_strength": "MUST NOT",
+      "issue": "RFC 6750 defines three bearer-token transmission methods but prohibits a client from using more than one method in one request.",
+      "interpretations": [
+        "Prioritize one populated source; accept several matching values; or reject every request that transmits a bearer token through more than one configured method."
+      ],
+      "peer_behavior": "Some middleware applies implicit source precedence, but RFC 6750 does not permit multiple transmission methods in one request.",
+      "selected_behavior": "A request must not transmit a bearer token through both the Authorization header and the RFC 6750 `access_token` query method. When both are populated, extraction rejects the request as ambiguous even when their values match.",
+      "rationale": "This preserves RFC 6750 Section 2's explicit prohibition without conflating it with the package's separate source-selection policy.",
+      "security_consequences": "Rejecting competing sources prevents parser and intermediary precedence differences from selecting different credentials.",
+      "resource_consequences": "All configured sources are inspected within the existing bounded source and request limits.",
+      "compatibility_consequences": "Clients must use one RFC 6750 bearer-token method per request. Cookie and custom-named sources remain explicit package extensions governed by AUTH-DEC-004.",
+      "wire_consequences": "Requests carrying bearer credentials in both the Authorization header and `access_token` query parameter are rejected instead of receiving source-order precedence.",
+      "executable_evidence": [
+        "TestBearerSourcesRejectMultipleTransmissionMethods"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzBearerQueryExtraction"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.Extractor`, `authhttp.BearerAuthorization`, and `authhttp.BearerQuery(\"access_token\")`"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 6750 Section 2 explicitly prohibits using more than one bearer-token transmission method in one request.",
+      "reconsider_when": "A successor bearer-token specification changes the single-method requirement."
+    },
+    {
+      "id": "AUTH-DEC-012",
+      "title": "Every 401 response carries an applicable challenge",
+      "status": "resolved",
+      "owner": "`authentication` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "normative",
+      "specification": "RFC 9110 HTTP Authentication Framework",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Sections 11.6.1 and 15.5.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.6.1)",
+      "requirement_strength": "MUST",
+      "issue": "RFC 9110 requires a server generating a 401 response to send `WWW-Authenticate` with at least one challenge applicable to the target resource.",
+      "interpretations": [
+        "Emit a bare 401 when no scheme metadata is available; invent a generic challenge; or avoid generating 401 unless at least one valid applicable challenge is available."
+      ],
+      "peer_behavior": "Bare 401 responses occur in middleware implementations but do not satisfy RFC 9110.",
+      "selected_behavior": "Middleware generates 401 only when it can emit at least one valid applicable `WWW-Authenticate` challenge. Missing or invalid challenge metadata produces a secret-safe 503 instead of a bare 401.",
+      "rationale": "This isolates and preserves RFC 9110's mandatory response requirement while leaving challenge serialization and failure mapping in their broader transport-policy decisions.",
+      "security_consequences": "The package does not invent an authentication scheme or emit an unusable bare challenge response.",
+      "resource_consequences": "Challenge validation remains bounded by the configured challenge and parameter limits.",
+      "compatibility_consequences": "Deployments that previously expected a bare 401 must configure a valid fallback or return an applicable challenge from the authenticator.",
+      "wire_consequences": "Every generated 401 includes at least one `WWW-Authenticate` field value; otherwise the response status is 503.",
+      "executable_evidence": [
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestMiddlewareUsesChallengeFromFailure",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzChallengeFormatting"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`authhttp.WithChallenges`, `authhttp.NewMiddleware`, and HTTP status/header behavior"
+      ],
+      "documentation": [
+        "docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 9110 requires at least one applicable challenge on every server-generated 401 response.",
+      "reconsider_when": "RFC 9110 is superseded by an HTTP authentication specification with a different 401 challenge requirement."
+    }
+  ]
+}

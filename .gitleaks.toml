@@ -8,6 +8,22 @@ description = "Generated local gate artifacts are not repository inputs."
 paths = ['''(?:^|/)\.artifacts(?:/.*)?$''']
 
 [[allowlists]]
+description = "Specification decision content identities are SHA-256 digests."
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "line"
+paths = ['''^(?:jwt/|oidc/)?CHANGELOG\.md$''']
+regexes = ['''^\s*-\s+(?:AUTH|JWT|OIDC)-DEC-[0-9]{3}\s+sha256:[0-9a-f]{64}\s*$''']
+
+[[allowlists]]
+description = "Specification conformance matrices contain public Go test identifiers."
+targetRules = ["generic-api-key"]
+condition = "AND"
+regexTarget = "line"
+paths = ['''^(?:jwt/|oidc/)?specification/README\.md$''']
+regexes = ['''Test[A-Za-z0-9_, ]+''']
+
+[[allowlists]]
 description = "The pinned public GitHub OpenAPI document contains example credentials."
 paths = ['''^(?:pkg/openapi/)?specification/independent/github-rest-api/api\.github\.com\.2022-11-28\.json$''']
 

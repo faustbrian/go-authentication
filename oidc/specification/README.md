@@ -55,3 +55,30 @@ state after that date.
   Keycloak image, run `jq -e .`, refresh its manifest digest and byte count, and
   run `scripts/test-oidc-keycloak-interoperability.sh` to prove the imported
   realm still issues a token accepted through real discovery and JWKS.
+
+
+## Decision conformance matrix
+
+| Decision | Authoritative sources | Executable evidence |
+| --- | --- | --- |
+| [OIDC-DEC-001](../docs/specification-decisions.md) | oidc-discovery-source, oidc-core-source | TestNewPreservesDiscoveryDeadlineAndRejectsIssuerMismatch, TestValidatorRequiresExactIssuerDespiteUpstreamCompatibilityAliases, TestConfigurationRejectsEachInvalidBoundary |
+| [OIDC-DEC-002](../docs/specification-decisions.md) | oidc-discovery-source, rfc8259-source | TestProviderMetadataValidationMatrix, TestNewRejectsDuplicateDiscoveryMembersBeforeFetchingKeys, TestNewRejectsNullOptionalProviderMetadata, TestNewRejectsSigningAlgorithmsNotAdvertisedByProvider |
+| [OIDC-DEC-003](../docs/specification-decisions.md) | oidc-discovery-source, rfc9110-source | TestGoogleProviderMetadataSnapshot, TestRemoteURLValidationRejectsEachUnsafeComponent, TestHTTPHardeningAndBoundedReaders, TestDiscoveryAndJWKRequestsAreBoundedAndCancelable |
+| [OIDC-DEC-004](../docs/specification-decisions.md) | rfc7518-source, oidc-core-source, oidc-discovery-source, rfc7517-source | TestJOSEKeyAlgorithmFamilies, TestRemoteFetchIgnoresUnrelatedEncryptionKeys, TestRemoteFetchRejectsAmbiguousJWKMetadata, TestVerifyWithKeysRejectsMissingKeyIDForAmbiguousSet, TestKeycloakProviderIssuedIDToken |
+| [OIDC-DEC-005](../docs/specification-decisions.md) | rfc7515-source, oidc-core-source, rfc8259-source | TestValidatorRejectsMalformedBoundedAndDuplicateTokens, TestInspectCompactTokenRejectsEachBoundary, TestValidatorRejectsClaimsThatCannotBeDecodedLosslessly, TestValidatorPreservesPrivateNumbersAndRejectsInvalidUnicode |
+| [OIDC-DEC-006](../docs/specification-decisions.md) | oidc-core-source | TestValidatorEnforcesOIDCClaimsAndAuthorizedParty, TestValidatorRejectsUntrustedAdditionalAudiences, TestValidatorRejectsNonASCIIOrOversizedSubject, TestOpenIDConnectCoreIDTokenClaimVector |
+| [OIDC-DEC-007](../docs/specification-decisions.md) | rfc7519-source, oidc-core-source | TestNumericDateBoundariesAndFraction, TestValidatorAppliesExactFractionalClockEdges, TestValidatorAppliesConfiguredClockSkewToAllNumericDates, TestValidatorAcceptsEpochAuthenticationTime |
+| [OIDC-DEC-008](../docs/specification-decisions.md) | oidc-core-source | TestValidatorUsesNonceCallback, TestValidatorValidatesAllClaimsBeforeConsumingNonce, TestValidatorAllowsExactlyOneConcurrentNonceConsumption, TestValidatorContainsNonceCallbackPanic, TestValidatorPreservesNonceCancellationAsUnavailable |
+| [OIDC-DEC-009](../docs/specification-decisions.md) | oidc-core-source | TestValidateIDTokenBindsAccessTokenAndAuthorizationCode, TestTokenHashAlgorithmsAndMalformedHeaders |
+| [OIDC-DEC-010](../docs/specification-decisions.md) | rfc9111-source, oidc-discovery-source, rfc7517-source | TestDiscoveryMetadataAndKeysRefreshTogether, TestDiscoveryValidatorRotatesKeysAndFailsClosedWhenCacheExpiresDuringOutage, TestRemoteKeySetRefreshesRotationMissBeforeCacheExpiry, TestRemoteKeySetRejectsRetiredKeyRollback, TestRemoteRefreshJitterSpreadsReplicaFleet |
+| [OIDC-DEC-011](../docs/specification-decisions.md) | rfc9110-source | TestRemoteKeySetSynchronizesLargeRefreshBurst, TestRemoteKeySetBoundsRefreshWaiters, TestRemoteKeySetCancellationDoesNotPoisonSharedRefresh, TestRemoteKeySetRefreshWaitHonorsCancellation, TestRemoteClockRunsOutsideSynchronization, TestConcurrentOIDCAuthenticationAndRotationAreRaceSafe |
+| [OIDC-DEC-012](../docs/specification-decisions.md) | oidc-core-source, oidc-discovery-source | TestNewDoesNotExposeProviderResponseText, TestProviderErrorRedactionPreservesOnlyStableCancellation, TestRemoteRefreshReportRedactsTransportFailure, TestValidatorContainsNonceCallbackPanic, TestValidateBearerRejectsCanceledAndEmptyInput |
+| [OIDC-DEC-013](../docs/specification-decisions.md) | oidc-discovery-source, oidc-core-source | TestNewPreservesDiscoveryDeadlineAndRejectsIssuerMismatch, TestValidatorRequiresExactIssuerDespiteUpstreamCompatibilityAliases, TestKeycloakProviderIssuedIDToken |
+| [OIDC-DEC-014](../docs/specification-decisions.md) | oidc-discovery-source | TestProviderMetadataValidationMatrix, TestGoogleProviderMetadataSnapshot |
+| [OIDC-DEC-015](../docs/specification-decisions.md) | oidc-discovery-source | TestRemoteURLValidationRejectsEachUnsafeComponent, TestIssuerURLRequiresBothHTTPOptInAndLoopback, TestHTTPHardeningAndBoundedReaders, TestGoogleProviderMetadataSnapshot |
+| [OIDC-DEC-016](../docs/specification-decisions.md) | oidc-core-source | TestJOSEKeyAlgorithmFamilies, TestKeycloakProviderIssuedIDToken |
+| [OIDC-DEC-017](../docs/specification-decisions.md) | oidc-core-source | TestValidatorEnforcesOIDCClaimsAndAuthorizedParty, TestValidatorRejectsUntrustedAdditionalAudiences, TestOpenIDConnectCoreIDTokenClaimVector, TestKeycloakProviderIssuedIDToken |
+| [OIDC-DEC-018](../docs/specification-decisions.md) | oidc-core-source | TestValidatorEnforcesOIDCClaimsAndAuthorizedParty |
+| [OIDC-DEC-019](../docs/specification-decisions.md) | oidc-core-source | TestValidatorUsesNonceCallback, TestValidatorValidatesAllClaimsBeforeConsumingNonce, TestValidatorAllowsExactlyOneConcurrentNonceConsumption |
+| [OIDC-DEC-020](../docs/specification-decisions.md) | oidc-core-source | TestValidateIDTokenBindsAccessTokenAndAuthorizationCode, TestTokenHashAlgorithmsAndMalformedHeaders |
+| [OIDC-DEC-021](../docs/specification-decisions.md) | oidc-discovery-source | TestProviderMetadataValidationMatrix, TestGoogleProviderMetadataSnapshot, TestKeycloakProviderIssuedIDToken |

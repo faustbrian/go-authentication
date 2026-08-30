@@ -1,0 +1,5 @@
+decision_id	peer_or_corpus	observed_behavior	classification	executable_evidence
+JWT-DEC-002	golang-jwt/jwt v5.3.1	The peer accepts duplicate claim members while this package rejects them before validation.	deliberate policy difference	TestDifferentialValidationKeepsExplicitlyStricterPolicy
+JWT-DEC-003	golang-jwt/jwt v5.3.1	Every shared HMAC, RSA, PSS, and ECDSA algorithm verifies in both directions with matching key policy.	maintained peer agreement	TestGolangJWTAlgorithmInteroperability
+JWT-DEC-014	golang-jwt/jwt v5.3.1	Every shared HMAC, RSA, PSS, and ECDSA algorithm verifies in both directions only under an explicit allowed algorithm set.	maintained peer agreement	TestGolangJWTAlgorithmInteroperability
+JWT-DEC-015	golang-jwt/jwt v5.3.1	The peer accepts an unsupported critical header while this package rejects it because no critical extension is implemented.	deliberate policy difference	TestDifferentialValidationKeepsExplicitlyStricterPolicy

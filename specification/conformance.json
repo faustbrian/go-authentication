@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "decisions": [
+    {
+      "id": "AUTH-DEC-001",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestBearerAuthorizationExtractionEnforcesGrammarAndBounds"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Basic and Bearer scheme names compare case-insensitively. A source treats another scheme as absent so another explicitly enabled source can recognize it. A recognized scheme requires exactly one ASCII space and one non-empty credential value; tabs, extra whitespace, and embedded whitespace are invalid. A naked recognized scheme is invalid, while a naked unknown scheme is absent."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-002",
+      "authoritative_sources": [
+        "rfc7617-source"
+      ],
+      "executable_evidence": [
+        "TestRFC7617BasicCredentialVectors",
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestBasicAuthorizationPreservesOctetsAndPasswordColons"
+      ],
+      "fixtures": [
+        "specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "interoperability_evidence": [
+        "specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "official fixture agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Decode canonical padded Base64 strictly, split at the first colon, require a non-empty user-id, and preserve all remaining password bytes including later colons. The extractor does not transcode or normalize. Control octets are rejected. A caller may construct a `charset=\"UTF-8\"` challenge, but extraction does not infer that challenge state or validate UTF-8 implicitly."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-003",
+      "authoritative_sources": [
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestRFC6750BearerHeaderVector",
+        "TestBearerAuthorizationExtractionEnforcesGrammarAndBounds",
+        "TestBearerAuthorizationPipeRequiresExplicitOptIn",
+        "TestPrivateTokenAndNameBoundaries"
+      ],
+      "fixtures": [
+        "specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzAuthorizationExtraction"
+      ],
+      "interoperability_evidence": [
+        "specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "official fixture agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header, query, and cookie sources."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-004",
+      "authoritative_sources": [
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestBearerQueryAndCookieAreExplicitSources",
+        "TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues",
+        "TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzBearerQueryExtraction"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Authorization is the recommended default. Query extraction is explicit, caller-named, and deprecated for new designs. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-005",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
+        "TestAPIKeySourcesRejectMalformedQueriesAndBoundedValues",
+        "TestStaticAuthenticatesKeyByDeterministicID",
+        "TestStaticRotationAtomicallyReplacesActiveKeys",
+        "TestStaticRejectsDuplicateKeyConfiguration"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzCredentialHeaderSet"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header, query, or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-006",
+      "authoritative_sources": [
+        "rfc9110-source",
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestBasicAuthorizationExtractionIsStrict",
+        "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
+        "TestExtractorSeparatesOriginAndProxyCredentials"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzCredentialHeaderSet"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated query or cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-007",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestFormatChallengeSortsAndEscapesParameters",
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestMiddlewareUsesChallengeFromFailure",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzChallengeFormatting"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`FormatChallenge` validates bounded token names and values, quotes every value, escapes quote and backslash, and sorts parameter names bytewise. Middleware emits each applicable challenge as its own `WWW-Authenticate` field value, preferring failure-specific challenges over configured fallbacks. If a classified credential failure has no valid challenge, middleware emits 503 instead of a non-compliant 401 and does not invent a scheme."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-008",
+      "authoritative_sources": [
+        "rfc6750-source",
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestOptionalMiddlewareAllowsOnlyAbsentCredentials",
+        "TestMiddlewareRejectsInvalidConfigurationAndResult",
+        "TestMiddlewarePropagatesRequestCancellation",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzChallengeFormatting"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Absent, invalid, rejected, and ambiguous credentials map to 401 only when a valid challenge is available. Unavailable, unclassified, invalid-result, and missing-challenge failures map to a secret-safe 503. `WithOptionalAnonymous` permits anonymous access only for `ErrCredentialsAbsent`; any supplied invalid or rejected credential still fails. The package never emits 403 or `insufficient_scope` because authorization owns those decisions."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-009",
+      "authoritative_sources": [
+        "rfc9110-source",
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestCompositeFallsThroughOnlyRejectedAuthenticators",
+        "TestCompositeStopsOnNonRejectedFailure",
+        "TestCompositeCombinesRejectedChallenges",
+        "TestCompositeRejectsInvalidConfigurationAndResults"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Bindings are grouped by credential kind and evaluated in declaration order. Only `ErrCredentialsRejected` falls through. Absent, invalid, ambiguous, unavailable, cancellation, and unclassified errors are terminal; unclassified errors become unavailable. A successful result must contain an authenticated principal. If all validators reject, their valid challenges are retained in declaration order."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-010",
+      "authoritative_sources": [
+        "rfc7617-source",
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestStaticAuthenticatesConfiguredBasicCredential",
+        "TestStaticRejectsUnsafeConfiguration",
+        "TestStaticAcceptsExactEntryLimitAndKeepsEarlierMatch",
+        "TestStaticRotatesBoundedBearerKeysAtomically",
+        "TestStaticBearerRotationIsRaceSafe",
+        "TestStaticBearerFailedReplacementKeepsPreviousSet",
+        "TestStaticAuthenticatesKeyByDeterministicID",
+        "TestStaticRotationAtomicallyReplacesActiveKeys",
+        "TestStaticRotationIsRaceSafe",
+        "TestStaticRejectsDuplicateKeyConfiguration"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Static Basic, bearer, and API-key authenticators derive per-instance HMAC-SHA-256 digests with random keys and compare the complete bounded candidate snapshot in constant work relative to entry count. Duplicate credentials and invalid principals reject configuration. Bearer and API-key replacement validates a complete new snapshot before atomic publication; failed replacement leaves the previous snapshot active. Basic rotation uses construction and deployment of a new immutable authenticator."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-011",
+      "authoritative_sources": [
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestBearerSourcesRejectMultipleTransmissionMethods"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzBearerQueryExtraction"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "A request must not transmit a bearer token through both the Authorization header and the RFC 6750 `access_token` query method. When both are populated, extraction rejects the request as ambiguous even when their values match."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-012",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestMiddlewareFailsClosedWithChallengesAndRedaction",
+        "TestMiddlewareUsesChallengeFromFailure",
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzChallengeFormatting"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Middleware generates 401 only when it can emit at least one valid applicable `WWW-Authenticate` challenge. Missing or invalid challenge metadata produces a secret-safe 503 instead of a bare 401."
+      ]
+    }
+  ]
+}

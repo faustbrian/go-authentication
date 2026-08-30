@@ -267,7 +267,9 @@
         "RFC 8259 JSON",
         "RFC 8725 JSON Web Token Best Current Practices",
         "RFC 9110 HTTP Semantics",
-        "RFC 9111 HTTP Caching"
+        "RFC 9111 HTTP Caching",
+        "RFC 9864 Fully-Specified Algorithms for JOSE and COSE",
+        "IANA JSON Object Signing and Encryption Registry"
       ],
       "conformance_corpora": [
         "RFC 7515 Appendix A.2 RS256 compact JWS",

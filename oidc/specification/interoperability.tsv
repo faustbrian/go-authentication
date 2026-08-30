@@ -1,0 +1,10 @@
+decision_id	peer_or_corpus	observed_behavior	classification	executable_evidence
+OIDC-DEC-003	Google metadata snapshot	Cross-origin HTTPS JWKS metadata is accepted while issuer identity remains exact.	provider agreement	TestGoogleProviderMetadataSnapshot
+OIDC-DEC-005	Keycloak 26.3.2	A provider-issued compact ID token passes the strict bounded JOSE and JSON inspection boundary.	provider agreement	TestKeycloakProviderIssuedIDToken
+OIDC-DEC-007	OpenID Connect Core Section 2 and Keycloak 26.3.2	The official and provider-issued NumericDate claims validate at the configured instant.	provider agreement	TestOpenIDConnectCoreIDTokenClaimVector, TestKeycloakProviderIssuedIDToken
+OIDC-DEC-013	Google metadata snapshot and Keycloak 26.3.2	Both provider profiles preserve exact issuer binding through discovery and token validation.	provider agreement	TestGoogleProviderMetadataSnapshot, TestKeycloakProviderIssuedIDToken
+OIDC-DEC-014	Google metadata snapshot	The observed provider metadata shape contains every required Discovery member.	provider agreement	TestGoogleProviderMetadataSnapshot
+OIDC-DEC-015	Google metadata snapshot	The observed provider metadata uses HTTPS authorization and JWKS endpoints.	provider agreement	TestGoogleProviderMetadataSnapshot
+OIDC-DEC-016	Keycloak 26.3.2	A provider-issued RS256 token validates against the provider's advertised public JWKS.	provider agreement	TestKeycloakProviderIssuedIDToken
+OIDC-DEC-017	OpenID Connect Core Section 2 and Keycloak 26.3.2	The official claims vector and provider-issued token identify the configured client as an audience.	provider agreement	TestOpenIDConnectCoreIDTokenClaimVector, TestKeycloakProviderIssuedIDToken
+OIDC-DEC-021	Google metadata snapshot and Keycloak 26.3.2	Both provider profiles advertise the mandatory RS256 signing baseline.	provider agreement	TestGoogleProviderMetadataSnapshot, TestKeycloakProviderIssuedIDToken

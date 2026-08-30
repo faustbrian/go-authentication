@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-08-30",
+  "review_interval_days": 90,
+  "authorities": [
+    {
+      "id": "rfc7617-source",
+      "kind": "specification",
+      "version": "RFC 7617",
+      "url": "https://www.rfc-editor.org/rfc/rfc7617.txt",
+      "sha256": "bc941321da9912fbb1bc92ad1820848ddfd3283dbfbc30f26ea2800bdaf541db",
+      "specifications": [
+        "RFC 7617 Basic HTTP Authentication"
+      ]
+    },
+    {
+      "id": "rfc7617-errata",
+      "kind": "errata",
+      "version": "",
+      "url": "https://errata.rfc-editor.org/search/?rfc_number=7617&presentation=records",
+      "sha256": "65c35dbd52a095a122e1bd17e5da0dee8c0b6c63bbb2888cb95ee8f598eb2312",
+      "specifications": [
+        "RFC 7617 Basic HTTP Authentication"
+      ]
+    },
+    {
+      "id": "rfc6750-source",
+      "kind": "specification",
+      "version": "RFC 6750",
+      "url": "https://www.rfc-editor.org/rfc/rfc6750.txt",
+      "sha256": "9dc385cf4ecdd85024e5a95e447ede9230e11700bf35251906b25b37557d604b",
+      "specifications": [
+        "RFC 6750 OAuth 2.0 Bearer Token Usage"
+      ]
+    },
+    {
+      "id": "rfc6750-errata",
+      "kind": "errata",
+      "version": "",
+      "url": "https://errata.rfc-editor.org/search/?rfc_number=6750&presentation=records",
+      "sha256": "ac9e048669da09d2756ab0b6241cdd493efba61a950d38df292f680ecbeaa7d0",
+      "specifications": [
+        "RFC 6750 OAuth 2.0 Bearer Token Usage"
+      ]
+    },
+    {
+      "id": "rfc9110-source",
+      "kind": "specification",
+      "version": "RFC 9110",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110.txt",
+      "sha256": "21c1cdce6ab0e5509b04d84a28000836c7a087cf786efe6f04877ebfff47232a",
+      "specifications": [
+        "RFC 9110 HTTP Authentication Framework"
+      ]
+    },
+    {
+      "id": "rfc9110-errata",
+      "kind": "errata",
+      "version": "",
+      "url": "https://errata.rfc-editor.org/search/?rfc_number=9110&presentation=records",
+      "sha256": "38bd006c96f8963d58573f704c5313a5f81968b90738c03ade0b036ec7bbdf4b",
+      "specifications": [
+        "RFC 9110 HTTP Authentication Framework"
+      ]
+    }
+  ]
+}

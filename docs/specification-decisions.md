@@ -34,6 +34,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Upstream record | RFC 9110 supersedes the authentication framework previously published in RFC 7235. No package-specific erratum changes this interpretation. |
 | Reconsider when | HTTP authentication grammar changes or a new package-owned scheme requires materially different dispatch semantics. |
 
+Machine-auditable bindings: classification `ambiguity`; decision scope `defensive`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzAuthorizationExtraction`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+
 ## AUTH-DEC-002: Basic user-password octets and delimiters
 
 | Field | Decision |
@@ -51,6 +54,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Public surface | `authhttp.BasicAuthorization`, `authentication.BasicCredential`, `basic.NewStatic`, and `authentication.NewChallenge` |
 | Upstream record | RFC 7617 deliberately leaves the default encoding compatibility-sensitive and defines UTF-8 only through the challenge parameter. |
 | Reconsider when | A supported application profile mandates one encoding or the package gains a stateful challenge-to-request negotiation API. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `application-policy`; specification `RFC 7617 Basic HTTP Authentication`; version `RFC 7617`; source authority `rfc7617-source` at `https://www.rfc-editor.org/rfc/rfc7617.txt`; requirement strength `not specified`; fuzz evidence `FuzzAuthorizationExtraction`; fixture evidence `specification/manifest.tsv`; interoperability evidence `specification/interoperability.tsv`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
 
 ## AUTH-DEC-003: Bearer token grammar and legacy pipe extension
 
@@ -70,6 +76,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Upstream record | The extension is package-owned and is not an RFC 6750 erratum or extension. |
 | Reconsider when | The legacy pipe contract is retired or a versioned external profile defines a different bearer grammar. |
 
+Machine-auditable bindings: classification `optional behavior`; decision scope `extension-specific`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzAuthorizationExtraction`; fixture evidence `specification/manifest.tsv`; interoperability evidence `specification/interoperability.tsv`; documentation `docs/specification-decisions.md`.
+Normative rationale: The base specification excludes this extension, so keeping it explicit and opt-in preserves the normative default.
+
 ## AUTH-DEC-004: Bearer transport locations
 
 | Field | Decision |
@@ -87,6 +96,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Public surface | `authhttp.BearerAuthorization`, `authhttp.BearerQuery`, `authhttp.BearerCookie`, `authhttp.Extractor`, and `authhttp.NewMiddleware` |
 | Upstream record | RFC 6750 has no cookie transmission method. Cookie support is retained only as an explicit application-owned extension. |
 | Reconsider when | The package adopts a separate form parser, removes query support, or standardizes a versioned cookie profile with CSRF semantics. |
+
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzBearerQueryExtraction`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
 
 ## AUTH-DEC-005: API-key profile and source shape
 
@@ -106,6 +118,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Upstream record | No IANA-registered generic API-key scheme defines this package profile. |
 | Reconsider when | A supported external profile standardizes one wire format or a separate package adds a named proprietary scheme. |
 
+Machine-auditable bindings: classification `omission`; decision scope `application-policy`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzCredentialHeaderSet`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+
 ## AUTH-DEC-006: Credential multiplicity and proxy separation
 
 | Field | Decision |
@@ -123,6 +138,10 @@ security, compatibility, executable-evidence, and changelog review.
 | Public surface | `authhttp.Extractor`, every built-in `Source`, `ErrAmbiguousCredentials`, and `ErrCredentialsInvalid` |
 | Upstream record | This is a stricter defensive profile where HTTP permits extensible authentication schemes but does not define application source precedence. |
 | Reconsider when | A versioned protocol profile requires deterministic multi-credential composition and defines downgrade-safe semantics. |
+
+Machine-auditable bindings: classification `ambiguity`; decision scope `defensive`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzCredentialHeaderSet`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc6750-source","version":"RFC 6750","url":"https://www.rfc-editor.org/rfc/rfc6750.txt","specifications":["RFC 6750 OAuth 2.0 Bearer Token Usage"]}`.
 
 ## AUTH-DEC-007: Challenge serialization and mandatory 401 challenges
 
@@ -142,6 +161,9 @@ security, compatibility, executable-evidence, and changelog review.
 | Upstream record | RFC 9110 requires at least one challenge on 401 and does not define a universal fallback scheme. |
 | Reconsider when | Middleware gains a typed extractor-to-challenge contract that can guarantee a scheme-specific fallback at construction. |
 
+Machine-auditable bindings: classification `interoperability policy`; decision scope `transport-specific`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzChallengeFormatting`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited protocol text does not fully determine the transport mapping, so the package records the mapping separately from base-protocol conformance.
+
 ## AUTH-DEC-008: HTTP failure mapping and anonymous access
 
 | Field | Decision |
@@ -159,6 +181,10 @@ security, compatibility, executable-evidence, and changelog review.
 | Public surface | `FailureKind`, exported sentinel errors, `authhttp.WithOptionalAnonymous`, `authhttp.NewMiddleware`, and HTTP response behavior |
 | Upstream record | RFC 6750 `insufficient_scope` applies to authorization and is intentionally outside this package boundary. |
 | Reconsider when | The package introduces a distinct transport adapter with a different standardized error mapping. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `transport-specific`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzChallengeFormatting`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited protocol text does not fully determine the transport mapping, so the package records the mapping separately from base-protocol conformance.
+Additional authoritative sources: `{"id":"rfc9110-source","version":"RFC 9110","url":"https://www.rfc-editor.org/rfc/rfc9110.txt","specifications":["RFC 9110 HTTP Authentication Framework"]}`.
 
 ## AUTH-DEC-009: Composite authenticator fallback
 
@@ -178,6 +204,10 @@ security, compatibility, executable-evidence, and changelog review.
 | Upstream record | This policy is intentionally package-owned and does not claim to extend RFC 9110. |
 | Reconsider when | A separate versioned composition profile defines parallel validation, quorum, or another downgrade-safe strategy. |
 
+Machine-auditable bindings: classification `omission`; decision scope `application-policy`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+Additional authoritative sources: `{"id":"rfc6750-source","version":"RFC 6750","url":"https://www.rfc-editor.org/rfc/rfc6750.txt","specifications":["RFC 6750 OAuth 2.0 Bearer Token Usage"]}`.
+
 ## AUTH-DEC-010: Static secret matching and rotation snapshots
 
 | Field | Decision |
@@ -195,6 +225,53 @@ security, compatibility, executable-evidence, and changelog review.
 | Public surface | `basic.NewStatic`, `bearer.NewStatic`, `bearer.Static.Replace`, `apikey.NewStatic`, and `apikey.Static.Replace` |
 | Upstream record | This is package-owned implementation policy rather than a protocol conformance claim. |
 | Reconsider when | A vetted secret-storage primitive replaces the digest snapshots or rotation moves behind a durable provider contract. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `application-policy`; specification `RFC 7617 Basic HTTP Authentication`; version `RFC 7617`; source authority `rfc7617-source` at `https://www.rfc-editor.org/rfc/rfc7617.txt`; requirement strength `not specified`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+Additional authoritative sources: `{"id":"rfc6750-source","version":"RFC 6750","url":"https://www.rfc-editor.org/rfc/rfc6750.txt","specifications":["RFC 6750 OAuth 2.0 Bearer Token Usage"]}`.
+
+## AUTH-DEC-011: One request uses one bearer-token transmission method
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication` maintainers |
+| Source | RFC 6750 [Section 2](https://www.rfc-editor.org/rfc/rfc6750.html#section-2) |
+| Classification | interoperability policy |
+| Issue | RFC 6750 defines three bearer-token transmission methods but prohibits a client from using more than one method in one request. |
+| Credible interpretations | Prioritize one populated source; accept several matching values; or reject every request that transmits a bearer token through more than one configured method. |
+| Known peer behavior | Some middleware applies implicit source precedence, but RFC 6750 does not permit multiple transmission methods in one request. |
+| Selected behavior | A request must not transmit a bearer token through both the Authorization header and the RFC 6750 `access_token` query method. When both are populated, extraction rejects the request as ambiguous even when their values match. |
+| Security and resource consequences | Security: Rejecting competing sources prevents parser and intermediary precedence differences from selecting different credentials. Resource: All configured sources are inspected within the existing bounded source and request limits. |
+| Compatibility and wire consequences | Compatibility: Clients must use one RFC 6750 bearer-token method per request. Cookie and custom-named sources remain explicit package extensions governed by AUTH-DEC-004. Wire: Requests carrying bearer credentials in both the Authorization header and `access_token` query parameter are rejected instead of receiving source-order precedence. |
+| Executable evidence | `TestBearerSourcesRejectMultipleTransmissionMethods` |
+| Public surface | `authhttp.Extractor`, `authhttp.BearerAuthorization`, and `authhttp.BearerQuery("access_token")` |
+| Upstream record | RFC 6750 Section 2 explicitly prohibits using more than one bearer-token transmission method in one request. |
+| Reconsider when | A successor bearer-token specification changes the single-method requirement. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `MUST NOT`; fuzz evidence `FuzzBearerQueryExtraction`; documentation `docs/specification-decisions.md`.
+Normative rationale: This preserves RFC 6750 Section 2's explicit prohibition without conflating it with the package's separate source-selection policy.
+
+## AUTH-DEC-012: Every 401 response carries an applicable challenge
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication` maintainers |
+| Source | RFC 9110 [Sections 11.6.1 and 15.5.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-11.6.1) |
+| Classification | interoperability policy |
+| Issue | RFC 9110 requires a server generating a 401 response to send `WWW-Authenticate` with at least one challenge applicable to the target resource. |
+| Credible interpretations | Emit a bare 401 when no scheme metadata is available; invent a generic challenge; or avoid generating 401 unless at least one valid applicable challenge is available. |
+| Known peer behavior | Bare 401 responses occur in middleware implementations but do not satisfy RFC 9110. |
+| Selected behavior | Middleware generates 401 only when it can emit at least one valid applicable `WWW-Authenticate` challenge. Missing or invalid challenge metadata produces a secret-safe 503 instead of a bare 401. |
+| Security and resource consequences | Security: The package does not invent an authentication scheme or emit an unusable bare challenge response. Resource: Challenge validation remains bounded by the configured challenge and parameter limits. |
+| Compatibility and wire consequences | Compatibility: Deployments that previously expected a bare 401 must configure a valid fallback or return an applicable challenge from the authenticator. Wire: Every generated 401 includes at least one `WWW-Authenticate` field value; otherwise the response status is 503. |
+| Executable evidence | `TestMiddlewareFailsClosedWithChallengesAndRedaction`, `TestMiddlewareUsesChallengeFromFailure`, `TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable` |
+| Public surface | `authhttp.WithChallenges`, `authhttp.NewMiddleware`, and HTTP status/header behavior |
+| Upstream record | RFC 9110 requires at least one applicable challenge on every server-generated 401 response. |
+| Reconsider when | RFC 9110 is superseded by an HTTP authentication specification with a different 401 challenge requirement. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `MUST`; fuzz evidence `FuzzChallengeFormatting`; documentation `docs/specification-decisions.md`.
+Normative rationale: This isolates and preserves RFC 9110's mandatory response requirement while leaving challenge serialization and failure mapping in their broader transport-policy decisions.
+
 
 ## Unresolved decisions
 

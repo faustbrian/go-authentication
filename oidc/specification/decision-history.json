@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "OIDC-DEC-001",
+      "digests": [
+        "de0f2a9341f2b699d11ac60048b4e66d4af69d6f7e1b3b32d9a636b5f81ec5c0",
+        "4a66bca4ec8200a15a86b110b0b5c60ae86ca16600765787c1714983455386d6",
+        "6ba7b1e244cf0ae1a14c200515d883d39e035890281521def6fbaed6690e8358",
+        "7a8b3a530b11376165d53bff2bb4d69d6c4e830242756e01786cbfef0d6f3916"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-002",
+      "digests": [
+        "17d52910558346e83e730bfde30463b7b3a85ee35ebfeb6c2bb6db3fd68e6214",
+        "fcf599c001a9f87e32ab4a4af47b0376728ef2a0ca990fcb0a73b021493cba47",
+        "a7e345590a417f6a54846614718e1855e8f01f5a4c7742f4cd7d9fb2c9455d5b",
+        "4c27a577b83f66e89a14a72c68de31f5c163a45438916d71b2515d719ea1beff"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-003",
+      "digests": [
+        "84732d47629eb903348bb1a04c007b8bff3433af03a6711753c13af3bd02c821",
+        "fbfa2fb5bd42ddda1b26064f7a300494c81c7d3939032aa9e09d36cbfd550327",
+        "e402150439139883ca569b17086da09bc4a31d9a18168d06f72131c57d36f4a6"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-004",
+      "digests": [
+        "a0828dbd1c4d0daf6a6e0a758d986c12eb13e842b2976ab4f7e43e4be1852581",
+        "52c4a5c44f49ed05eb78fd4ac37ffa88b7cbfc52641d00a1c5c4e1dce640c508",
+        "f7fea8e2be978eff5fcf774078066a525a1d1d44f5aa4502c79bfced0fb1f1aa",
+        "11e7aeea297ffd3e56f9b90c9fc490f6804c589830cd10e50c6cc9d609d8b55e"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-005",
+      "digests": [
+        "9123fc1514132f32516e70fc3b6c64958f28c30d647ce8b0b211928183e7dccd",
+        "b5c8765843d6894ce8ed326f22e0dde7a6d62c189a149167c94cfd12defb5ba7"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-006",
+      "digests": [
+        "d87227e2616911c9e1aed3eb066401823d0930d3823e2cff54d60f45ca78e382",
+        "b093acb2b2e6664ee033abd232ba020418585bd9c600f5c8d28e94344ade85bc",
+        "3eb21f03f56e588fa3ef488f91cbc153e125a30438378df31e05217da79c3e47",
+        "c54c2b9ba203848c23ffe950717fae78aa531df61665fa1ceb5c07689035ddd7"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-007",
+      "digests": [
+        "95b6aac22b4b286d8722e26c52e12e5cee05a69a38dfc48664e2ff9ff6e12258",
+        "7f19497d534fe8670fdf276f1e133823ee19a1b39688188d86fe2dfda06fdc3a"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-008",
+      "digests": [
+        "3368b6b11ccdf96302ee15b32b3431f295f959d1fbbf2705b9865568bfeebf75",
+        "c12dbd3ff3d66dad907a1aaac71e5eb4e47d88b78d276e2a988573ab4bcb8891"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-009",
+      "digests": [
+        "7f1254754e91cdbd16b927540dbdd0622405460792eca468c25327b20a905b4c",
+        "7002d7631b3249f2cd42c864d97846de7931b0fae6014396125392970d976bcd"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-010",
+      "digests": [
+        "f7909c473937446e2ae83dcc52f5020bd22c3a94bb0f56e18ed058d47b395215"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-011",
+      "digests": [
+        "818c068a1c4bbca20d91854a6dd5146b760bd2b9a909637b31199e7eef5983a2"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-012",
+      "digests": [
+        "afba367424b1bb76c608a91d80f2f54244ba67ad4f267b6fc861987813fb5204"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-013",
+      "digests": [
+        "7862568bda041be5351e305d4c0b0601915881f607cdf07778192a06040d6580"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-014",
+      "digests": [
+        "d8eaa1a9269ebed0d7a32f7c5d8ee3db0ca5411d1d23286e90a07d17f467d35b"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-015",
+      "digests": [
+        "8a730e1092d800d5ff9cf762c62275fa10972ff6624ce6313878008cd2107158"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-016",
+      "digests": [
+        "d9d2d340034d6ac47885e392f47bcbe6c761c5db3a06e7e638d907a98b2be2e4",
+        "df4330289370532d844d6ffb21970987e0e9ac44dd5bb2430f8eff9316ec0e57"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-017",
+      "digests": [
+        "10222ec1a08f1bf2f6f22ecdf6d4ba0384ec1506078b053db6dd2b2d02600837",
+        "0daaa9acad410d09786280051445fc9ca34f43977f5cca33c0021b7eb153dc8c"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-018",
+      "digests": [
+        "39a63d7aa2684d1e0fcb9fb25b35b37e1f653a85745495f95417730654f84292"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-019",
+      "digests": [
+        "890c583c8ffe0866484e6e3ab12fde81122e8a961fb46c4fceee61ebbebab579"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-020",
+      "digests": [
+        "fb171717c43a00340aa7f6bad8cb6bd95d8ed5f547006448cfddc2a239cfe638"
+      ]
+    },
+    {
+      "id": "OIDC-DEC-021",
+      "digests": [
+        "fb29adf4b5479787e3fc8638c0d0876e3db34528dba44b52df1225bf7df54de4",
+        "67a5aa86c5ea78034550cbf3a8138c8b7ad088282a467d51ae6a74d81b383cda"
+      ]
+    }
+  ]
+}

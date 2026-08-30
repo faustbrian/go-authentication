@@ -31,6 +31,10 @@ appear in all capitals.
 | Upstream record | RFC 7519 delegates cryptographic representation to JOSE; this package narrows that optional surface to signed compact JWT authentication. |
 | Reconsider when | A concrete service contract requires another JOSE serialization and can preserve equivalent algorithm, nesting, resource, and token-kind controls. |
 
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 7519 JSON Web Token`; version `RFC 7519`; source authority `rfc7519-source` at `https://www.rfc-editor.org/rfc/rfc7519.txt`; requirement strength `OPTIONAL`; fuzz evidence `FuzzInspectCompactJWT`; fixture evidence `jwt/specification/manifest.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+Additional authoritative sources: `{"id":"rfc7515-source","version":"RFC 7515","url":"https://www.rfc-editor.org/rfc/rfc7515.txt","specifications":["RFC 7515 JSON Web Signature"]}`.
+
 ## JWT-DEC-002: JSON members, Unicode, numbers, and shape are inspected strictly
 
 | Field | Decision |
@@ -48,6 +52,10 @@ appear in all capitals.
 | Public surface | `Config.MaxClaims`, `Config.MaxClaimDepth`, `Config.MaxTokenBytes`, and `Validator.ValidateBearer` |
 | Upstream record | RFC 8725 identifies multiplicity of JSON encodings as a substitution and validation risk; no upstream erratum mandates first- or last-member precedence. |
 | Reconsider when | JSON or JWT publishes a mandatory duplicate-member and Unicode handling rule that is at least as deterministic and fail closed. |
+
+Machine-auditable bindings: classification `ambiguity`; decision scope `defensive`; specification `RFC 8259 JSON`; version `RFC 8259`; source authority `rfc8259-source` at `https://www.rfc-editor.org/rfc/rfc8259.txt`; requirement strength `not specified`; fuzz evidence `FuzzInspectCompactJWT`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`.
 
 ## JWT-DEC-003: Algorithms are explicit, allowlisted, and never inferred
 
@@ -67,6 +75,10 @@ appear in all capitals.
 | Upstream record | The IANA registry is reviewed on dependency and release updates; registry presence does not itself opt an algorithm into this package. |
 | Reconsider when | A new algorithm has stable Go support, an acceptable registry status, concrete adoption demand, and complete key-policy and interoperability evidence. |
 
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `RFC 9864 Fully-Specified Algorithms for JOSE and COSE`; version `RFC 9864`; source authority `rfc9864-source` at `https://www.rfc-editor.org/rfc/rfc9864.txt`; requirement strength `not specified`; fuzz evidence `FuzzValidateSignedPayload`; fixture evidence `jwt/specification/manifest.tsv`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`, `{"id":"rfc7518-source","version":"RFC 7518","url":"https://www.rfc-editor.org/rfc/rfc7518.txt","specifications":["RFC 7518 JSON Web Algorithms"]}`, `{"id":"iana-jose-source","version":"observed-2026-08-30","url":"https://www.iana.org/assignments/jose/jose.xhtml","specifications":["IANA JSON Object Signing and Encryption Registry"]}`.
+
 ## JWT-DEC-004: Verification keys require explicit identity, purpose, and strength
 
 | Field | Decision |
@@ -84,6 +96,10 @@ appear in all capitals.
 | Public surface | `Config.KeySet`, `Config.MaxKeys`, `KeyProvider`, `Remote.KeySet`, and `New` |
 | Upstream record | RFC 7517 permits application-specific JWK selection policy; this package records its stricter authentication profile here. |
 | Reconsider when | A standards profile requires key selection without `kid` or `alg` and supplies an equally unambiguous bounded selector. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `RFC 7518 JSON Web Algorithms`; version `RFC 7518`; source authority `rfc7518-source` at `https://www.rfc-editor.org/rfc/rfc7518.txt`; requirement strength `not specified`; fuzz evidence `FuzzRemoteJWKResponseBoundary`; fixture evidence `jwt/specification/manifest.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc7517-source","version":"RFC 7517","url":"https://www.rfc-editor.org/rfc/rfc7517.txt","specifications":["RFC 7517 JSON Web Key"]}`, `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`.
 
 ## JWT-DEC-005: Token-controlled key references and unknown critical headers are rejected
 
@@ -103,6 +119,10 @@ appear in all capitals.
 | Upstream record | JOSE makes these headers optional and requires critical parameters to be understood; this package supports none of those trust-bearing extensions. |
 | Reconsider when | A required profile defines one extension with a complete trust, retrieval, resource, and interoperability contract. |
 
+Machine-auditable bindings: classification `optional behavior`; decision scope `defensive`; specification `RFC 7515 JSON Web Signature`; version `RFC 7515`; source authority `rfc7515-source` at `https://www.rfc-editor.org/rfc/rfc7515.txt`; requirement strength `not specified`; fuzz evidence `FuzzInspectCompactJWT`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`.
+
 ## JWT-DEC-006: Identity and lifetime claims are mandatory and deployment-bound
 
 | Field | Decision |
@@ -120,6 +140,10 @@ appear in all capitals.
 | Public surface | `Config.Issuer`, `Config.Audience`, `Config.Subjects`, `Config.RequiredClaims`, and `Validator.ValidateBearer` |
 | Upstream record | RFC 7519 explicitly leaves required claims to applications; this package's authentication profile is the application policy. |
 | Reconsider when | A distinct token profile needs different mandatory claims; it should normally use a separate validator configuration rather than weaken this profile. |
+
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 7519 JSON Web Token`; version `RFC 7519`; source authority `rfc7519-source` at `https://www.rfc-editor.org/rfc/rfc7519.txt`; requirement strength `OPTIONAL`; fuzz evidence `FuzzValidateSignedPayload`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`.
 
 ## JWT-DEC-007: NumericDate edges use one injected clock and bounded non-negative skew
 
@@ -139,6 +163,9 @@ appear in all capitals.
 | Upstream record | RFC 7519 permits only a small leeway and leaves its magnitude to implementers; this package requires callers to own that deployment decision. |
 | Reconsider when | A profile specifies distinct skew rules per claim or higher-resolution time semantics. |
 
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 7519 JSON Web Token`; version `RFC 7519`; source authority `rfc7519-source` at `https://www.rfc-editor.org/rfc/rfc7519.txt`; requirement strength `MAY`; fuzz evidence `FuzzValidateSignedPayload`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+
 ## JWT-DEC-008: Static and dynamic key providers preserve ownership and one trust source
 
 | Field | Decision |
@@ -156,6 +183,10 @@ appear in all capitals.
 | Public surface | `Config.KeySet`, `Config.Provider`, `KeyProvider`, `KeyProviderFunc`, `Remote.KeySet`, and `authentication.Principal` |
 | Upstream record | JWK standards do not define in-process ownership; this policy is package-owned and documented as stricter than direct library use. |
 | Reconsider when | Go gains an immutable JWK representation with equivalent validation and lifecycle guarantees. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 7517 JSON Web Key`; version `RFC 7517`; source authority `rfc7517-source` at `https://www.rfc-editor.org/rfc/rfc7517.txt`; requirement strength `not specified`; fuzz evidence `FuzzRemoteJWKResponseBoundary`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`.
 
 ## JWT-DEC-009: Remote JWKS retrieval is exact-authority, bounded, and redirect-free
 
@@ -175,6 +206,10 @@ appear in all capitals.
 | Upstream record | No JWT or JWK RFC defines a complete remote-fetch trust policy; the endpoint is trusted application configuration and the remaining network policy is explicit. |
 | Reconsider when | A required discovery profile supplies stronger exact-origin redirect and endpoint rules that can be adopted without hidden network behavior. |
 
+Machine-auditable bindings: classification `omission`; decision scope `defensive`; specification `RFC 9110 HTTP Semantics`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzRemoteJWKResponseBoundary`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`, `{"id":"rfc7517-source","version":"RFC 7517","url":"https://www.rfc-editor.org/rfc/rfc7517.txt","specifications":["RFC 7517 JSON Web Key"]}`.
+
 ## JWT-DEC-010: HTTP freshness controls bounded refresh with fail-stale validation
 
 | Field | Decision |
@@ -192,6 +227,9 @@ appear in all capitals.
 | Public surface | `WithRefreshBounds`, `WithRefreshJitter`, `Remote.Refresh`, and `Remote.KeySet` |
 | Upstream record | HTTP defines response-cache freshness and storage directives but not JWT trust-state retention during issuer outage. This package does not claim that retaining validated keys satisfies HTTP cache reuse semantics; fail-stale is a separate application trust decision. |
 | Reconsider when | A deployment profile mandates maximum key age or an issuer supplies a reliable push/invalidation mechanism that preserves bounded work. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 9111 HTTP Caching`; version `RFC 9111`; source authority `rfc9111-source` at `https://www.rfc-editor.org/rfc/rfc9111.txt`; requirement strength `not specified`; fuzz evidence `FuzzCacheLifetimeHeaders`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
 
 ## JWT-DEC-011: Remote lifecycle serializes fetches and makes shutdown explicit
 
@@ -211,6 +249,9 @@ appear in all capitals.
 | Upstream record | This is a Go lifecycle contract layered over standards-defined messages; no upstream protocol erratum controls it. |
 | Reconsider when | The underlying cache exposes a stronger lifecycle contract that can replace this wrapper without observable cancellation or ownership regression. |
 
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 9110 HTTP Semantics`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzRemoteJWKResponseBoundary`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+
 ## JWT-DEC-012: Failures expose stable categories without retaining secrets
 
 | Field | Decision |
@@ -229,6 +270,10 @@ appear in all capitals.
 | Upstream record | JWT validation steps are normative, but public diagnostic detail is not; this package deliberately separates safe classification from secret-bearing causes. |
 | Reconsider when | A standard protocol profile requires a specific external error code that can map from these categories without exposing sensitive detail. |
 
+Machine-auditable bindings: classification `omission`; decision scope `defensive`; specification `RFC 8725 JSON Web Token Best Current Practices`; version `RFC 8725`; source authority `rfc8725-source` at `https://www.rfc-editor.org/rfc/rfc8725.txt`; requirement strength `not specified`; fuzz evidence `FuzzValidateSignedPayload`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc7519-source","version":"RFC 7519","url":"https://www.rfc-editor.org/rfc/rfc7519.txt","specifications":["RFC 7519 JSON Web Token"]}`.
+
 ## JWT-DEC-013: Token kinds use mutually exclusive validator profiles
 
 | Field | Decision |
@@ -246,6 +291,52 @@ appear in all capitals.
 | Public surface | `Config.Issuer`, `Config.Audience`, `Config.Algorithms`, `Config.KeySet`, `Config.Provider`, and `Config.RequiredClaims` |
 | Upstream record | RFC 8725 recommends explicit typing and mutually exclusive rules but leaves application dispatch and profile identity to deployments. This package prevents token headers from selecting trust policy. |
 | Reconsider when | A concrete JWT profile requires a protected `typ` value and supplies a complete compatibility and routing contract. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `recommended`; specification `RFC 8725 JSON Web Token Best Current Practices`; version `RFC 8725`; source authority `rfc8725-source` at `https://www.rfc-editor.org/rfc/rfc8725.txt`; requirement strength `SHOULD`; fuzz evidence `FuzzValidateSignedPayload`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The selected behavior preserves the cited recommendation at its recorded strength without upgrading it to a normative requirement.
+
+## JWT-DEC-014: Verification uses only an explicit allowed algorithm set
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/jwt` maintainers |
+| Source | RFC 8725 [Section 3.1](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1) |
+| Classification | interoperability policy |
+| Issue | JWT verification must not select cryptographic policy from an attacker-controlled `alg` header or a library's changing default algorithm registry. |
+| Credible interpretations | Accept every library-supported algorithm; infer policy from the token or key type; or require the caller to configure an allowed set and reject every algorithm outside it. |
+| Known peer behavior | Maintained JOSE peers expose algorithm restrictions, but their broader defaults do not define this package's accepted set. |
+| Selected behavior | Configuration must specify at least one supported algorithm. Verification uses no algorithm outside that set, requires the protected `alg` to name the performed operation, and requires each key's algorithm to agree with that operation. |
+| Security and resource consequences | Security: Explicit algorithm binding prevents algorithm confusion, downgrade, and key-type substitution. Resource: Configuration validation bounds the allowed set and avoids speculative verification across algorithms. |
+| Compatibility and wire consequences | Compatibility: Callers must opt into each accepted algorithm; tokens using any other algorithm are rejected even if a dependency can parse them. Wire: The protected `alg`, configured allowed set, performed operation, and selected key must agree exactly. |
+| Executable evidence | `TestSupportedAlgorithmAndKeyMatrix`, `TestGolangJWTAlgorithmInteroperability`, `TestValidatorRejectsAlgorithmKeyAndHeaderAttacks` |
+| Public surface | `Config.Algorithms`, `New`, and `Validator.ValidateBearer` |
+| Upstream record | RFC 8725 Section 3.1 requires caller-selectable algorithm restrictions, exact operation agreement, and single-algorithm key use. |
+| Reconsider when | RFC 8725 is superseded by algorithm-verification requirements with different binding semantics. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 8725 JSON Web Token Best Current Practices`; version `RFC 8725`; source authority `rfc8725-source` at `https://www.rfc-editor.org/rfc/rfc8725.txt`; requirement strength `MUST`; fuzz evidence `FuzzValidateSignedPayload`; fixture evidence `jwt/specification/manifest.tsv`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: This preserves RFC 8725 Section 3.1's mandatory algorithm-verification requirements separately from the package's narrower supported-algorithm policy.
+
+## JWT-DEC-015: Unsupported critical JOSE extensions invalidate the token
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/jwt` maintainers |
+| Source | RFC 7515 [Section 4.1.11](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.11) and [Appendix E](https://www.rfc-editor.org/rfc/rfc7515.html#appendix-E) |
+| Classification | optional behavior |
+| Issue | A JWS `crit` header declares extension semantics that must be understood and processed before the signature can establish the intended message meaning. |
+| Credible interpretations | Ignore unknown critical parameters; pass them through to a general JOSE dependency; or reject tokens because this package implements no critical JOSE extensions. |
+| Known peer behavior | General JOSE libraries can accept critical extensions through handlers; maintained-peer defaults differ when no application extension handler is configured. |
+| Selected behavior | This package implements no critical JOSE extensions, so every token containing `crit` is rejected. It never treats a successfully verified signature as sufficient when declared critical semantics are unsupported. |
+| Security and resource consequences | Security: Attackers cannot obtain validation under extension semantics that the package ignored. Resource: Unsupported critical headers fail during bounded protected-header inspection before key-provider or signature work. |
+| Compatibility and wire consequences | Compatibility: Tokens using any critical JOSE extension are incompatible until a separately reviewed extension profile is implemented. Wire: Any protected header containing `crit` causes rejection. |
+| Executable evidence | `TestValidatorRejectsAlgorithmKeyAndHeaderAttacks`, `TestInspectCompactJWTRejectsEachBoundary`, `TestDifferentialValidationKeepsExplicitlyStricterPolicy` |
+| Public surface | `Validator.ValidateBearer` |
+| Upstream record | RFC 7515 requires recipients to understand and process every listed critical extension; Appendix E requires rejection when they cannot. |
+| Reconsider when | The package implements a specific critical extension with complete parsing, processing, security, and interoperability evidence. |
+
+Machine-auditable bindings: classification `optional behavior`; decision scope `normative`; specification `RFC 7515 JSON Web Signature`; version `RFC 7515`; source authority `rfc7515-source` at `https://www.rfc-editor.org/rfc/rfc7515.txt`; requirement strength `MUST`; fuzz evidence `FuzzInspectCompactJWT`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: RFC 7515 requires critical extensions to be understood and processed; rejection is the only conforming outcome when this package supports none.
+
 
 ## Unresolved decisions
 
