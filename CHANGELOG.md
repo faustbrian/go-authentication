@@ -11,6 +11,8 @@ this project follows Semantic Versioning.
   enforces specification decisions, conformance bindings, source monitoring,
   and change control while retaining package-owned policy and verification
   evidence.
+  The required specification lane remains independent of module-resolution
+  failures in the broader repository gate.
 
 ### Documentation
 
