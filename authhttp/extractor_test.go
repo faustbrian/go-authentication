@@ -237,6 +237,25 @@ func TestBearerQueryAndCookieAreExplicitSources(t *testing.T) {
 	}
 }
 
+func TestBearerSourcesRejectMultipleTransmissionMethods(t *testing.T) {
+	t.Parallel()
+
+	extractor := mustExtractor(
+		t,
+		authhttp.BearerAuthorization(),
+		authhttp.BearerQuery("access_token"),
+	)
+	request := &http.Request{
+		Header: http.Header{"Authorization": {"Bearer same-token"}},
+		URL:    &url.URL{RawQuery: "access_token=same-token"},
+	}
+
+	_, err := extractor.Extract(request)
+	if !errors.Is(err, authentication.ErrAmbiguousCredentials) {
+		t.Fatalf("Extract() error = %v, want ambiguous credentials", err)
+	}
+}
+
 func TestExtractorRejectsInvalidConfiguration(t *testing.T) {
 	t.Parallel()
 

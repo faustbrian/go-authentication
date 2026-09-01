@@ -1,0 +1,672 @@
+{
+  "schema_version": 1,
+  "change_control": {
+    "readme": "jwt/README.md",
+    "conformance": "jwt/specification/README.md",
+    "compatibility": "jwt/docs/README.md",
+    "contribution": "CONTRIBUTING.md",
+    "changelog": "jwt/CHANGELOG.md",
+    "pull_request_template": ".github/pull_request_template.md"
+  },
+  "decisions": [
+    {
+      "id": "JWT-DEC-001",
+      "title": "Compact signed JWTs are the only accepted serialization",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "application-policy",
+      "specification": "RFC 7519 JSON Web Token",
+      "version": "RFC 7519",
+      "source_authority": "rfc7519-source",
+      "section": "RFC 7519 [Section 7.2](https://www.rfc-editor.org/rfc/rfc7519.html#section-7.2) and RFC 7515 [Sections 3.1 and 5.2](https://www.rfc-editor.org/rfc/rfc7515.html#section-3.1)",
+      "requirement_strength": "OPTIONAL",
+      "issue": "JWT permits JWS or JWE representations and JOSE defines compact and JSON serializations. Accepting all forms would make token kind, nesting, and parser behavior dependent on upstream defaults.",
+      "interpretations": [
+        "Accept every JOSE serialization; accept compact JWS and JWE; unwrap nested tokens; or require one signed compact JWS with exactly three segments."
+      ],
+      "peer_behavior": "JWX and golang-jwt both parse compact signed tokens, while their broader JOSE capabilities and permissive options differ.",
+      "selected_behavior": "Accept exactly three non-empty canonical unpadded base64url segments representing one compact JWS. Reject JWE, JSON serialization, nested compact payloads, padding, non-zero pad bits, truncation, and trailing data.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "One bounded parse path avoids implicit decryption, nesting amplification, and ambiguous token-kind dispatch. `MaxTokenBytes`, claim-count, and depth limits apply before signature verification.",
+      "resource_consequences": "One bounded parse path avoids implicit decryption, nesting amplification, and ambiguous token-kind dispatch. `MaxTokenBytes`, claim-count, and depth limits apply before signature verification.",
+      "compatibility_consequences": "Valid compact JWS input interoperates with peers. Other standards-valid JOSE serializations are intentionally outside this package and fail as invalid credentials rather than being normalized.",
+      "wire_consequences": "Valid compact JWS input interoperates with peers. Other standards-valid JOSE serializations are intentionally outside this package and fail as invalid credentials rather than being normalized.",
+      "executable_evidence": [
+        "TestValidatorRejectsNonCanonicalBase64TruncationAndNestedPayloads",
+        "TestInspectCompactJWTRejectsEachBoundary",
+        "TestRFC7515AppendixA2RS256CompactJWS"
+      ],
+      "fixture_evidence": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzInspectCompactJWT"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config`, `New`, `Validator.ValidateBearer`, and `Validator.Authenticate`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7519 delegates cryptographic representation to JOSE; this package narrows that optional surface to signed compact JWT authentication.",
+      "reconsider_when": "A concrete service contract requires another JOSE serialization and can preserve equivalent algorithm, nesting, resource, and token-kind controls."
+    },
+    {
+      "id": "JWT-DEC-002",
+      "title": "JSON members, Unicode, numbers, and shape are inspected strictly",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "ambiguity",
+      "decision_scope": "defensive",
+      "specification": "RFC 8259 JSON",
+      "version": "RFC 8259",
+      "source_authority": "rfc8259-source",
+      "section": "RFC 8259 [Sections 4, 6, and 8.2](https://www.rfc-editor.org/rfc/rfc8259.html#section-4) and RFC 8725 [Sections 2.6 and 3.7](https://www.rfc-editor.org/rfc/rfc8725.html#section-2.6)",
+      "requirement_strength": "not specified",
+      "issue": "JSON only says object names SHOULD be unique, parsers disagree on duplicate members and invalid Unicode, and very large numbers can be accepted with implementation-specific precision or allocation cost.",
+      "interpretations": [
+        "Keep first or last duplicate; inherit the upstream JSON decoder; replace malformed Unicode; coerce quoted NumericDate values; or reject ambiguous and excessive encodings before JOSE parsing."
+      ],
+      "peer_behavior": "Go JSON and JWT libraries commonly accept last-member-wins objects and may replace invalid UTF-8, creating differential interpretation risk across validators.",
+      "selected_behavior": "Protected headers and claims must be UTF-8 JSON objects with unique members, paired UTF-16 escapes, bounded nesting and collection size, and JSON numbers no longer than 128 encoded bytes. NumericDate claims must be JSON numbers, not strings.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Duplicate-key smuggling, Unicode replacement mismatches, excessive nesting, and number-size amplification fail before trust decisions. Inspection adds one bounded pass over each decoded segment.",
+      "resource_consequences": "Duplicate-key smuggling, Unicode replacement mismatches, excessive nesting, and number-size amplification fail before trust decisions. Inspection adds one bounded pass over each decoded segment.",
+      "compatibility_consequences": "Canonical peer-produced JSON remains compatible. Inputs accepted by permissive last-member-wins or coercing implementations are deliberately rejected without rewriting their wire form.",
+      "wire_consequences": "Canonical peer-produced JSON remains compatible. Inputs accepted by permissive last-member-wins or coercing implementations are deliberately rejected without rewriting their wire form.",
+      "executable_evidence": [
+        "TestValidatorRejectsDuplicateAndOversizedClaims",
+        "TestInspectJSONObjectRejectsNonInteroperableUnicodeAndHugeNumbers",
+        "TestJSONUnicodeEscapeValidationAcceptsPairsAndRejectsMalformedPairs",
+        "TestValidatorRejectsMalformedNumericDates"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzInspectCompactJWT"
+      ],
+      "interoperability_evidence": [],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`Config.MaxClaims`, `Config.MaxClaimDepth`, `Config.MaxTokenBytes`, and `Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 8725 identifies multiplicity of JSON encodings as a substitution and validation risk; no upstream erratum mandates first- or last-member precedence.",
+      "reconsider_when": "JSON or JWT publishes a mandatory duplicate-member and Unicode handling rule that is at least as deterministic and fail closed."
+    },
+    {
+      "id": "JWT-DEC-003",
+      "title": "Algorithms are explicit, allowlisted, and never inferred",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "defensive",
+      "specification": "RFC 9864 Fully-Specified Algorithms for JOSE and COSE",
+      "version": "RFC 9864",
+      "source_authority": "rfc9864-source",
+      "section": "RFC 8725 [Sections 2.1, 3.1, and 3.2](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1), RFC 7518 [Section 3](https://www.rfc-editor.org/rfc/rfc7518.html#section-3), RFC 9864, and the [IANA JOSE registry](https://www.iana.org/assignments/jose/jose.xhtml)",
+      "requirement_strength": "not specified",
+      "issue": "A token declares `alg`, libraries expose changing registries, and algorithm confusion occurs if verification derives policy from attacker-controlled headers or key shape. Registry status also changes independently of package releases.",
+      "interpretations": [
+        "Trust the token algorithm; accept every library-supported algorithm; infer an algorithm from the JWK; use a deployment allowlist; or pin a smaller package-supported matrix."
+      ],
+      "peer_behavior": "JWX and golang-jwt support configurable algorithm sets. Both can be configured more broadly than this package and therefore require caller discipline when used directly.",
+      "selected_behavior": "Configuration must explicitly allow one or more supported algorithms. The token `alg`, configured allowlist, JWK `alg`, JWK type, and key material must all agree. `none`, deprecated generic `EdDSA`, ES256K, unknown algorithms, and algorithms outside the documented matrix are rejected.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Header-driven downgrade and symmetric/asymmetric confusion fail closed. The supported matrix bounds cryptographic implementations and upgrade review.",
+      "resource_consequences": "Header-driven downgrade and symmetric/asymmetric confusion fail closed. The supported matrix bounds cryptographic implementations and upgrade review.",
+      "compatibility_consequences": "HS256/384/512, RS256/384/512, PS256/384/512, ES256/384/512, and Ed25519 compact JWS are accepted when explicitly configured. Other JOSE algorithms remain wire-incompatible by policy.",
+      "wire_consequences": "HS256/384/512, RS256/384/512, PS256/384/512, ES256/384/512, and Ed25519 compact JWS are accepted when explicitly configured. Other JOSE algorithms remain wire-incompatible by policy.",
+      "executable_evidence": [
+        "TestSupportedAlgorithmAndKeyMatrix",
+        "TestGolangJWTAlgorithmInteroperability",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixture_evidence": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`Config.Algorithms`, `New`, and `Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "The IANA registry is reviewed on dependency and release updates; registry presence does not itself opt an algorithm into this package.",
+      "reconsider_when": "A new algorithm has stable Go support, an acceptable registry status, concrete adoption demand, and complete key-policy and interoperability evidence."
+    },
+    {
+      "id": "JWT-DEC-004",
+      "title": "Verification keys require explicit identity, purpose, and strength",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "defensive",
+      "specification": "RFC 7518 JSON Web Algorithms",
+      "version": "RFC 7518",
+      "source_authority": "rfc7518-source",
+      "section": "RFC 7517 [Sections 4.2 through 4.7 and 5](https://www.rfc-editor.org/rfc/rfc7517.html#section-4.2), RFC 7518 [Sections 3.2 through 3.4](https://www.rfc-editor.org/rfc/rfc7518.html#section-3.2), and RFC 8725 [Section 3.4](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.4)",
+      "requirement_strength": "not specified",
+      "issue": "JWK fields are partly optional, multiple keys may otherwise match, and standards specify minimums without defining this package's complete operational work bounds.",
+      "interpretations": [
+        "Try every key; accept absent `kid` or `alg`; ignore `use` and `key_ops`; accept private asymmetric keys; enforce only library minimums; or require one unambiguous bounded verification key."
+      ],
+      "peer_behavior": "General JOSE libraries support flexible selectors and may try multiple keys. Their flexibility is useful outside this narrower authentication boundary but increases configuration ambiguity here.",
+      "selected_behavior": "Every JWK needs a unique non-empty `kid` and explicit allowed `alg`. If present, `use` is `sig` and `key_ops` contains only `verify`. Asymmetric keys are public only. HMAC keys meet algorithm output size, RSA moduli are 2048 through 8192 bits, and EC curves match the selected algorithm exactly.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Deterministic key selection prevents key confusion and trial amplification. Minimum strength rejects weak keys; the RSA upper bound prevents attacker- or operator-supplied excessive verification work.",
+      "resource_consequences": "Deterministic key selection prevents key confusion and trial amplification. Minimum strength rejects weak keys; the RSA upper bound prevents attacker- or operator-supplied excessive verification work.",
+      "compatibility_consequences": "Well-formed verification JWKS interoperate unchanged. Sets with duplicate IDs, metadata omissions, signing-only operations, private keys, weak keys, or oversized RSA keys are rejected at configuration or refresh time.",
+      "wire_consequences": "Well-formed verification JWKS interoperate unchanged. Sets with duplicate IDs, metadata omissions, signing-only operations, private keys, weak keys, or oversized RSA keys are rejected at configuration or refresh time.",
+      "executable_evidence": [
+        "TestValidatorRejectsCryptographicallyUnsafeKeys",
+        "TestValidateKeyMaterialRejectsEveryInvalidRepresentation",
+        "TestRemoteJWKValidationRejectsEveryKeyPolicyViolation",
+        "TestRFC7520HMACJWKInteroperability"
+      ],
+      "fixture_evidence": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config.KeySet`, `Config.MaxKeys`, `KeyProvider`, `Remote.KeySet`, and `New`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7517 permits application-specific JWK selection policy; this package records its stricter authentication profile here.",
+      "reconsider_when": "A standards profile requires key selection without `kid` or `alg` and supplies an equally unambiguous bounded selector."
+    },
+    {
+      "id": "JWT-DEC-005",
+      "title": "Token-controlled key references and unknown critical headers are rejected",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "defensive",
+      "specification": "RFC 7515 JSON Web Signature",
+      "version": "RFC 7515",
+      "source_authority": "rfc7515-source",
+      "section": "RFC 7515 [Sections 4.1.2 through 4.1.11](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.2) and RFC 8725 [Section 2.9](https://www.rfc-editor.org/rfc/rfc8725.html#section-2.9)",
+      "requirement_strength": "not specified",
+      "issue": "JOSE permits embedded or URL-referenced keys and critical extensions, but blindly honoring them lets an untrusted token influence trust material, network access, or parsing semantics.",
+      "interpretations": [
+        "Resolve `jku` or `x5u`; trust embedded `jwk` or `x5c`; ignore unknown `crit`; delegate every extension to the JOSE library; or reject token-controlled trust and unsupported critical behavior."
+      ],
+      "peer_behavior": "General JOSE libraries expose hooks for remote and embedded key resolution. Safe use depends on application-supplied allowlists and extension handlers.",
+      "selected_behavior": "Reject `jku`, `jwk`, `x5u`, `x5c`, `x5t`, and `x5t#S256` in token headers. Reject `crit` rather than claiming support for extensions this package does not implement. Keys come only from the configured static set or provider.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Validation performs no token-directed network I/O and cannot replace configured trust with attacker material. Unsupported extension semantics fail before cryptographic work proceeds.",
+      "resource_consequences": "Validation performs no token-directed network I/O and cannot replace configured trust with attacker material. Unsupported extension semantics fail before cryptographic work proceeds.",
+      "compatibility_consequences": "Tokens relying on certificate chains, embedded keys, remote key URLs, or critical extensions are intentionally incompatible. Ordinary `alg` and `kid` headers are unchanged.",
+      "wire_consequences": "Tokens relying on certificate chains, embedded keys, remote key URLs, or critical extensions are intentionally incompatible. Ordinary `alg` and `kid` headers are unchanged.",
+      "executable_evidence": [
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks",
+        "TestInspectCompactJWTRejectsEachBoundary"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzInspectCompactJWT"
+      ],
+      "interoperability_evidence": [],
+      "differential_evidence": [],
+      "public_apis": [
+        "`Validator.ValidateBearer`, `Config.KeySet`, and `Config.Provider`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "JOSE makes these headers optional and requires critical parameters to be understood; this package supports none of those trust-bearing extensions.",
+      "reconsider_when": "A required profile defines one extension with a complete trust, retrieval, resource, and interoperability contract."
+    },
+    {
+      "id": "JWT-DEC-006",
+      "title": "Identity and lifetime claims are mandatory and deployment-bound",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "application-policy",
+      "specification": "RFC 7519 JSON Web Token",
+      "version": "RFC 7519",
+      "source_authority": "rfc7519-source",
+      "section": "RFC 7519 [Sections 4.1.1 through 4.1.7 and 7.2](https://www.rfc-editor.org/rfc/rfc7519.html#section-4.1.1) and RFC 8725 [Sections 3.8 and 3.9](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.8)",
+      "requirement_strength": "OPTIONAL",
+      "issue": "JWT marks registered claims optional and leaves application validation requirements to deployments, while an authentication principal needs stable issuer, audience, subject, and lifetime semantics.",
+      "interpretations": [
+        "Require only signature validity; require `exp`; accept any audience or subject; infer defaults; or require a complete configured identity and lifetime profile."
+      ],
+      "peer_behavior": "JWX and golang-jwt expose claim validators as options. Direct defaults can accept claim sets that this package rejects.",
+      "selected_behavior": "Require non-empty exact `iss`, configured `aud`, non-empty `sub`, numeric `iat`, and numeric `exp`. Optionally require an exact subject allowlist and unique deployment claims. `nbf`, when present, is numeric and enforced.",
+      "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
+      "security_consequences": "Tokens cannot cross issuer or recipient boundaries or become timeless bearer credentials. Required claim counts are validated against configured resource limits before construction.",
+      "resource_consequences": "Tokens cannot cross issuer or recipient boundaries or become timeless bearer credentials. Required claim counts are validated against configured resource limits before construction.",
+      "compatibility_consequences": "Tokens missing a mandatory claim or using another issuer, audience, or subject policy are rejected even though generic JWT parsers may accept them. Audience string and array forms remain supported through standards-aware validation.",
+      "wire_consequences": "Tokens missing a mandatory claim or using another issuer, audience, or subject policy are rejected even though generic JWT parsers may accept them. Audience string and array forms remain supported through standards-aware validation.",
+      "executable_evidence": [
+        "TestValidatorRejectsInvalidJWTTrustDecisions",
+        "TestValidatorEnforcesSubjectAndRequiredClaimPolicy",
+        "TestConfigurationReservesCapacityForMandatoryAndRequiredClaims",
+        "TestValidatorRejectsInvalidPrincipalClaims"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config.Issuer`, `Config.Audience`, `Config.Subjects`, `Config.RequiredClaims`, and `Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7519 explicitly leaves required claims to applications; this package's authentication profile is the application policy.",
+      "reconsider_when": "A distinct token profile needs different mandatory claims; it should normally use a separate validator configuration rather than weaken this profile."
+    },
+    {
+      "id": "JWT-DEC-007",
+      "title": "NumericDate edges use one injected clock and bounded non-negative skew",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "defensive",
+      "specification": "RFC 7519 JSON Web Token",
+      "version": "RFC 7519",
+      "source_authority": "rfc7519-source",
+      "section": "RFC 7519 [Sections 2, 4.1.4, 4.1.5, and 4.1.6](https://www.rfc-editor.org/rfc/rfc7519.html#section-2)",
+      "requirement_strength": "MAY",
+      "issue": "RFC 7519 permits small leeway but does not define its value, and edge comparisons can differ at exact expiration, not-before, or issued-at instants.",
+      "interpretations": [
+        "Use wall clock directly; accept arbitrary leeway; treat expiration equality as valid; ignore future `iat`; or use one injected instant and explicit skew equations."
+      ],
+      "peer_behavior": "JWT libraries expose time functions and leeway options, but defaults and optional `iat` validation differ.",
+      "selected_behavior": "Accept integral-second NumericDate JSON numbers only; reject fractional and exponent forms rather than inherit parser-specific rounding. Read one injected clock per validation. Enforce `nbf <= now + skew`, `iat <= now + skew`, and `now < exp + skew`; equality at `exp` without skew is expired. Skew is explicit, non-negative, and shared across the three boundaries.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Deterministic checks prevent inconsistent multi-read clock edges. Bounded operator-selected skew limits replay extension while tolerating measured clock error.",
+      "resource_consequences": "Deterministic checks prevent inconsistent multi-read clock edges. Bounded operator-selected skew limits replay extension while tolerating measured clock error.",
+      "compatibility_consequences": "Integral NumericDate values preserve second-based JWT semantics. RFC 7519 permits non-integer values, but this profile deliberately rejects fractional and exponent encodings to avoid precision and rounding differences. Tokens exactly at expiration are rejected; permissive peers or deployments with larger leeway may differ intentionally.",
+      "wire_consequences": "Integral NumericDate values preserve second-based JWT semantics. RFC 7519 permits non-integer values, but this profile deliberately rejects fractional and exponent encodings to avoid precision and rounding differences. Tokens exactly at expiration are rejected; permissive peers or deployments with larger leeway may differ intentionally.",
+      "executable_evidence": [
+        "TestValidatorHonorsExactNumericDateBoundaries",
+        "TestNumericDateValidationChecksEveryPresentClaimAndDigitBoundary",
+        "TestValidatorRejectsMalformedNumericDates",
+        "TestValidatorHonorsCancellationAndConfigurationBounds"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config.Clock`, `Config.Skew`, `New`, and `Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7519 permits only a small leeway and leaves its magnitude to implementers; this package requires callers to own that deployment decision.",
+      "reconsider_when": "A profile specifies distinct skew rules per claim or higher-resolution time semantics."
+    },
+    {
+      "id": "JWT-DEC-008",
+      "title": "Static and dynamic key providers preserve ownership and one trust source",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "defensive",
+      "specification": "RFC 7517 JSON Web Key",
+      "version": "RFC 7517",
+      "source_authority": "rfc7517-source",
+      "section": "RFC 7517 [Section 5](https://www.rfc-editor.org/rfc/rfc7517.html#section-5) and RFC 8725 [Section 3.4](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.4)",
+      "requirement_strength": "not specified",
+      "issue": "Standards define JWK Sets but not Go ownership, mutation, provider errors, typed nil values, or precedence when static and dynamic sources are both configured.",
+      "interpretations": [
+        "Retain caller sets by reference; prefer one source silently; merge static and dynamic keys; expose provider-owned sets; or require exactly one source and copy at every boundary."
+      ],
+      "peer_behavior": "General libraries commonly retain sets or cache references according to their own ownership contracts. Those contracts do not establish this package's concurrency boundary.",
+      "selected_behavior": "Configure exactly one of `KeySet` or `Provider`. Static sets are copied and validated during construction; provider sets are copied and revalidated for each attempt. Typed-nil providers fail configuration. Returned principals and private claims are caller-owned copies.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Callers cannot mutate active trust state through aliases, and provider changes cannot bypass key limits or algorithm policy. Copying is bounded by `MaxKeys`, token, and claim limits.",
+      "resource_consequences": "Callers cannot mutate active trust state through aliases, and provider changes cannot bypass key limits or algorithm policy. Copying is bounded by `MaxKeys`, token, and claim limits.",
+      "compatibility_consequences": "This changes no JWT bytes. Applications that previously mutated a retained key set must publish a new provider snapshot or remote refresh instead.",
+      "wire_consequences": "This changes no JWT bytes. Applications that previously mutated a retained key set must publish a new provider snapshot or remote refresh instead.",
+      "executable_evidence": [
+        "TestConfigurationAndKeySetValidationBoundaries",
+        "TestValidateBearerAndProviderFailureBoundaries",
+        "TestRemoteDoesNotTransferCachedKeyOwnership"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config.KeySet`, `Config.Provider`, `KeyProvider`, `KeyProviderFunc`, `Remote.KeySet`, and `authentication.Principal`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "JWK standards do not define in-process ownership; this policy is package-owned and documented as stricter than direct library use.",
+      "reconsider_when": "Go gains an immutable JWK representation with equivalent validation and lifecycle guarantees."
+    },
+    {
+      "id": "JWT-DEC-009",
+      "title": "Remote JWKS retrieval is exact-authority, bounded, and redirect-free",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "omission",
+      "decision_scope": "defensive",
+      "specification": "RFC 9110 HTTP Semantics",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Sections 7.6 and 15.4](https://www.rfc-editor.org/rfc/rfc9110.html#section-15.4), RFC 8725 [Section 2.9](https://www.rfc-editor.org/rfc/rfc8725.html#section-2.9), and RFC 7517 [Section 5](https://www.rfc-editor.org/rfc/rfc7517.html#section-5)",
+      "requirement_strength": "not specified",
+      "issue": "JWK Set retrieval standards do not define redirects, compression, private-network policy, response limits, endpoint mutation, or Go transport ownership.",
+      "interpretations": [
+        "Follow ordinary HTTP defaults; honor redirects and compression; permit any URL; ban private issuers globally; or require one configured exact URL with caller-owned network policy."
+      ],
+      "peer_behavior": "JWX provides a remote cache and HTTP customization. Default HTTP clients can follow redirects and transparently decompress unless hardened by the caller.",
+      "selected_behavior": "`NewRemote` uses one configured URL and exactly one request for successful initialization, requires HTTPS except for an explicit development option, rejects user info and fragments, denies every redirect and compressed response, and bounds initialization, headers, body, keys, and concurrent operations. Private-address and DNS policy belongs to the supplied transport because legitimate deployments use private issuers.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Token input never selects a URL. Exact-authority checks and disabled redirects prevent credential forwarding to a changed authority; byte, time, and operation bounds limit remote amplification.",
+      "resource_consequences": "Token input never selects a URL. Exact-authority checks and disabled redirects prevent credential forwarding to a changed authority; byte, time, and operation bounds limit remote amplification.",
+      "compatibility_consequences": "Standards-compliant direct HTTPS JWKS responses work. Redirecting, compressed, oversized, or plain-HTTP production endpoints are intentionally incompatible unless the caller explicitly chooses the development exception.",
+      "wire_consequences": "Standards-compliant direct HTTPS JWKS responses work. Redirecting, compressed, oversized, or plain-HTTP production endpoints are intentionally incompatible unless the caller explicitly chooses the development exception.",
+      "executable_evidence": [
+        "TestRemoteRejectsRedirects",
+        "TestRemoteRejectsHostileJWKResponsesAtInitialization",
+        "TestRemoteConfigurationRejectsEachUnsafeBoundary",
+        "TestJWKResponseTransportRejectsBrokenAndOversizedResponses"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`NewRemote`, `WithHTTPClient`, `WithInsecureHTTP`, `WithMaxJWKBodyBytes`, `WithMaxJWKHeaderBytes`, `WithMaxJWKKeys`, and `WithInitializationTimeout`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "No JWT or JWK RFC defines a complete remote-fetch trust policy; the endpoint is trusted application configuration and the remaining network policy is explicit.",
+      "reconsider_when": "A required discovery profile supplies stronger exact-origin redirect and endpoint rules that can be adopted without hidden network behavior."
+    },
+    {
+      "id": "JWT-DEC-010",
+      "title": "HTTP freshness controls bounded refresh with fail-stale validation",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "defensive",
+      "specification": "RFC 9111 HTTP Caching",
+      "version": "RFC 9111",
+      "source_authority": "rfc9111-source",
+      "section": "RFC 9111 [Sections 4.2, 5.2.2.1, 5.2.2.3, 5.2.2.4, 5.2.2.9, and 5.2.3](https://www.rfc-editor.org/rfc/rfc9111.html#section-4.2)",
+      "requirement_strength": "not specified",
+      "issue": "JWKS rotation needs refresh, while HTTP freshness metadata may be absent, malformed, stale, or demand revalidation. JWT standards do not decide whether an issuer outage invalidates previously trusted keys.",
+      "interpretations": [
+        "Ignore cache headers; refresh every validation; trust arbitrary server lifetimes; drop keys on refresh failure; serve stale indefinitely; or combine HTTP freshness with bounded local policy."
+      ],
+      "peer_behavior": "Remote JWKS caches generally retain the last successful set and use cache metadata, but refresh timing, outage behavior, jitter, and unknown-key misses vary.",
+      "selected_behavior": "`max-age` and `Expires` determine the next trust revalidation time inside configured minimum and maximum bounds; `Age` reduces remaining `max-age`. Missing, malformed, conflicting, or unusable metadata uses the minimum. `no-cache`, `no-store`, and `must-revalidate` force the minimum. These directives do not authorize HTTP response reuse: the separately validated key trust state remains available under fail-stale policy. Successful refresh atomically replaces the set. Failed refresh reports unavailable but retains the last validated set for known keys; it never admits an unknown key.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Bounds prevent an issuer from suppressing refresh indefinitely or causing a tight fetch loop. Fail-stale improves outage tolerance but extends trust in the last successful keys; applications needing a freshness deadline must enforce it by closing or withdrawing the provider.",
+      "resource_consequences": "Bounds prevent an issuer from suppressing refresh indefinitely or causing a tight fetch loop. Fail-stale improves outage tolerance but extends trust in the last successful keys; applications needing a freshness deadline must enforce it by closing or withdrawing the provider.",
+      "compatibility_consequences": "No token wire form changes. Rotation becomes visible after bounded refresh, while immediate unknown-key refetch is deliberately absent to prevent attacker-driven fetch amplification.",
+      "wire_consequences": "No token wire form changes. Rotation becomes visible after bounded refresh, while immediate unknown-key refetch is deliberately absent to prevent attacker-driven fetch amplification.",
+      "executable_evidence": [
+        "TestRemoteJWKRotationAndIssuerOutage",
+        "TestRemoteRefreshTimingHonorsBoundsAndCacheHeaders",
+        "TestRemoteRefreshAndAuthenticationAreRaceSafe",
+        "TestRemoteRefreshSchedulingHasFleetJitter"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzCacheLifetimeHeaders"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`WithRefreshBounds`, `WithRefreshJitter`, `Remote.Refresh`, and `Remote.KeySet`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "HTTP defines response-cache freshness and storage directives but not JWT trust-state retention during issuer outage. This package does not claim that retaining validated keys satisfies HTTP cache reuse semantics; fail-stale is a separate application trust decision.",
+      "reconsider_when": "A deployment profile mandates maximum key age or an issuer supplies a reliable push/invalidation mechanism that preserves bounded work."
+    },
+    {
+      "id": "JWT-DEC-011",
+      "title": "Remote lifecycle serializes fetches and makes shutdown explicit",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "implementation-defined behavior",
+      "decision_scope": "defensive",
+      "specification": "RFC 9110 HTTP Semantics",
+      "version": "RFC 9110",
+      "source_authority": "rfc9110-source",
+      "section": "RFC 9110 [Section 9.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2) and Go's [`context` contract](https://pkg.go.dev/context)",
+      "requirement_strength": "not specified",
+      "issue": "Neither JOSE nor HTTP defines cache goroutine ownership, overlapping refreshes, constructor-context lifetime, waiter cancellation, or close behavior for a Go provider.",
+      "interpretations": [
+        "Let every miss fetch; overlap automatic and explicit refreshes; tie lifetime to constructor context; make close fire-and-forget; or serialize remote work under an owned lifecycle."
+      ],
+      "peer_behavior": "Caches and singleflight implementations coalesce work differently. Cancellation often stops only a waiter, not shared admitted work.",
+      "selected_behavior": "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Close` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines; a canceled close reports its context and may be retried.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "At most one remote fetch proceeds per provider and admitted operation count is bounded, preventing refresh herds and shutdown leaks. Cancellation cannot silently abandon owned goroutines.",
+      "resource_consequences": "At most one remote fetch proceeds per provider and admitted operation count is bounded, preventing refresh herds and shutdown leaks. Cancellation cannot silently abandon owned goroutines.",
+      "compatibility_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly close providers and must not assume canceling the constructor context destroys a successfully returned provider.",
+      "wire_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly close providers and must not assume canceling the constructor context destroys a successfully returned provider.",
+      "executable_evidence": [
+        "TestRemoteRefreshWaitersShareResultAndHonorCancellation",
+        "TestRemoteSerializesAutomaticAndExplicitRefreshWork",
+        "TestRemoteLifetimeIsOwnedByClose",
+        "TestRemoteCloseReportsCanceledJoin",
+        "TestRemoteCloseDeadlineIsNotBlockedByRefreshLock"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`NewRemote`, `Remote.Refresh`, `Remote.KeySet`, and `Remote.Close`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "This is a Go lifecycle contract layered over standards-defined messages; no upstream protocol erratum controls it.",
+      "reconsider_when": "The underlying cache exposes a stronger lifecycle contract that can replace this wrapper without observable cancellation or ownership regression."
+    },
+    {
+      "id": "JWT-DEC-012",
+      "title": "Failures expose stable categories without retaining secrets",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "omission",
+      "decision_scope": "defensive",
+      "specification": "RFC 8725 JSON Web Token Best Current Practices",
+      "version": "RFC 8725",
+      "source_authority": "rfc8725-source",
+      "section": "RFC 8725 [Sections 2.9 and 3.10](https://www.rfc-editor.org/rfc/rfc8725.html#section-2.9) and RFC 7519 [Section 7.2](https://www.rfc-editor.org/rfc/rfc7519.html#section-7.2)",
+      "requirement_strength": "not specified",
+      "issue": "Callers need actionable categories, but raw parse, provider, transport, token, key, claim, endpoint, and response errors can retain credentials or create a validation oracle.",
+      "interpretations": [
+        "Return upstream errors verbatim; collapse every failure; expose token and key diagnostics; retain only safe standards sentinels; or wrap redacted stable application categories."
+      ],
+      "peer_behavior": "JOSE libraries expose detailed parse and validation errors. Those are useful in controlled tooling but are unsafe as an authentication-boundary response or log payload without filtering.",
+      "selected_behavior": "Credential shape uses `ErrCredentialsInvalid`; signature, claim, and trust rejection uses `ErrCredentialsRejected`; provider, cancellation, capacity, and lifecycle failure uses `ErrAuthenticationUnavailable`. Safe JWX standards sentinels remain in the chain. Raw provider and transport causes are replaced by `ErrKeyProviderUnavailable`, and public text contains no token, signature, key, claim, query, endpoint, or remote body.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "Stable low-cardinality errors avoid credential disclosure and attacker-controlled telemetry. Bounded safe codes remain sufficient for retry and incident policy.",
+      "resource_consequences": "Stable low-cardinality errors avoid credential disclosure and attacker-controlled telemetry. Bounded safe codes remain sufficient for retry and incident policy.",
+      "compatibility_consequences": "HTTP or RPC adapters receive stable categories rather than JOSE-specific wire diagnostics. Consumers must use `errors.Is` and `errors.As`, not match strings or expect raw provider causes.",
+      "wire_consequences": "HTTP or RPC adapters receive stable categories rather than JOSE-specific wire diagnostics. Consumers must use `errors.Is` and `errors.As`, not match strings or expect raw provider causes.",
+      "executable_evidence": [
+        "TestProviderFailureIsUnavailableAndSecretSafe",
+        "TestRemoteFailureRedactsEndpointQueryAndTransportError",
+        "TestValidatorPreservesSafeStandardsErrorCategories",
+        "TestRejectedJWTFailureWithoutStandardsCategory"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Validator.Authenticate`, `Validator.ValidateBearer`, `ErrKeyProviderUnavailable`, and `authentication.Failure`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "JWT validation steps are normative, but public diagnostic detail is not; this package deliberately separates safe classification from secret-bearing causes.",
+      "reconsider_when": "A standard protocol profile requires a specific external error code that can map from these categories without exposing sensitive detail."
+    },
+    {
+      "id": "JWT-DEC-013",
+      "title": "Token kinds use mutually exclusive validator profiles",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "recommended",
+      "specification": "RFC 8725 JSON Web Token Best Current Practices",
+      "version": "RFC 8725",
+      "source_authority": "rfc8725-source",
+      "section": "RFC 8725 [Sections 3.11 and 3.12](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.11)",
+      "requirement_strength": "SHOULD",
+      "issue": "`typ` and `cty` are optional JOSE metadata, while one process may receive multiple JWT kinds whose claims or keys overlap. Dispatching validation rules from attacker-controlled metadata can create cross-token substitution.",
+      "interpretations": [
+        "Require one package-wide `typ`; dispatch validators from token headers; ignore token kinds; or make each application route select a mutually exclusive validator profile before parsing credentials."
+      ],
+      "peer_behavior": "General JWT libraries expose header values but do not know an application's token kinds or routing boundary. Profiles such as OIDC define their own validation rules outside generic JWT parsing.",
+      "selected_behavior": "Non-critical `typ` and `cty` values are metadata only and never select a validator. A deployment accepting multiple JWT kinds must route each kind to a distinct validator configuration with mutually exclusive issuer, audience, key, algorithm, and required-claim policy. OIDC ID tokens remain owned by `authentication/oidc`.",
+      "rationale": "The selected behavior preserves the cited recommendation at its recorded strength without upgrading it to a normative requirement.",
+      "security_consequences": "Attacker-controlled headers cannot broaden or switch validation policy. Cross-token substitution is prevented by application-selected profiles whose trust and claim constraints do not overlap.",
+      "resource_consequences": "Attacker-controlled headers cannot broaden or switch validation policy. Cross-token substitution is prevented by application-selected profiles whose trust and claim constraints do not overlap.",
+      "compatibility_consequences": "Existing compact JWTs do not need a `typ` header. Deployments that relied on one shared permissive profile for multiple token kinds must split it before adoption.",
+      "wire_consequences": "Existing compact JWTs do not need a `typ` header. Deployments that relied on one shared permissive profile for multiple token kinds must split it before adoption.",
+      "executable_evidence": [
+        "TestValidatorRejectsInvalidJWTTrustDecisions",
+        "TestValidatorEnforcesSubjectAndRequiredClaimPolicy",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`Config.Issuer`, `Config.Audience`, `Config.Algorithms`, `Config.KeySet`, `Config.Provider`, and `Config.RequiredClaims`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 8725 recommends explicit typing and mutually exclusive rules but leaves application dispatch and profile identity to deployments. This package prevents token headers from selecting trust policy.",
+      "reconsider_when": "A concrete JWT profile requires a protected `typ` value and supplies a complete compatibility and routing contract."
+    },
+    {
+      "id": "JWT-DEC-014",
+      "title": "Verification uses only an explicit allowed algorithm set",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "interoperability policy",
+      "decision_scope": "normative",
+      "specification": "RFC 8725 JSON Web Token Best Current Practices",
+      "version": "RFC 8725",
+      "source_authority": "rfc8725-source",
+      "section": "RFC 8725 [Section 3.1](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1)",
+      "requirement_strength": "MUST",
+      "issue": "JWT verification must not select cryptographic policy from an attacker-controlled `alg` header or a library's changing default algorithm registry.",
+      "interpretations": [
+        "Accept every library-supported algorithm; infer policy from the token or key type; or require the caller to configure an allowed set and reject every algorithm outside it."
+      ],
+      "peer_behavior": "Maintained JOSE peers expose algorithm restrictions, but their broader defaults do not define this package's accepted set.",
+      "selected_behavior": "Configuration must specify at least one supported algorithm. Verification uses no algorithm outside that set, requires the protected `alg` to name the performed operation, and requires each key's algorithm to agree with that operation.",
+      "rationale": "This preserves RFC 8725 Section 3.1's mandatory algorithm-verification requirements separately from the package's narrower supported-algorithm policy.",
+      "security_consequences": "Explicit algorithm binding prevents algorithm confusion, downgrade, and key-type substitution.",
+      "resource_consequences": "Configuration validation bounds the allowed set and avoids speculative verification across algorithms.",
+      "compatibility_consequences": "Callers must opt into each accepted algorithm; tokens using any other algorithm are rejected even if a dependency can parse them.",
+      "wire_consequences": "The protected `alg`, configured allowed set, performed operation, and selected key must agree exactly.",
+      "executable_evidence": [
+        "TestSupportedAlgorithmAndKeyMatrix",
+        "TestGolangJWTAlgorithmInteroperability",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixture_evidence": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz_evidence": [
+        "FuzzValidateSignedPayload"
+      ],
+      "interoperability_evidence": [],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`Config.Algorithms`, `New`, and `Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 8725 Section 3.1 requires caller-selectable algorithm restrictions, exact operation agreement, and single-algorithm key use.",
+      "reconsider_when": "RFC 8725 is superseded by algorithm-verification requirements with different binding semantics."
+    },
+    {
+      "id": "JWT-DEC-015",
+      "title": "Unsupported critical JOSE extensions invalidate the token",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "optional behavior",
+      "decision_scope": "normative",
+      "specification": "RFC 7515 JSON Web Signature",
+      "version": "RFC 7515",
+      "source_authority": "rfc7515-source",
+      "section": "RFC 7515 [Section 4.1.11](https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.11) and [Appendix E](https://www.rfc-editor.org/rfc/rfc7515.html#appendix-E)",
+      "requirement_strength": "MUST",
+      "issue": "A JWS `crit` header declares extension semantics that must be understood and processed before the signature can establish the intended message meaning.",
+      "interpretations": [
+        "Ignore unknown critical parameters; pass them through to a general JOSE dependency; or reject tokens because this package implements no critical JOSE extensions."
+      ],
+      "peer_behavior": "General JOSE libraries can accept critical extensions through handlers; maintained-peer defaults differ when no application extension handler is configured.",
+      "selected_behavior": "This package implements no critical JOSE extensions, so every token containing `crit` is rejected. It never treats a successfully verified signature as sufficient when declared critical semantics are unsupported.",
+      "rationale": "RFC 7515 requires critical extensions to be understood and processed; rejection is the only conforming outcome when this package supports none.",
+      "security_consequences": "Attackers cannot obtain validation under extension semantics that the package ignored.",
+      "resource_consequences": "Unsupported critical headers fail during bounded protected-header inspection before key-provider or signature work.",
+      "compatibility_consequences": "Tokens using any critical JOSE extension are incompatible until a separately reviewed extension profile is implemented.",
+      "wire_consequences": "Any protected header containing `crit` causes rejection.",
+      "executable_evidence": [
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks",
+        "TestInspectCompactJWTRejectsEachBoundary",
+        "TestDifferentialValidationKeepsExplicitlyStricterPolicy"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzInspectCompactJWT"
+      ],
+      "interoperability_evidence": [],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "public_apis": [
+        "`Validator.ValidateBearer`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "RFC 7515 requires recipients to understand and process every listed critical extension; Appendix E requires rejection when they cannot.",
+      "reconsider_when": "The package implements a specific critical extension with complete parsing, processing, security, and interoperability evidence."
+    }
+  ]
+}

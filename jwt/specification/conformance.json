@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "decisions": [
+    {
+      "id": "JWT-DEC-001",
+      "authoritative_sources": [
+        "rfc7519-source",
+        "rfc7515-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsNonCanonicalBase64TruncationAndNestedPayloads",
+        "TestInspectCompactJWTRejectsEachBoundary",
+        "TestRFC7515AppendixA2RS256CompactJWS"
+      ],
+      "fixtures": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzInspectCompactJWT"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Accept exactly three non-empty canonical unpadded base64url segments representing one compact JWS. Reject JWE, JSON serialization, nested compact payloads, padding, non-zero pad bits, truncation, and trailing data."
+      ]
+    },
+    {
+      "id": "JWT-DEC-002",
+      "authoritative_sources": [
+        "rfc8259-source",
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsDuplicateAndOversizedClaims",
+        "TestInspectJSONObjectRejectsNonInteroperableUnicodeAndHugeNumbers",
+        "TestJSONUnicodeEscapeValidationAcceptsPairsAndRejectsMalformedPairs",
+        "TestValidatorRejectsMalformedNumericDates"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzInspectCompactJWT"
+      ],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "differential_classification": "deliberate policy difference",
+      "public_behavior": [
+        "Protected headers and claims must be UTF-8 JSON objects with unique members, paired UTF-16 escapes, bounded nesting and collection size, and JSON numbers no longer than 128 encoded bytes. NumericDate claims must be JSON numbers, not strings."
+      ]
+    },
+    {
+      "id": "JWT-DEC-003",
+      "authoritative_sources": [
+        "rfc9864-source",
+        "rfc8725-source",
+        "rfc7518-source",
+        "iana-jose-source"
+      ],
+      "executable_evidence": [
+        "TestSupportedAlgorithmAndKeyMatrix",
+        "TestGolangJWTAlgorithmInteroperability",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixtures": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "differential_classification": "maintained peer agreement",
+      "public_behavior": [
+        "Configuration must explicitly allow one or more supported algorithms. The token `alg`, configured allowlist, JWK `alg`, JWK type, and key material must all agree. `none`, deprecated generic `EdDSA`, ES256K, unknown algorithms, and algorithms outside the documented matrix are rejected."
+      ]
+    },
+    {
+      "id": "JWT-DEC-004",
+      "authoritative_sources": [
+        "rfc7518-source",
+        "rfc7517-source",
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsCryptographicallyUnsafeKeys",
+        "TestValidateKeyMaterialRejectsEveryInvalidRepresentation",
+        "TestRemoteJWKValidationRejectsEveryKeyPolicyViolation",
+        "TestRFC7520HMACJWKInteroperability"
+      ],
+      "fixtures": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Every JWK needs a unique non-empty `kid` and explicit allowed `alg`. If present, `use` is `sig` and `key_ops` contains only `verify`. Asymmetric keys are public only. HMAC keys meet algorithm output size, RSA moduli are 2048 through 8192 bits, and EC curves match the selected algorithm exactly."
+      ]
+    },
+    {
+      "id": "JWT-DEC-005",
+      "authoritative_sources": [
+        "rfc7515-source",
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks",
+        "TestInspectCompactJWTRejectsEachBoundary"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzInspectCompactJWT"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Reject `jku`, `jwk`, `x5u`, `x5c`, `x5t`, and `x5t#S256` in token headers. Reject `crit` rather than claiming support for extensions this package does not implement. Keys come only from the configured static set or provider."
+      ]
+    },
+    {
+      "id": "JWT-DEC-006",
+      "authoritative_sources": [
+        "rfc7519-source",
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsInvalidJWTTrustDecisions",
+        "TestValidatorEnforcesSubjectAndRequiredClaimPolicy",
+        "TestConfigurationReservesCapacityForMandatoryAndRequiredClaims",
+        "TestValidatorRejectsInvalidPrincipalClaims"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Require non-empty exact `iss`, configured `aud`, non-empty `sub`, numeric `iat`, and numeric `exp`. Optionally require an exact subject allowlist and unique deployment claims. `nbf`, when present, is numeric and enforced."
+      ]
+    },
+    {
+      "id": "JWT-DEC-007",
+      "authoritative_sources": [
+        "rfc7519-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorHonorsExactNumericDateBoundaries",
+        "TestNumericDateValidationChecksEveryPresentClaimAndDigitBoundary",
+        "TestValidatorRejectsMalformedNumericDates",
+        "TestValidatorHonorsCancellationAndConfigurationBounds"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Accept integral-second NumericDate JSON numbers only; reject fractional and exponent forms rather than inherit parser-specific rounding. Read one injected clock per validation. Enforce `nbf <= now + skew`, `iat <= now + skew`, and `now < exp + skew`; equality at `exp` without skew is expired. Skew is explicit, non-negative, and shared across the three boundaries."
+      ]
+    },
+    {
+      "id": "JWT-DEC-008",
+      "authoritative_sources": [
+        "rfc7517-source",
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestConfigurationAndKeySetValidationBoundaries",
+        "TestValidateBearerAndProviderFailureBoundaries",
+        "TestRemoteDoesNotTransferCachedKeyOwnership"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Configure exactly one of `KeySet` or `Provider`. Static sets are copied and validated during construction; provider sets are copied and revalidated for each attempt. Typed-nil providers fail configuration. Returned principals and private claims are caller-owned copies."
+      ]
+    },
+    {
+      "id": "JWT-DEC-009",
+      "authoritative_sources": [
+        "rfc9110-source",
+        "rfc8725-source",
+        "rfc7517-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteRejectsRedirects",
+        "TestRemoteRejectsHostileJWKResponsesAtInitialization",
+        "TestRemoteConfigurationRejectsEachUnsafeBoundary",
+        "TestJWKResponseTransportRejectsBrokenAndOversizedResponses"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`NewRemote` uses one configured URL and exactly one request for successful initialization, requires HTTPS except for an explicit development option, rejects user info and fragments, denies every redirect and compressed response, and bounds initialization, headers, body, keys, and concurrent operations. Private-address and DNS policy belongs to the supplied transport because legitimate deployments use private issuers."
+      ]
+    },
+    {
+      "id": "JWT-DEC-010",
+      "authoritative_sources": [
+        "rfc9111-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteJWKRotationAndIssuerOutage",
+        "TestRemoteRefreshTimingHonorsBoundsAndCacheHeaders",
+        "TestRemoteRefreshAndAuthenticationAreRaceSafe",
+        "TestRemoteRefreshSchedulingHasFleetJitter"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzCacheLifetimeHeaders"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`max-age` and `Expires` determine the next trust revalidation time inside configured minimum and maximum bounds; `Age` reduces remaining `max-age`. Missing, malformed, conflicting, or unusable metadata uses the minimum. `no-cache`, `no-store`, and `must-revalidate` force the minimum. These directives do not authorize HTTP response reuse: the separately validated key trust state remains available under fail-stale policy. Successful refresh atomically replaces the set. Failed refresh reports unavailable but retains the last validated set for known keys; it never admits an unknown key."
+      ]
+    },
+    {
+      "id": "JWT-DEC-011",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteRefreshWaitersShareResultAndHonorCancellation",
+        "TestRemoteSerializesAutomaticAndExplicitRefreshWork",
+        "TestRemoteLifetimeIsOwnedByClose",
+        "TestRemoteCloseReportsCanceledJoin",
+        "TestRemoteCloseDeadlineIsNotBlockedByRefreshLock"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzRemoteJWKResponseBoundary"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Close` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines; a canceled close reports its context and may be retried."
+      ]
+    },
+    {
+      "id": "JWT-DEC-012",
+      "authoritative_sources": [
+        "rfc8725-source",
+        "rfc7519-source"
+      ],
+      "executable_evidence": [
+        "TestProviderFailureIsUnavailableAndSecretSafe",
+        "TestRemoteFailureRedactsEndpointQueryAndTransportError",
+        "TestValidatorPreservesSafeStandardsErrorCategories",
+        "TestRejectedJWTFailureWithoutStandardsCategory"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Credential shape uses `ErrCredentialsInvalid`; signature, claim, and trust rejection uses `ErrCredentialsRejected`; provider, cancellation, capacity, and lifecycle failure uses `ErrAuthenticationUnavailable`. Safe JWX standards sentinels remain in the chain. Raw provider and transport causes are replaced by `ErrKeyProviderUnavailable`, and public text contains no token, signature, key, claim, query, endpoint, or remote body."
+      ]
+    },
+    {
+      "id": "JWT-DEC-013",
+      "authoritative_sources": [
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsInvalidJWTTrustDecisions",
+        "TestValidatorEnforcesSubjectAndRequiredClaimPolicy",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Non-critical `typ` and `cty` values are metadata only and never select a validator. A deployment accepting multiple JWT kinds must route each kind to a distinct validator configuration with mutually exclusive issuer, audience, key, algorithm, and required-claim policy. OIDC ID tokens remain owned by `authentication/oidc`."
+      ]
+    },
+    {
+      "id": "JWT-DEC-014",
+      "authoritative_sources": [
+        "rfc8725-source"
+      ],
+      "executable_evidence": [
+        "TestSupportedAlgorithmAndKeyMatrix",
+        "TestGolangJWTAlgorithmInteroperability",
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks"
+      ],
+      "fixtures": [
+        "jwt/specification/manifest.tsv"
+      ],
+      "fuzz": [
+        "FuzzValidateSignedPayload"
+      ],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "differential_classification": "maintained peer agreement",
+      "public_behavior": [
+        "Configuration must specify at least one supported algorithm. Verification uses no algorithm outside that set, requires the protected `alg` to name the performed operation, and requires each key's algorithm to agree with that operation."
+      ]
+    },
+    {
+      "id": "JWT-DEC-015",
+      "authoritative_sources": [
+        "rfc7515-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsAlgorithmKeyAndHeaderAttacks",
+        "TestInspectCompactJWTRejectsEachBoundary",
+        "TestDifferentialValidationKeepsExplicitlyStricterPolicy"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzInspectCompactJWT"
+      ],
+      "differential_evidence": [
+        "jwt/specification/interoperability.tsv"
+      ],
+      "differential_classification": "deliberate policy difference",
+      "public_behavior": [
+        "This package implements no critical JOSE extensions, so every token containing `crit` is rejected. It never treats a successfully verified signature as sufficient when declared critical semantics are unsupported."
+      ]
+    }
+  ]
+}

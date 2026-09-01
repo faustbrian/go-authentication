@@ -56,6 +56,7 @@ additional guarantees beyond the documented module boundary.
 
 - [Documentation index](docs/README.md)
 - [Complete technical guide](docs/reference.md)
+- [Specification decision register](docs/specification-decisions.md)
 - [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/oidc)
 - [Parent package documentation](../docs/README.md)
 

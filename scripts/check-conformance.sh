@@ -27,17 +27,17 @@ while IFS=$'\t' read -r id version role status digest bytes url value; do
 		rfc7617-aladdin)
 			expected_version='RFC-7617'
 			expected_role='basic-aladdin-credential'
-			expected_url='https://www.rfc-editor.org/rfc/rfc7617.html#section-2'
+			expected_url='https://www.rfc-editor.org/rfc/rfc7617.html'
 			;;
 		rfc7617-utf8-pound)
 			expected_version='RFC-7617'
 			expected_role='basic-utf8-credential'
-			expected_url='https://www.rfc-editor.org/rfc/rfc7617.html#section-2.1'
+			expected_url='https://www.rfc-editor.org/rfc/rfc7617.html'
 			;;
 		rfc6750-bearer-token)
 			expected_version='RFC-6750'
 			expected_role='bearer-b64token'
-			expected_url='https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1'
+			expected_url='https://www.rfc-editor.org/rfc/rfc6750.html'
 			;;
 		*)
 			printf 'unknown authentication specification row: %s\n' "${id}" >&2

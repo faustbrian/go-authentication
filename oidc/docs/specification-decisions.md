@@ -24,6 +24,10 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | Discovery errata set 2 defines the issuer append and exact-match requirements; no alias registry is defined. |
 | Reconsider when | A future OpenID profile standardizes issuer aliases with downgrade-resistant discovery and token-binding semantics. |
 
+Machine-auditable bindings: classification `ambiguity`; decision scope `defensive`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `not specified`; fuzz evidence `FuzzRemoteURL`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-core-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-core-1_0.html","specifications":["OpenID Connect Core 1.0 incorporating errata set 2"]}`.
+
 ## OIDC-DEC-002: Provider metadata is strict, bounded, and capability-complete
 
 | Field | Decision |
@@ -41,6 +45,10 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `New`, `Config.MaxHTTPBodyBytes`, `Config.DiscoveryTimeout`, `Config.Algorithms`, and `Config.MaxKeys` |
 | Upstream record | The OpenID Foundation conformance profiles informed the matrix; they do not replace package-level hostile JSON and allocation policy. |
 | Reconsider when | Discovery publishes a new metadata member or erratum requiring a different null, list, or algorithm-advertisement interpretation. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `not specified`; fuzz evidence `FuzzProviderMetadata`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc8259-source","version":"RFC 8259","url":"https://www.rfc-editor.org/rfc/rfc8259.txt","specifications":["RFC 8259 JSON"]}`.
 
 ## OIDC-DEC-003: Provider-directed endpoints are HTTPS but may be cross-origin
 
@@ -60,6 +68,10 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | Discovery permits endpoint URLs but does not provide a universal SSRF policy; that deployment boundary remains caller-owned and documented. |
 | Reconsider when | Discovery or a deployment profile defines enforceable endpoint-origin constraints compatible with supported providers. |
 
+Machine-auditable bindings: classification `optional behavior`; decision scope `defensive`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `not specified`; fuzz evidence `FuzzRemoteURL`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc9110-source","version":"RFC 9110","url":"https://www.rfc-editor.org/rfc/rfc9110.txt","specifications":["RFC 9110 HTTP Semantics"]}`.
+
 ## OIDC-DEC-004: Algorithms and public JWK candidates must agree exactly
 
 | Field | Decision |
@@ -77,6 +89,10 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `Config.Algorithms`, `Config.MaxKeys`, `New`, `NewWithKeySet`, and `Validator.ValidateIDToken` |
 | Upstream record | Discovery requires RS256 support and advertises additional algorithms; configuration does not silently inherit the provider's entire algorithm set. |
 | Reconsider when | A concrete profile requires encrypted or symmetric ID tokens and can provide separate bounded key and client-secret handling. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `RFC 7518 JSON Web Algorithms`; version `RFC 7518`; source authority `rfc7518-source` at `https://www.rfc-editor.org/rfc/rfc7518.txt`; requirement strength `not specified`; fuzz evidence `FuzzJWKSetResponse`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-core-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-core-1_0.html","specifications":["OpenID Connect Core 1.0 incorporating errata set 2"]}`, `{"id":"oidc-discovery-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-discovery-1_0.html","specifications":["OpenID Connect Discovery 1.0 incorporating errata set 2"]}`, `{"id":"rfc7517-source","version":"RFC 7517","url":"https://www.rfc-editor.org/rfc/rfc7517.txt","specifications":["RFC 7517 JSON Web Key"]}`.
 
 ## OIDC-DEC-005: Compact token JSON is inspected before upstream verification
 
@@ -96,6 +112,10 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | No erratum mandates permissive duplicate or lossy-number behavior; strict parsing is package-owned hardening. |
 | Reconsider when | Core adopts another mandatory ID-token serialization with equivalent deterministic and bounded parsing rules. |
 
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `RFC 7515 JSON Web Signature`; version `RFC 7515`; source authority `rfc7515-source` at `https://www.rfc-editor.org/rfc/rfc7515.txt`; requirement strength `not specified`; fuzz evidence `FuzzInspectCompactToken`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-core-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-core-1_0.html","specifications":["OpenID Connect Core 1.0 incorporating errata set 2"]}`, `{"id":"rfc8259-source","version":"RFC 8259","url":"https://www.rfc-editor.org/rfc/rfc8259.txt","specifications":["RFC 8259 JSON"]}`.
+
 ## OIDC-DEC-006: Audience, authorized party, and subject form one principal boundary
 
 | Field | Decision |
@@ -113,6 +133,9 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `Config.ClientID`, `Config.TrustedAudiences`, `Validator.ValidateIDToken`, and `authentication.Principal` |
 | Upstream record | Core defines audience and `azp`; rejection of unlisted additional audiences and the subject byte profile are explicit application hardening. |
 | Reconsider when | A deployment needs another subject syntax or audience delegation model with an explicit non-ambiguous principal mapping. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `not specified`; fuzz evidence `FuzzValidateBearer`; fixture evidence `oidc/testdata/oidc-core-section-2-claims.json`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
 
 ## OIDC-DEC-007: NumericDate validation preserves fractions and one skew policy
 
@@ -132,13 +155,17 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | Core permits reasonable skew but does not define its amount; the package's default and upper bound are explicit implementation policy. |
 | Reconsider when | A profile mandates per-claim leeway or higher-precision time semantics. |
 
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 7519 JSON Web Token`; version `RFC 7519`; source authority `rfc7519-source` at `https://www.rfc-editor.org/rfc/rfc7519.txt`; requirement strength `MAY`; fuzz evidence `FuzzNumericDate`; fixture evidence `oidc/testdata/oidc-core-section-2-claims.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-core-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-core-1_0.html","specifications":["OpenID Connect Core 1.0 incorporating errata set 2"]}`.
+
 ## OIDC-DEC-008: Nonce replay ownership stays with one caller callback
 
 | Field | Decision |
 | --- | --- |
 | Status and owner | `resolved`; `authentication/oidc` maintainers |
 | Source | OpenID Connect Core 1.0 [Sections 3.1.2.1 and 3.1.3.7](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest) |
-| Classification | Normative nonce comparison with application-owned replay-state policy |
+| Classification | Application-owned nonce replay and callback policy layered on Core nonce comparison |
 | Issue | Core requires nonce comparison when sent but cannot define application storage, atomic consumption, expiry, replay coordination, or callback failure handling. |
 | Credible interpretations | Store nonce in the package; compare a caller string; make checking optional even when configured; invoke before other validation; or delegate atomic single-use consumption after all other checks. |
 | Known peer behavior | OIDC libraries commonly return nonce for callers to compare. Replay stores remain application-specific. |
@@ -149,6 +176,9 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `Config.NonceValidator`, `NonceValidator`, `NonceValidatorFunc`, and `Validator.ValidateIDToken` |
 | Upstream record | Core owns nonce semantics; storage and atomic replay prevention are deliberately outside the protocol package. |
 | Reconsider when | A reusable nonce-store adapter can be added without embedding persistence or weakening caller lifecycle ownership. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `application-policy`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `not specified`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
 
 ## OIDC-DEC-009: Front-channel token hashes are validated only from explicit call inputs
 
@@ -168,6 +198,9 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | Core defines flow-specific requirements; this API exposes rather than guesses the missing flow context. |
 | Reconsider when | A higher-level authorization-flow package can guarantee and supply these values automatically without changing this validator's narrow boundary. |
 
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `not specified`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+
 ## OIDC-DEC-010: Metadata and JWKS refresh together, expire fail closed, and reject rollback
 
 | Field | Decision |
@@ -185,6 +218,10 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `Config.MinRefreshInterval`, `Config.MaxRefreshInterval`, `Config.MaxRefreshWaiters`, `New`, and remote signature verification |
 | Upstream record | HTTP controls freshness, but fail-closed expiry and retired-key rollback prevention are explicit package security policy. |
 | Reconsider when | A provider profile supplies authenticated push invalidation or a shared cache protocol with equivalent bounded rollback protection. |
+
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 9111 HTTP Caching`; version `RFC 9111`; source authority `rfc9111-source` at `https://www.rfc-editor.org/rfc/rfc9111.txt`; requirement strength `not specified`; fuzz evidence `FuzzJWKSetResponse`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-discovery-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-discovery-1_0.html","specifications":["OpenID Connect Discovery 1.0 incorporating errata set 2"]}`, `{"id":"rfc7517-source","version":"RFC 7517","url":"https://www.rfc-editor.org/rfc/rfc7517.txt","specifications":["RFC 7517 JSON Web Key"]}`.
 
 ## OIDC-DEC-011: Refresh concurrency is synchronous, bounded, and caller-cancelable
 
@@ -204,6 +241,9 @@ documented in [`../specification/`](../specification/README.md).
 | Upstream record | This is a Go runtime contract layered over protocol messages; no OpenID erratum defines process lifecycle. |
 | Reconsider when | A background refresh design can prove explicit close ownership, equivalent bounds, and no weaker cancellation or fleet behavior. |
 
+Machine-auditable bindings: classification `implementation-defined behavior`; decision scope `defensive`; specification `RFC 9110 HTTP Semantics`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+
 ## OIDC-DEC-012: Errors are stable, redacted, and preserve only safe cancellation identity
 
 | Field | Decision |
@@ -221,6 +261,201 @@ documented in [`../specification/`](../specification/README.md).
 | Public surface | `New`, `Validator.Authenticate`, `Validator.ValidateBearer`, `Validator.ValidateIDToken`, and `authentication.Failure` |
 | Upstream record | OpenID defines validation outcomes but not Go error-chain disclosure; this redaction profile is package-owned. |
 | Reconsider when | A protocol adapter requires a standardized external error code that can map from these categories without retaining sensitive detail. |
+
+Machine-auditable bindings: classification `omission`; decision scope `defensive`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `not specified`; fuzz evidence `FuzzValidateBearer`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"oidc-discovery-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-discovery-1_0.html","specifications":["OpenID Connect Discovery 1.0 incorporating errata set 2"]}`.
+
+## OIDC-DEC-013: Provider metadata and ID Tokens use the exact configured issuer
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Discovery 1.0 [Section 4.3](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfigurationValidation) and OpenID Connect Core 1.0 [Section 3.1.3.7](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation) |
+| Classification | interoperability policy |
+| Issue | Issuer aliases and URL normalization can bind provider metadata or tokens to a different tenant or trust domain than the issuer selected by the client. |
+| Credible interpretations | Normalize equivalent URLs; accept provider aliases; or require byte-for-byte identity between the configured issuer, discovered metadata issuer, and token issuer. |
+| Known peer behavior | Observed providers preserve exact issuer identity, while some libraries accept compatibility aliases or normalized URL forms. |
+| Selected behavior | The configured issuer, the discovered metadata `issuer`, and the ID Token `iss` claim must match exactly. Alias, case, port, path, and trailing-slash differences are rejected. |
+| Security and resource consequences | Security: Exact identity prevents metadata, key, and token substitution across issuer aliases or tenants. Resource: Issuer comparison is bounded by the configured metadata and token limits. |
+| Compatibility and wire consequences | Compatibility: Providers and clients must use one exact issuer identifier across configuration, discovery, and tokens. Wire: A metadata document or ID Token with a non-identical issuer is rejected. |
+| Executable evidence | `TestNewPreservesDiscoveryDeadlineAndRejectsIssuerMismatch`, `TestValidatorRequiresExactIssuerDespiteUpstreamCompatibilityAliases`, `TestKeycloakProviderIssuedIDToken` |
+| Public surface | `Config.Issuer`, `New`, `NewWithKeySet`, and `Validator.ValidateIDToken` |
+| Upstream record | Discovery Section 4.3 and Core Section 3.1.3.7 require exact issuer identity. |
+| Reconsider when | A future OpenID profile replaces exact issuer identity with an authenticated alias mechanism. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `MUST`; fuzz evidence `FuzzRemoteURL`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Discovery and Core's exact issuer-match requirements separately from URL construction and defensive URL-policy choices.
+Additional authoritative sources: `{"id":"oidc-core-source","version":"final-errata-2","url":"https://openid.net/specs/openid-connect-core-1_0.html","specifications":["OpenID Connect Core 1.0 incorporating errata set 2"]}`.
+
+## OIDC-DEC-014: Discovery metadata contains every required provider member
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Discovery 1.0 [Section 3](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata) |
+| Classification | interoperability policy |
+| Issue | A Discovery response without the required provider metadata cannot establish the issuer, authorization endpoint, signing keys, response types, subject types, and ID Token signing algorithms needed by an OpenID client. |
+| Credible interpretations | Infer omitted defaults; accept a partial metadata profile; or reject a response missing any required Discovery member. |
+| Known peer behavior | The pinned Google metadata and representative provider profiles include the required members. |
+| Selected behavior | Provider metadata must contain non-null, correctly typed `issuer`, `authorization_endpoint`, `jwks_uri`, `response_types_supported`, `subject_types_supported`, and `id_token_signing_alg_values_supported` members. |
+| Security and resource consequences | Security: The client never infers a trust endpoint, key location, subject model, or signing capability from missing metadata. Resource: Required-member validation runs within the bounded metadata object before JWKS retrieval. |
+| Compatibility and wire consequences | Compatibility: Partial or null-filled provider metadata is rejected even when a permissive client could infer defaults. Wire: A Discovery response missing any required member is invalid. |
+| Executable evidence | `TestProviderMetadataValidationMatrix`, `TestGoogleProviderMetadataSnapshot` |
+| Public surface | `New` and provider metadata validation |
+| Upstream record | Discovery Section 3 marks these six provider metadata members REQUIRED. |
+| Reconsider when | A later Discovery version changes the required provider metadata set. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `REQUIRED`; fuzz evidence `FuzzProviderMetadata`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This records Discovery's REQUIRED members without upgrading separately recommended or optional metadata to mandatory status.
+
+## OIDC-DEC-015: Provider authorization and JWKS endpoints use HTTPS
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Discovery 1.0 [Section 3](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata) |
+| Classification | interoperability policy |
+| Issue | Provider-directed authorization and key endpoints cross a network trust boundary and Discovery requires them to use HTTPS. |
+| Credible interpretations | Accept any URL scheme; follow provider redirects; or require direct HTTPS endpoints while exposing loopback HTTP only as an explicit non-conformant development extension. |
+| Known peer behavior | The pinned Google and Keycloak provider profiles publish HTTPS endpoints in conformant deployment metadata. |
+| Selected behavior | Provider `authorization_endpoint` and `jwks_uri` values must use HTTPS. Plain HTTP is rejected except for the explicit loopback-only `InsecureHTTP` development extension, which is outside the conformance claim. |
+| Security and resource consequences | Security: Production metadata cannot downgrade authorization or signing-key retrieval to unauthenticated transport. Resource: URL validation occurs before any network request; redirect and response bounds remain governed separately. |
+| Compatibility and wire consequences | Compatibility: Production providers must publish direct HTTPS endpoints. Loopback HTTP remains available only through explicit development configuration. Wire: Non-HTTPS production endpoint metadata is rejected. |
+| Executable evidence | `TestRemoteURLValidationRejectsEachUnsafeComponent`, `TestIssuerURLRequiresBothHTTPOptInAndLoopback`, `TestHTTPHardeningAndBoundedReaders`, `TestGoogleProviderMetadataSnapshot` |
+| Public surface | `Config.InsecureHTTP`, `New`, and provider endpoint validation |
+| Upstream record | Discovery Section 3 requires HTTPS for the authorization and JWKS endpoint URLs. |
+| Reconsider when | A successor Discovery specification defines another authenticated endpoint transport. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `MUST`; fuzz evidence `FuzzRemoteURL`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Discovery's HTTPS requirements while clearly excluding the explicit loopback development extension from protocol conformance.
+
+## OIDC-DEC-016: ID Token signatures use their declared algorithm and issuer key
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Core 1.0 [Sections 3.1.3.7 and 3.2.2.11](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation) |
+| Classification | interoperability policy |
+| Issue | An ID Token signature must be validated with the algorithm selected for the response and keys belonging to the exact issuer. |
+| Credible interpretations | Trust any library-supported algorithm and compatible key; accept an unadvertised algorithm; or require an advertised configured algorithm and a matching public issuer key. |
+| Known peer behavior | The pinned Keycloak provider issues an RS256 ID Token that validates against its advertised public JWKS. |
+| Selected behavior | ID Token signatures must validate using the algorithm specified by the protected `alg` header and keys provided by the exact issuer. |
+| Security and resource consequences | Security: Tokens cannot authenticate through an algorithm different from the protected `alg` header or trust material from another issuer. Resource: Candidate algorithm and key work remains bounded by configured algorithm and JWKS limits. |
+| Compatibility and wire consequences | Compatibility: The token's declared algorithm and a compatible public issuer key must produce a valid signature. Wire: ID Tokens with unverifiable signatures, algorithm-operation disagreement, or no matching issuer key are rejected. |
+| Executable evidence | `TestJOSEKeyAlgorithmFamilies`, `TestKeycloakProviderIssuedIDToken` |
+| Public surface | `Config.Algorithms`, `New`, `NewWithKeySet`, and ID Token validation |
+| Upstream record | Core requires clients to validate ID Token signatures using the selected JOSE algorithm and issuer keys. |
+| Reconsider when | A future OpenID profile changes the mandatory ID Token signature-validation mechanism. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `MUST`; fuzz evidence `FuzzJWKSetResponse`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Core's mandatory signature validation separately from the package's narrower key-size, key-selection, and supported-algorithm policy.
+
+## OIDC-DEC-017: The ID Token audience contains the client ID and no untrusted audience
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Core 1.0 [Section 3.1.3.7](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation) |
+| Classification | interoperability policy |
+| Issue | Signature validity does not prove that an ID Token was issued for this client; the client must be one of the token audiences. |
+| Credible interpretations | Accept any signed audience; infer the audience from `azp`; or require the configured client ID in the `aud` claim and reject untrusted additional audiences. |
+| Known peer behavior | The official Core claims vector and provider-issued token bind the audience to the client identifier. |
+| Selected behavior | The ID Token `aud` claim must contain the configured client ID, every additional audience must be trusted explicitly, and the token is rejected otherwise. Separate `azp` policy remains recorded in OIDC-DEC-006 and OIDC-DEC-018. |
+| Security and resource consequences | Security: Tokens issued only for another client or carrying an untrusted additional audience cannot authenticate at this client boundary. Resource: Audience parsing and comparison remain bounded by the configured claim limits. |
+| Compatibility and wire consequences | Compatibility: Every accepted token must identify the configured client ID and no untrusted recipient in its audience set. Wire: ID Tokens omitting the configured client ID or containing an untrusted additional audience are rejected. |
+| Executable evidence | `TestValidatorEnforcesOIDCClaimsAndAuthorizedParty`, `TestValidatorRejectsUntrustedAdditionalAudiences`, `TestOpenIDConnectCoreIDTokenClaimVector`, `TestKeycloakProviderIssuedIDToken` |
+| Public surface | `Config.ClientID`, `Config.TrustedAudiences`, and ID Token validation |
+| Upstream record | Core Section 3.1.3.7 requires the audience to contain the client's registered client ID. |
+| Reconsider when | A future OpenID profile replaces client ID audience binding with another mandatory recipient-binding mechanism. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `MUST`; fuzz evidence `FuzzValidateBearer`; fixture evidence `oidc/testdata/oidc-core-section-2-claims.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Core's mandatory client-audience and trusted-additional-audience checks without upgrading its separate `azp` recommendations.
+
+## OIDC-DEC-018: A present authorized-party claim identifies this client
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Core 1.0 [Section 3.1.3.7, items 4 and 5](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation) |
+| Classification | interoperability policy |
+| Issue | When an extension supplies `azp`, the client should validate the authorized party instead of ignoring a claim that can disambiguate the token recipient. |
+| Credible interpretations | Ignore `azp`; validate it only under an extension-specific profile; or require a present `azp` to equal the configured client ID. |
+| Known peer behavior | Provider and client libraries vary because Core makes authorized-party validation extension-aware and recommended rather than universally mandatory. |
+| Selected behavior | When `azp` is present, it must be a non-empty string equal to the configured client ID. The package's stricter requirement for `azp` with multiple audiences remains defensive policy in OIDC-DEC-006. |
+| Security and resource consequences | Security: A present authorized-party claim cannot identify a different client without rejection. Resource: The bounded claim is compared once to the configured client ID. |
+| Compatibility and wire consequences | Compatibility: Tokens with a present `azp` naming another party are rejected; absence is governed separately by the multi-audience defensive profile. Wire: A present `azp` must equal the configured client ID. |
+| Executable evidence | `TestValidatorEnforcesOIDCClaimsAndAuthorizedParty` |
+| Public surface | `Config.ClientID` and ID Token validation |
+| Upstream record | Core recommends extension-aware `azp` validation and says clients should verify a present value against their client ID. |
+| Reconsider when | A supported extension profile defines a different authorized-party validation rule. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `recommended`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `SHOULD`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Core's recommendation without upgrading the source to a universal MUST or claiming that Core requires `azp` for every multi-audience token.
+
+## OIDC-DEC-019: A sent nonce is present and matches exactly
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Core 1.0 [Section 3.1.3.7](https://openid.net/specs/openid-connect-core-1_0.html#IDTokenValidation) |
+| Classification | interoperability policy |
+| Issue | When an authentication request sent a nonce, accepting an ID Token without the same nonce breaks the request-to-token binding. |
+| Credible interpretations | Ignore nonce; accept absence; normalize nonce values; or require presence and exact equality to the value sent in the authentication request. |
+| Known peer behavior | OIDC clients commonly expose nonce validation hooks, but callback ownership and replay storage differ. |
+| Selected behavior | When a caller supplies a nonce validation contract for a sent nonce, the ID Token must contain the nonce and its value must match exactly. Missing or mismatched nonce is rejected. |
+| Security and resource consequences | Security: The ID Token remains bound to the initiating authentication request and cannot be substituted across nonce contexts. Resource: Nonce validation runs once within existing token and callback bounds. |
+| Compatibility and wire consequences | Compatibility: Callers that sent a nonce must supply a validator capable of checking its exact value. Wire: A missing or mismatched nonce claim causes rejection when nonce validation is required. |
+| Executable evidence | `TestValidatorUsesNonceCallback`, `TestValidatorValidatesAllClaimsBeforeConsumingNonce`, `TestValidatorAllowsExactlyOneConcurrentNonceConsumption` |
+| Public surface | `Config.NonceValidator` and ID Token validation |
+| Upstream record | Core Section 3.1.3.7 requires presence and exact checking when a nonce was sent. |
+| Reconsider when | A future OpenID profile replaces nonce request binding with another mandatory mechanism. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `MUST`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: This preserves Core's mandatory sent-nonce presence and equality check separately from the package's callback, ordering, cancellation, and replay-storage policy.
+
+## OIDC-DEC-020: Presented front-channel token hashes match exactly
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Core 1.0 [Sections 3.2.2.9 and 3.3.2.10](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitTokenValidation) |
+| Classification | interoperability policy |
+| Issue | Front-channel access tokens and authorization codes need an exact cryptographic binding to the ID Token when their hash claims are used. |
+| Credible interpretations | Trust presence of the hash claim; compare an implementation-defined encoding; or compute the algorithm-defined left-half hash and require exact equality. |
+| Known peer behavior | OIDC libraries vary in whether flow context and front-channel values are supplied to low-level ID Token validators. |
+| Selected behavior | When `ValidateIDToken` is asked to bind an access token or authorization code, the corresponding `at_hash` or `c_hash` claim must be present and must exactly match the algorithm-defined left-half hash. The API does not infer flow context when no value is supplied. |
+| Security and resource consequences | Security: Exact hash binding prevents access-token or authorization-code substitution in the validated front-channel response. Resource: Hash work is bounded by the caller-supplied token/code and supported signing algorithm. |
+| Compatibility and wire consequences | Compatibility: A requested binding fails when the corresponding claim is absent, malformed, unsupported, or mismatched. Wire: Presented `at_hash` and `c_hash` claims must match their corresponding values exactly when validation is requested. |
+| Executable evidence | `TestValidateIDTokenBindsAccessTokenAndAuthorizationCode`, `TestTokenHashAlgorithmsAndMalformedHeaders` |
+| Public surface | `TokenBinding` and `Validator.ValidateIDToken` |
+| Upstream record | Core Sections 3.2.2.9 and 3.3.2.10 require present front-channel hash claims to match the algorithm-defined value. |
+| Reconsider when | A future OpenID profile replaces these hash bindings or defines additional supported signing-algorithm hash families. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Core 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-core-source` at `https://openid.net/specs/openid-connect-core-1_0.html`; requirement strength `MUST`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: Core requires the claim value to match the computed hash; the package's explicit-input API supplies the otherwise unavailable flow context without claiming the hash is mandatory in every flow.
+
+## OIDC-DEC-021: Discovery advertises the mandatory RS256 baseline
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/oidc` maintainers |
+| Source | OpenID Connect Discovery 1.0 [Section 3](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata) |
+| Classification | interoperability policy |
+| Issue | Discovery requires `id_token_signing_alg_values_supported` to include RS256 as the interoperable signing baseline. |
+| Credible interpretations | Accept any non-empty algorithm list; accept only caller-configured algorithms; or require RS256 in addition to every configured algorithm. |
+| Known peer behavior | The pinned Google metadata and Keycloak provider advertise RS256. |
+| Selected behavior | Provider metadata must advertise RS256 in `id_token_signing_alg_values_supported`. |
+| Security and resource consequences | Security: The client does not silently accept a provider profile that omits OpenID Connect's mandatory signing baseline. Resource: Algorithm-list validation is bounded by the metadata limits. |
+| Compatibility and wire consequences | Compatibility: Providers omitting RS256 are rejected even when another locally supported algorithm overlaps. Wire: Discovery metadata without RS256 in the advertised ID Token signing algorithm list is invalid. |
+| Executable evidence | `TestProviderMetadataValidationMatrix`, `TestGoogleProviderMetadataSnapshot`, `TestKeycloakProviderIssuedIDToken` |
+| Public surface | `New` and provider metadata validation |
+| Upstream record | Discovery Section 3 requires RS256 in the advertised ID Token signing algorithm list. |
+| Reconsider when | A later Discovery version replaces RS256 as the mandatory algorithm baseline. |
+
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `OpenID Connect Discovery 1.0 incorporating errata set 2`; version `final-errata-2`; source authority `oidc-discovery-source` at `https://openid.net/specs/openid-connect-discovery-1_0.html`; requirement strength `MUST`; fuzz evidence `FuzzProviderMetadata`; fixture evidence `oidc/testdata/google-openid-configuration-2026-08-09.json`; interoperability evidence `oidc/specification/interoperability.tsv`; documentation `oidc/docs/specification-decisions.md`.
+Normative rationale: The RS256 requirement comes directly from Discovery; requiring other configured algorithms remains the package's separate capability-consistency policy.
+
 
 ## Unresolved decisions
 

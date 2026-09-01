@@ -23,6 +23,10 @@ Specification-backed changes must follow the
 the affected stable decision entries, and complete the Specification Decisions
 section of the pull request template. An unresolved interpretation or stale
 source pin is release-blocking; peer behavior cannot silently select policy.
+The authoritative registers are maintained for the
+[root module](docs/specification-decisions.md),
+[JWT module](jwt/docs/specification-decisions.md), and
+[OIDC module](oidc/docs/specification-decisions.md).
 
 Required mutation gates must finish with zero surviving viable mutants.
 

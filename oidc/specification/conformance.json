@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "decisions": [
+    {
+      "id": "OIDC-DEC-001",
+      "authoritative_sources": [
+        "oidc-discovery-source",
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestNewPreservesDiscoveryDeadlineAndRejectsIssuerMismatch",
+        "TestValidatorRequiresExactIssuerDespiteUpstreamCompatibilityAliases",
+        "TestConfigurationRejectsEachInvalidBoundary"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzRemoteURL"
+      ],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Derive `/.well-known/openid-configuration` using the Discovery append rule. Reject configured issuer query, fragment, userinfo, unsupported schemes, and non-loopback HTTP. The configured issuer, metadata `issuer`, and token `iss` must match byte for byte."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-002",
+      "authoritative_sources": [
+        "oidc-discovery-source",
+        "rfc8259-source"
+      ],
+      "executable_evidence": [
+        "TestProviderMetadataValidationMatrix",
+        "TestNewRejectsDuplicateDiscoveryMembersBeforeFetchingKeys",
+        "TestNewRejectsNullOptionalProviderMetadata",
+        "TestNewRejectsSigningAlgorithmsNotAdvertisedByProvider"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzProviderMetadata"
+      ],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Require one bounded JSON object and an exact JSON response media type. Standard members must be unique and correctly typed; explicit null is not absence. Response types use one ASCII-space separator, supported subject types are unique, advertised scopes include `openid`, and signing algorithms include RS256 plus every configured algorithm."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-003",
+      "authoritative_sources": [
+        "oidc-discovery-source",
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestGoogleProviderMetadataSnapshot",
+        "TestRemoteURLValidationRejectsEachUnsafeComponent",
+        "TestHTTPHardeningAndBoundedReaders",
+        "TestDiscoveryAndJWKRequestsAreBoundedAndCancelable"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzRemoteURL"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Accept valid HTTPS provider endpoints, including cross-origin JWKS. Reject redirects, userinfo, fragments, unsupported schemes, and non-loopback HTTP. `InsecureHTTP` permits loopback development only. Deployments needing DNS, address, port, proxy, or origin restrictions must supply a hardened `HTTPClient` transport."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-004",
+      "authoritative_sources": [
+        "rfc7518-source",
+        "oidc-core-source",
+        "oidc-discovery-source",
+        "rfc7517-source"
+      ],
+      "executable_evidence": [
+        "TestJOSEKeyAlgorithmFamilies",
+        "TestRemoteFetchIgnoresUnrelatedEncryptionKeys",
+        "TestRemoteFetchRejectsAmbiguousJWKMetadata",
+        "TestVerifyWithKeysRejectsMissingKeyIDForAmbiguousSet",
+        "TestKeycloakProviderIssuedIDToken"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzJWKSetResponse"
+      ],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Support configured asymmetric RS, PS, ES, and EdDSA families only when advertised by the provider. Candidate keys must be public, algorithm- and shape-compatible, and signing-capable; encryption-only keys are ignored. Ambiguous permitted candidates require `kid`. RSA is 2048 through 8192 bits and EC/EdDSA shape must match exactly."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-005",
+      "authoritative_sources": [
+        "rfc7515-source",
+        "oidc-core-source",
+        "rfc8259-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorRejectsMalformedBoundedAndDuplicateTokens",
+        "TestInspectCompactTokenRejectsEachBoundary",
+        "TestValidatorRejectsClaimsThatCannotBeDecodedLosslessly",
+        "TestValidatorPreservesPrivateNumbersAndRejectsInvalidUnicode"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzInspectCompactToken"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Require three non-empty strict unpadded base64url segments within `MaxTokenBytes`. Protected header and claims are bounded unique-member JSON objects with valid Unicode and correctly typed standard members. Claims are decoded losslessly without float64 coercion. Unsupported distributed-claim protocol fields are rejected."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-006",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorEnforcesOIDCClaimsAndAuthorizedParty",
+        "TestValidatorRejectsUntrustedAdditionalAudiences",
+        "TestValidatorRejectsNonASCIIOrOversizedSubject",
+        "TestOpenIDConnectCoreIDTokenClaimVector"
+      ],
+      "fixtures": [
+        "oidc/testdata/oidc-core-section-2-claims.json"
+      ],
+      "fuzz": [
+        "FuzzValidateBearer"
+      ],
+      "interoperability_evidence": [],
+      "interoperability_classification": "not assessed",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Require client ID in a unique audience set. Every extra audience must be explicitly trusted. `azp`, when present, equals client ID and is mandatory for multiple audiences. Subject is non-empty ASCII and at most 255 bytes. Exact issuer and subject become the principal identity."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-007",
+      "authoritative_sources": [
+        "rfc7519-source",
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestNumericDateBoundariesAndFraction",
+        "TestValidatorAppliesExactFractionalClockEdges",
+        "TestValidatorAppliesConfiguredClockSkewToAllNumericDates",
+        "TestValidatorAcceptsEpochAuthenticationTime"
+      ],
+      "fixtures": [
+        "oidc/testdata/oidc-core-section-2-claims.json"
+      ],
+      "fuzz": [
+        "FuzzNumericDate"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Require `iat` and `exp`; validate optional `nbf` and `auth_time`; preserve fractional seconds; read the configured clock deterministically; and apply one bounded non-negative `ClockSkew` to every temporal boundary. Epoch `auth_time` is valid."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-008",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorUsesNonceCallback",
+        "TestValidatorValidatesAllClaimsBeforeConsumingNonce",
+        "TestValidatorAllowsExactlyOneConcurrentNonceConsumption",
+        "TestValidatorContainsNonceCallbackPanic",
+        "TestValidatorPreservesNonceCancellationAsUnavailable"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`NonceValidator` owns presence, expiry, equality, and atomic single-use consumption. Invoke it once only after signature, binding, and every other claim succeeds. Contain callback panic and redact callback errors as rejection; preserve callback context cancellation as authentication unavailability."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-009",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidateIDTokenBindsAccessTokenAndAuthorizationCode",
+        "TestTokenHashAlgorithmsAndMalformedHeaders"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`ValidateIDToken` validates `at_hash` for non-empty access-token input and `c_hash` for non-empty authorization-code input using the signing algorithm's 256/384/512 hash family. A requested binding requires the claim and exact value. EdDSA with requested binding is rejected because no hash family is defined. `ValidateBearer` supplies no front-channel values."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-010",
+      "authoritative_sources": [
+        "rfc9111-source",
+        "oidc-discovery-source",
+        "rfc7517-source"
+      ],
+      "executable_evidence": [
+        "TestDiscoveryMetadataAndKeysRefreshTogether",
+        "TestDiscoveryValidatorRotatesKeysAndFailsClosedWhenCacheExpiresDuringOutage",
+        "TestRemoteKeySetRefreshesRotationMissBeforeCacheExpiry",
+        "TestRemoteKeySetRejectsRetiredKeyRollback",
+        "TestRemoteRefreshJitterSpreadsReplicaFleet"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzJWKSetResponse"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Refresh metadata and JWKS as one synchronized transition. Clamp HTTP freshness to configured bounds and apply per-instance early jitter. After cooldown, an unknown `kid` triggers one shared probe. Known keys work only while fresh; required refresh failure is cached until the minimum interval and fails closed after expiry. Successful removal retires key material for this validator lifetime; later rollback cannot reintroduce it. A changed `jwks_uri` clears validators for the old URL."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-011",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteKeySetSynchronizesLargeRefreshBurst",
+        "TestRemoteKeySetBoundsRefreshWaiters",
+        "TestRemoteKeySetCancellationDoesNotPoisonSharedRefresh",
+        "TestRemoteKeySetRefreshWaitHonorsCancellation",
+        "TestRemoteClockRunsOutsideSynchronization",
+        "TestConcurrentOIDCAuthenticationAndRotationAreRaceSafe"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "The validator starts no goroutines or timers. One caller synchronously owns each network refresh; admitted waiters are bounded and retain independent contexts. Owner cancellation does not poison another caller's future refresh or shared cooldown. Clock callbacks run outside synchronization. Every response body is closed."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-012",
+      "authoritative_sources": [
+        "oidc-core-source",
+        "oidc-discovery-source"
+      ],
+      "executable_evidence": [
+        "TestNewDoesNotExposeProviderResponseText",
+        "TestProviderErrorRedactionPreservesOnlyStableCancellation",
+        "TestRemoteRefreshReportRedactsTransportFailure",
+        "TestValidatorContainsNonceCallbackPanic",
+        "TestValidateBearerRejectsCanceledAndEmptyInput"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzValidateBearer"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Empty, wrong-kind, malformed, or oversized credentials are invalid; signature, issuer, claim, nonce, and binding failures are rejected; discovery, JWKS, rollback, timeout, waiter saturation, and cancellation are unavailable. Public errors do not retain arbitrary provider, callback, token, nonce, key, credential, or body text. Safe `context.Canceled` and deadline identity remains detectable."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-013",
+      "authoritative_sources": [
+        "oidc-discovery-source",
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestNewPreservesDiscoveryDeadlineAndRejectsIssuerMismatch",
+        "TestValidatorRequiresExactIssuerDespiteUpstreamCompatibilityAliases",
+        "TestKeycloakProviderIssuedIDToken"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzRemoteURL"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "The configured issuer, the discovered metadata `issuer`, and the ID Token `iss` claim must match exactly. Alias, case, port, path, and trailing-slash differences are rejected."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-014",
+      "authoritative_sources": [
+        "oidc-discovery-source"
+      ],
+      "executable_evidence": [
+        "TestProviderMetadataValidationMatrix",
+        "TestGoogleProviderMetadataSnapshot"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzProviderMetadata"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Provider metadata must contain non-null, correctly typed `issuer`, `authorization_endpoint`, `jwks_uri`, `response_types_supported`, `subject_types_supported`, and `id_token_signing_alg_values_supported` members."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-015",
+      "authoritative_sources": [
+        "oidc-discovery-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteURLValidationRejectsEachUnsafeComponent",
+        "TestIssuerURLRequiresBothHTTPOptInAndLoopback",
+        "TestHTTPHardeningAndBoundedReaders",
+        "TestGoogleProviderMetadataSnapshot"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzRemoteURL"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Provider `authorization_endpoint` and `jwks_uri` values must use HTTPS. Plain HTTP is rejected except for the explicit loopback-only `InsecureHTTP` development extension, which is outside the conformance claim."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-016",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestJOSEKeyAlgorithmFamilies",
+        "TestKeycloakProviderIssuedIDToken"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzJWKSetResponse"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "ID Token signatures must validate using the algorithm specified by the protected `alg` header and keys provided by the exact issuer."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-017",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorEnforcesOIDCClaimsAndAuthorizedParty",
+        "TestValidatorRejectsUntrustedAdditionalAudiences",
+        "TestOpenIDConnectCoreIDTokenClaimVector",
+        "TestKeycloakProviderIssuedIDToken"
+      ],
+      "fixtures": [
+        "oidc/testdata/oidc-core-section-2-claims.json"
+      ],
+      "fuzz": [
+        "FuzzValidateBearer"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "The ID Token `aud` claim must contain the configured client ID, every additional audience must be trusted explicitly, and the token is rejected otherwise. Separate `azp` policy remains recorded in OIDC-DEC-006 and OIDC-DEC-018."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-018",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorEnforcesOIDCClaimsAndAuthorizedParty"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "When `azp` is present, it must be a non-empty string equal to the configured client ID. The package's stricter requirement for `azp` with multiple audiences remains defensive policy in OIDC-DEC-006."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-019",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidatorUsesNonceCallback",
+        "TestValidatorValidatesAllClaimsBeforeConsumingNonce",
+        "TestValidatorAllowsExactlyOneConcurrentNonceConsumption"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "When a caller supplies a nonce validation contract for a sent nonce, the ID Token must contain the nonce and its value must match exactly. Missing or mismatched nonce is rejected."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-020",
+      "authoritative_sources": [
+        "oidc-core-source"
+      ],
+      "executable_evidence": [
+        "TestValidateIDTokenBindsAccessTokenAndAuthorizationCode",
+        "TestTokenHashAlgorithmsAndMalformedHeaders"
+      ],
+      "fixtures": [],
+      "fuzz": [],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "When `ValidateIDToken` is asked to bind an access token or authorization code, the corresponding `at_hash` or `c_hash` claim must be present and must exactly match the algorithm-defined left-half hash. The API does not infer flow context when no value is supplied."
+      ]
+    },
+    {
+      "id": "OIDC-DEC-021",
+      "authoritative_sources": [
+        "oidc-discovery-source"
+      ],
+      "executable_evidence": [
+        "TestProviderMetadataValidationMatrix",
+        "TestGoogleProviderMetadataSnapshot",
+        "TestKeycloakProviderIssuedIDToken"
+      ],
+      "fixtures": [
+        "oidc/testdata/google-openid-configuration-2026-08-09.json"
+      ],
+      "fuzz": [
+        "FuzzProviderMetadata"
+      ],
+      "interoperability_evidence": [
+        "oidc/specification/interoperability.tsv"
+      ],
+      "interoperability_classification": "provider agreement",
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "Provider metadata must advertise RS256 in `id_token_signing_alg_values_supported`."
+      ]
+    }
+  ]
+}

@@ -7,12 +7,36 @@ this project follows Semantic Versioning.
 
 ### Changed
 
-- Replace copied repository tooling with the pinned `go-library-tools` v1.0.13
-  contract while retaining package-owned policy and verification evidence.
+- Adopt the pinned `go-library-tools` v1.2.0 CLI and reusable workflow so CI
+  enforces specification decisions, conformance bindings, source monitoring,
+  and change control while retaining package-owned policy and verification
+  evidence.
+  The required specification lane remains independent of module-resolution
+  failures in the broader repository gate.
 
 ### Documentation
 
 - Replace archived monorepo links with a package-owned documentation index.
+- Make the current [authentication specification decisions](docs/specification-decisions.md)
+  machine-auditable and preserve their content identities below.
+- Treat recorded decision digests and public conformance test identifiers as
+  non-secret specification metadata during repository scanning.
+- AUTH-DEC-011 sha256:be33f5111184dec4c31bdeac3760ee2ef0fcdd730a677f55479e7ee8f66ad659
+- AUTH-DEC-012 sha256:9135676640d9c0df84a1b676985d9f5c2512998304591b8809092b50ce0d7884
+- AUTH-DEC-001 sha256:dbf293fd525d952dfe51ac1af7a43325429fa00dfe6d34e2cdc45069830330f5
+- AUTH-DEC-002 sha256:5d9b14d24d6ac9ea1f84b43d5d745454b53e5271fee035aa909d1d9a2342d5fe
+- AUTH-DEC-002 sha256:15e8ade498da812548bf36deb3ab0b77d5fae91462036bc36e27aaa39fb4f273
+- AUTH-DEC-003 sha256:81ffead77cfa54913477444f24798f9b632beb94057e578ec1f266b020c6a7c1
+- AUTH-DEC-003 sha256:10e348b7b49b28fb53f35f0072cbda5ff08156f871c854fcb7e0f62b70f0ed9e
+- AUTH-DEC-004 sha256:86762f7d564203e9714e51b867aa8ec4ebc913d0ca704e716a409e56b2537722
+- AUTH-DEC-004 sha256:06998d20abf14867af6c7195a88b8adadc4a66dda00e1990172180c5c71a61a6
+- AUTH-DEC-005 sha256:b8d53a0e3c0980892e5b161e2e5b2534f635d250e4310757d11d78ff08b773c4
+- AUTH-DEC-006 sha256:e18d639138c2828e3b8240a6bf80c5437b04d630da12cc3e419d476ab35b88e7
+- AUTH-DEC-007 sha256:f8b3f8e8393811a2c3ce06988b92f81252babeede518c6836afaac7a3de89326
+- AUTH-DEC-007 sha256:e9a921116a9efa033845aff4eb3e931303ad4f1380b190338c730245ea8860d6
+- AUTH-DEC-008 sha256:b4f02becb2f6f0f2d098c8d24fe750048bf87f8d2aefc8c680745c0d240c812a
+- AUTH-DEC-009 sha256:0104da4c0dca68fb7146d17f5d70077fe34edaf919feef29b718252edb65ee37
+- AUTH-DEC-010 sha256:4a94dc00885603ca190f6e2eda39a98d09511ff7417bb3de9cb131774398d60f
 
 ## [1.0.0] - 2026-08-25
 
