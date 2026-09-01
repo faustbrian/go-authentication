@@ -7,8 +7,10 @@ this project follows Semantic Versioning.
 
 ### Changed
 
-- Replace copied repository tooling with the pinned `go-library-tools` v1.0.13
-  contract while retaining package-owned policy and verification evidence.
+- Adopt the pinned `go-library-tools` v1.2.0 CLI and reusable workflow so CI
+  enforces specification decisions, conformance bindings, source monitoring,
+  and change control while retaining package-owned policy and verification
+  evidence.
 
 ### Documentation
 
