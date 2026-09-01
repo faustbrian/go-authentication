@@ -19,9 +19,9 @@ regexes = ['''^\s*-\s+(?:AUTH|JWT|OIDC)-DEC-[0-9]{3}\s+sha256:[0-9a-f]{64}\s*$''
 description = "Specification conformance matrices contain public Go test identifiers."
 targetRules = ["generic-api-key"]
 condition = "AND"
-regexTarget = "line"
+regexTarget = "match"
 paths = ['''^(?:jwt/|oidc/)?specification/README\.md$''']
-regexes = ['''Test[A-Za-z0-9_, ]+''']
+regexes = ['''^[A-Za-z0-9_]+(?:, Test[A-Za-z0-9_]+)*[ ]*$''']
 
 [[allowlists]]
 description = "The pinned public GitHub OpenAPI document contains example credentials."
