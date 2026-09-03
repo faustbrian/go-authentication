@@ -15,6 +15,10 @@ All notable changes to this module are documented here.
 
 - Link ecosystem and Service edge family guidance to the immutable v1.4.0
   documentation release.
+- Record the behavior-neutral review of reported RFC 9110 Erratum 9162 without
+  changing remote JWK authority or lifecycle decisions.
+- Record the behavior-neutral IANA JOSE registry representation refresh while
+  retaining the explicit supported-algorithm matrix.
 - Move detailed module guidance behind a concise README and documentation index.
 - Use human-oriented section names and package-owned documentation links.
 - Make the current [JWT specification decisions](docs/specification-decisions.md)

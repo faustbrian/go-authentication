@@ -29,6 +29,8 @@ this project follows Semantic Versioning.
 
 - Link the root and optional modules to the immutable v1.4.0 Golib ecosystem
   index and Service edge family guidance.
+- Record the behavior-neutral review of reported RFC 9110 Erratum 9162 while
+  retaining the package's duplicate-credential rejection policy.
 
 - Replace archived monorepo links with a package-owned documentation index.
 - Make the current [authentication specification decisions](docs/specification-decisions.md)

@@ -6,6 +6,12 @@ The final OpenID Connect Core 1.0 and Discovery 1.0 publications incorporating
 errata set 2 remain authoritative. Pinned fixtures and provider evidence are
 documented in [`../specification/`](../specification/README.md).
 
+## Authority review history
+
+| Reviewed | Authority movement | Monitoring digest | Disposition | Decision impact |
+| --- | --- | --- | --- | --- |
+| 2026-09-03 | RFC 9110 gained reported technical Erratum 9162 for Section 5.2, proposing that combined field-line values explicitly use a comma followed by a space. | `rfc9110-errata`: `38bd006c96f8963d58573f704c5313a5f81968b90738c03ade0b036ec7bbdf4b` to `1f6790054c0cdb2f2a70a94fa2b9c73b09a4ee0578a32b4a3006ed0ecfaac86d`. | Behavior-neutral. The erratum is reported, not verified, and does not alter the module's synchronous, bounded remote-refresh lifecycle. | `OIDC-DEC-011`, its conformance binding, and runtime behavior remain unchanged. |
+
 ## OIDC-DEC-001: Discovery is derived from and bound to one exact issuer
 
 | Field | Decision |

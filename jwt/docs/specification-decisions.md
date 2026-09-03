@@ -13,6 +13,13 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they
 appear in all capitals.
 
+## Authority review history
+
+| Reviewed | Authority movement | Monitoring digest | Disposition | Decision impact |
+| --- | --- | --- | --- | --- |
+| 2026-09-03 | The monitored IANA JOSE XHTML representation changed while the registry still reports `Last Updated` as 2026-05-22. | `iana-jose-source` and `iana-jose-updates`: `4b722bea60769de9b5b9fde98cdacdbc89b98d3aa75dee7f560a0828373b1442` to `b413f740ba386c199f50e5e97554b8b12ca3bcba1bef7aeab27ba64ba6ad52ab`. | Behavior-neutral. The current registry values do not change the module's explicit supported-algorithm matrix, and registry presence never opts an algorithm into the package. | `JWT-DEC-003`, its conformance binding, and runtime behavior remain unchanged. |
+| 2026-09-03 | RFC 9110 gained reported technical Erratum 9162 for Section 5.2, proposing that combined field-line values explicitly use a comma followed by a space. | `rfc9110-errata`: `38bd006c96f8963d58573f704c5313a5f81968b90738c03ade0b036ec7bbdf4b` to `1f6790054c0cdb2f2a70a94fa2b9c73b09a4ee0578a32b4a3006ed0ecfaac86d`. | Behavior-neutral. The erratum is reported, not verified, and does not alter the module's exact-authority or remote-resource lifecycle rules. | `JWT-DEC-009`, `JWT-DEC-011`, their conformance bindings, and runtime behavior remain unchanged. |
+
 ## JWT-DEC-001: Compact signed JWTs are the only accepted serialization
 
 | Field | Decision |
@@ -77,7 +84,7 @@ Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","
 
 Machine-auditable bindings: classification `interoperability policy`; decision scope `defensive`; specification `RFC 9864 Fully-Specified Algorithms for JOSE and COSE`; version `RFC 9864`; source authority `rfc9864-source` at `https://www.rfc-editor.org/rfc/rfc9864.txt`; requirement strength `not specified`; fuzz evidence `FuzzValidateSignedPayload`; fixture evidence `jwt/specification/manifest.tsv`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
 Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
-Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`, `{"id":"rfc7518-source","version":"RFC 7518","url":"https://www.rfc-editor.org/rfc/rfc7518.txt","specifications":["RFC 7518 JSON Web Algorithms"]}`, `{"id":"iana-jose-source","version":"observed-2026-08-30","url":"https://www.iana.org/assignments/jose/jose.xhtml","specifications":["IANA JSON Object Signing and Encryption Registry"]}`.
+Additional authoritative sources: `{"id":"rfc8725-source","version":"RFC 8725","url":"https://www.rfc-editor.org/rfc/rfc8725.txt","specifications":["RFC 8725 JSON Web Token Best Current Practices"]}`, `{"id":"rfc7518-source","version":"RFC 7518","url":"https://www.rfc-editor.org/rfc/rfc7518.txt","specifications":["RFC 7518 JSON Web Algorithms"]}`, `{"id":"iana-jose-source","version":"observed-2026-09-03","url":"https://www.iana.org/assignments/jose/jose.xhtml","specifications":["IANA JSON Object Signing and Encryption Registry"]}`.
 
 ## JWT-DEC-004: Verification keys require explicit identity, purpose, and strength
 
