@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## Unreleased
 
+### Changed
+
+- Publish schema-v2 cohesion metadata for the OpenTelemetry adapter and link
+  its consumer entry point to the immutable Golib ecosystem index.
+
 ### Documentation
 
 - Move detailed module guidance behind a concise README and documentation index.

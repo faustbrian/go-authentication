@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "repository": "github.com/faustbrian/go-authentication",
   "go_version": "1.26.6",
   "modules": [
@@ -101,6 +101,93 @@
       "family_label": "Service Edge",
       "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
       "family_order": 2,
+      "cohesion": {
+        "family": "service-edge",
+        "secondary_capabilities": [
+          "cryptography-and-secrets",
+          "http-and-service-edge",
+          "identity-and-access",
+          "observability",
+          "testing-and-conformance"
+        ],
+        "responsibility": "Turn Basic credentials, opaque bearer tokens, and API keys into immutable authenticated principals.",
+        "non_goals": [
+          "Decide whether an authenticated principal may perform an action.",
+          "Own application sessions, login flows, token issuance, or credential persistence."
+        ],
+        "public_package_identifier": "authentication",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-authentication"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-authentication": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
+          "github.com/faustbrian/go-authentication/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
+          "github.com/faustbrian/go-authentication/authhttp": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
+          "github.com/faustbrian/go-authentication/authlog": "Use to emit bounded secret-safe authentication observations through log/slog.",
+          "github.com/faustbrian/go-authentication/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
+          "github.com/faustbrian/go-authentication/basic": "Use for constant-work static Basic authentication.",
+          "github.com/faustbrian/go-authentication/bearer": "Use for opaque bearer-token validators and bounded static token sets."
+        },
+        "lifecycle_status": "active",
+        "maturity": "stable",
+        "construction_styles": [
+          "functional-options",
+          "validated-value"
+        ],
+        "lifecycle_styles": [
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "borrow",
+            "copy"
+          ],
+          "runtime_resources": "none",
+          "background_work": "none"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [
+          "github.com/faustbrian/go-authentication/authotel"
+        ],
+        "companions": [
+          "github.com/faustbrian/go-authentication/jwt",
+          "github.com/faustbrian/go-authentication/oidc"
+        ],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [],
+        "supported_protocols": [
+          "basic-authentication",
+          "bearer-token"
+        ],
+        "documentation": {
+          "readme": "README.md",
+          "api": "docs/api.md",
+          "adoption": "docs/adoption.md",
+          "security": "docs/security/threat-model.md",
+          "compatibility": "docs/compatibility.md",
+          "performance": "docs/performance.md",
+          "examples": "example_test.go",
+          "faq": "docs/faq.md",
+          "changelog": "CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "not-started",
+          "hardening": "not-started",
+          "release": "not-started"
+        }
+      },
       "version": "1.0.0",
       "tag_prefix": "v",
       "owned_dependencies": [
@@ -176,6 +263,76 @@
       "family_label": "Service Edge",
       "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
       "family_order": 2,
+      "cohesion": {
+        "family": "service-edge",
+        "secondary_capabilities": [
+          "identity-and-access",
+          "observability"
+        ],
+        "responsibility": "Adapt bounded authentication observations to OpenTelemetry traces and metrics.",
+        "non_goals": [
+          "Authenticate credentials or make authorization decisions.",
+          "Configure OpenTelemetry SDKs, exporters, providers, or global state."
+        ],
+        "public_package_identifier": "authotel",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-authentication/authotel"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-authentication/authotel": "Use when authentication outcomes must produce bounded OpenTelemetry traces and metrics through caller-owned providers."
+        },
+        "lifecycle_status": "active",
+        "maturity": "stable",
+        "construction_styles": [
+          "new-config"
+        ],
+        "lifecycle_styles": [
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "borrow"
+          ],
+          "runtime_resources": "caller",
+          "background_work": "none"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [],
+        "companions": [],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [
+          "opentelemetry"
+        ],
+        "supported_protocols": [],
+        "documentation": {
+          "readme": "authotel/README.md",
+          "api": "authotel/README.md",
+          "adoption": "authotel/README.md",
+          "security": "docs/security/threat-model.md",
+          "compatibility": "docs/compatibility.md",
+          "performance": null,
+          "examples": "authotel/example_test.go",
+          "faq": "docs/faq.md",
+          "changelog": "authotel/CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/authotel",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "not-started",
+          "hardening": "not-started",
+          "release": "not-started"
+        }
+      },
       "version": "1.0.0",
       "tag_prefix": "authotel/v",
       "owned_dependencies": [
@@ -240,6 +397,86 @@
       "family_label": "Service Edge",
       "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
       "family_order": 2,
+      "cohesion": {
+        "family": "service-edge",
+        "secondary_capabilities": [
+          "cryptography-and-secrets",
+          "identity-and-access",
+          "transport-and-networking"
+        ],
+        "responsibility": "Validate signed compact JWTs and operate bounded static or remote JWK sets at an authentication boundary.",
+        "non_goals": [
+          "Extract HTTP credentials, discover OpenID providers, issue tokens, manage sessions, or authorize principals.",
+          "Detach remote key retrieval from caller cancellation or hide remote-cache ownership."
+        ],
+        "public_package_identifier": "jwt",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-authentication/jwt"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-authentication/jwt": "Use for strict JWT and JWS validation with caller-selected algorithms, claims policy, and bounded static or remote JWK sets."
+        },
+        "lifecycle_status": "active",
+        "maturity": "stable",
+        "construction_styles": [
+          "functional-options",
+          "new-config"
+        ],
+        "lifecycle_styles": [
+          "close",
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "borrow",
+            "copy"
+          ],
+          "runtime_resources": "package",
+          "background_work": "package"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [],
+        "companions": [
+          "github.com/faustbrian/go-authentication/oidc"
+        ],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [
+          "remote-jwks"
+        ],
+        "supported_protocols": [
+          "json-web-key",
+          "json-web-signature",
+          "json-web-token"
+        ],
+        "documentation": {
+          "readme": "jwt/README.md",
+          "api": "jwt/docs/api.md",
+          "adoption": "jwt/docs/README.md",
+          "security": "jwt/docs/hardening.md",
+          "compatibility": "jwt/docs/reference.md",
+          "performance": "jwt/docs/reference.md",
+          "examples": "jwt/example_test.go",
+          "faq": "jwt/docs/README.md",
+          "changelog": "jwt/CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/jwt",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "not-started",
+          "hardening": "not-started",
+          "release": "not-started"
+        }
+      },
       "version": "1.0.0",
       "tag_prefix": "jwt/v",
       "owned_dependencies": [
@@ -322,6 +559,83 @@
       "family_label": "Service Edge",
       "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
       "family_order": 2,
+      "cohesion": {
+        "family": "service-edge",
+        "secondary_capabilities": [
+          "cryptography-and-secrets",
+          "identity-and-access",
+          "protocols-and-schemas",
+          "transport-and-networking"
+        ],
+        "responsibility": "Discover OpenID Providers and validate signed OpenID Connect ID tokens at the authentication trust boundary.",
+        "non_goals": [
+          "Own OAuth authorization flows, redirects, sessions, cookies, middleware, nonce storage, or authorization policy.",
+          "Run background provider discovery or key-refresh work outside caller-bounded operations."
+        ],
+        "public_package_identifier": "oidc",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-authentication/oidc"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-authentication/oidc": "Use for bounded OpenID Provider discovery and strict ID-token validation with explicit issuer, audience, nonce, and token-binding policy."
+        },
+        "lifecycle_status": "active",
+        "maturity": "stable",
+        "construction_styles": [
+          "new-config"
+        ],
+        "lifecycle_styles": [
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "borrow",
+            "copy"
+          ],
+          "runtime_resources": "package",
+          "background_work": "none"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [],
+        "companions": [
+          "github.com/faustbrian/go-authentication/jwt"
+        ],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [
+          "openid-provider"
+        ],
+        "supported_protocols": [
+          "openid-connect"
+        ],
+        "documentation": {
+          "readme": "oidc/README.md",
+          "api": "oidc/docs/reference.md",
+          "adoption": "oidc/docs/README.md",
+          "security": "oidc/docs/hardening.md",
+          "compatibility": "oidc/docs/reference.md",
+          "performance": "oidc/docs/reference.md",
+          "examples": "oidc/example_test.go",
+          "faq": "oidc/docs/README.md",
+          "changelog": "oidc/CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/oidc",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.3.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "not-started",
+          "hardening": "not-started",
+          "release": "not-started"
+        }
+      },
       "version": "1.0.0",
       "tag_prefix": "oidc/v",
       "owned_dependencies": [

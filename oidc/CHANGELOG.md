@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## Unreleased
 
+### Changed
+
+- Publish schema-v2 cohesion metadata for OIDC discovery and validation, with
+  an immutable Golib ecosystem-index entry point.
+
 ### Documentation
 
 - Move detailed module guidance behind a concise README and documentation index.
