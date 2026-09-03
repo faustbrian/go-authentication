@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at": "2026-08-30",
+  "reviewed_at": "2026-09-03",
   "review_interval_days": 90,
   "authorities": [
     {
@@ -138,7 +138,7 @@
       "kind": "errata",
       "version": "",
       "url": "https://errata.rfc-editor.org/search/?rfc_number=9110&presentation=records",
-      "sha256": "38bd006c96f8963d58573f704c5313a5f81968b90738c03ade0b036ec7bbdf4b",
+      "sha256": "1f6790054c0cdb2f2a70a94fa2b9c73b09a4ee0578a32b4a3006ed0ecfaac86d",
       "specifications": [
         "RFC 9110 HTTP Semantics"
       ]
@@ -186,9 +186,9 @@
     {
       "id": "iana-jose-source",
       "kind": "registry",
-      "version": "observed-2026-08-30",
+      "version": "observed-2026-09-03",
       "url": "https://www.iana.org/assignments/jose/jose.xhtml",
-      "sha256": "4b722bea60769de9b5b9fde98cdacdbc89b98d3aa75dee7f560a0828373b1442",
+      "sha256": "b413f740ba386c199f50e5e97554b8b12ca3bcba1bef7aeab27ba64ba6ad52ab",
       "specifications": [
         "IANA JSON Object Signing and Encryption Registry"
       ]
@@ -198,7 +198,7 @@
       "kind": "releases",
       "version": "",
       "url": "https://www.iana.org/assignments/jose/jose.xhtml",
-      "sha256": "4b722bea60769de9b5b9fde98cdacdbc89b98d3aa75dee7f560a0828373b1442",
+      "sha256": "b413f740ba386c199f50e5e97554b8b12ca3bcba1bef7aeab27ba64ba6ad52ab",
       "specifications": [
         "IANA JSON Object Signing and Encryption Registry"
       ]

@@ -7,6 +7,17 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Publish schema-v2 cohesion metadata for the root authentication module and
+  the optional OpenTelemetry, JWT, and OIDC modules.
+- Adopt the checksum-verified `go-library-tools` v1.3.0 CLI, expose the local
+  `make cohesion` gate, and pin reusable-workflow cohesion enforcement to its
+  final immutable revision.
+- Adopt the checksum-verified `go-library-tools` v1.4.0 W14 contract and
+  immutable workflow so public module identities are preferred over bootstrap
+  fallbacks.
+- Reconcile `go-clock` v1.0.0 with its public SumDB identity across the root
+  and optional modules.
+
 - Adopt the pinned `go-library-tools` v1.2.0 CLI and reusable workflow so CI
   enforces specification decisions, conformance bindings, source monitoring,
   and change control while retaining package-owned policy and verification
@@ -15,6 +26,11 @@ this project follows Semantic Versioning.
   failures in the broader repository gate.
 
 ### Documentation
+
+- Link the root and optional modules to the immutable v1.4.0 Golib ecosystem
+  index and Service edge family guidance.
+- Record the behavior-neutral review of reported RFC 9110 Erratum 9162 while
+  retaining the package's duplicate-credential rejection policy.
 
 - Replace archived monorepo links with a package-owned documentation index.
 - Make the current [authentication specification decisions](docs/specification-decisions.md)

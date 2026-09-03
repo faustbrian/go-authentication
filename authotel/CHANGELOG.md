@@ -4,8 +4,17 @@ All notable changes to this module are documented here.
 
 ## Unreleased
 
+### Changed
+
+- Publish schema-v2 cohesion metadata for the OpenTelemetry adapter and link
+  its consumer entry point to the immutable Golib ecosystem index.
+- Reconcile `go-authentication` and `go-clock` v1.0.0 with their public SumDB
+  identities and adopt the shared v1.4.0 W14 validation contract.
+
 ### Documentation
 
+- Link ecosystem and Service edge family guidance to the immutable v1.4.0
+  documentation release.
 - Move detailed module guidance behind a concise README and documentation index.
 - Use human-oriented section names and package-owned documentation links.
 
