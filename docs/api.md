@@ -21,6 +21,10 @@ checked in CI. Use `go doc` for signatures and contracts.
 - `oidc`: discovery/static-key config, validator, and nonce interface.
 - `authotel`: OpenTelemetry provider config and instrumenter.
 
+New instrumentation integrations implement `BeginInstrumenter.Begin` and use
+`NewInstrumentedWithBegin`. The released `Instrumenter.Start` and
+`NewInstrumented` contract remains available for v1 source compatibility.
+
 Challenge formatting is bounded by `MaxChallengeParameters`,
 `MaxChallengeSchemeBytes`, `MaxChallengeNameBytes`, and
 `MaxChallengeValueBytes`. OIDC remote policy is configured with

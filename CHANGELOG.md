@@ -5,7 +5,19 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.1.0]
+
 ### Changed
+
+- Add the preferred `BeginInstrumenter` observation contract and
+  `NewInstrumentedWithBegin` decorator while retaining the released
+  `Instrumenter.Start` contract and constructor for source compatibility.
+- State Go 1.26.6 as the exact supported toolchain floor.
+- Deprecate `Instrumenter` and `NewInstrumented` in favor of the Begin-named
+  contracts, and deprecate `authlog.Instrumenter.Start` in favor of `Begin`.
+  Add `Begin` with equivalent semantics and switch constructor and method
+  calls; the legacy APIs remain supported throughout v1 and may be removed no
+  earlier than v2.0.0.
 
 - Publish schema-v2 cohesion metadata for the root authentication module and
   the optional OpenTelemetry, JWT, and OIDC modules.
@@ -160,5 +172,6 @@ this project follows Semantic Versioning.
   enforce explicit parameter and field bounds.
 - Query credential constructors are deprecated for new designs.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.1.0
 [1.0.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.0.0
