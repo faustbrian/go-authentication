@@ -5,6 +5,8 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.1.0]
+
 ### Changed
 
 - Add the preferred `BeginInstrumenter` observation contract and

@@ -2,7 +2,7 @@
 
 ## Go and modules
 
-The supported floor is Go 1.26. The repository contains independent modules:
+The supported floor is Go 1.26.6. The repository contains independent modules:
 
 | Module | Runtime dependency policy |
 | --- | --- |
