@@ -22,7 +22,7 @@ graphs are opt-in.
 
 ## Requirements
 
-- Go 1.26 or newer.
+- Go 1.26.6 or newer.
 - `clock` v1 for deterministic time seams.
 - `jwt`: lestrrat-go/jwx v3.
 - `oidc`: coreos/go-oidc v3 and go-jose v4.

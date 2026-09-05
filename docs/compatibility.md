@@ -2,7 +2,7 @@
 
 ## Go and modules
 
-The supported floor is Go 1.26. The repository contains independent modules:
+The supported floor is Go 1.26.6. The repository contains independent modules:
 
 | Module | Runtime dependency policy |
 | --- | --- |
@@ -25,6 +25,10 @@ user-visible change even if Go signatures remain compatible.
 
 API baselines are maintained separately for the root and each optional module.
 Generated interfaces from dependencies are not part of this project’s API.
+
+The root `Instrumenter.Start` interface remains unchanged so existing
+implementers compile. New integrations implement `BeginInstrumenter.Begin` and
+use `NewInstrumentedWithBegin`.
 
 ## Protocol compatibility
 
