@@ -26,6 +26,10 @@ user-visible change even if Go signatures remain compatible.
 API baselines are maintained separately for the root and each optional module.
 Generated interfaces from dependencies are not part of this project’s API.
 
+The root `Instrumenter.Start` interface remains unchanged so existing
+implementers compile. New integrations implement `BeginInstrumenter.Begin` and
+use `NewInstrumentedWithBegin`.
+
 ## Protocol compatibility
 
 Basic follows RFC 7617 extraction shape without negotiating a charset. Bearer

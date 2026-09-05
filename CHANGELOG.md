@@ -7,6 +7,10 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Add the preferred `BeginInstrumenter` observation contract and
+  `NewInstrumentedWithBegin` decorator while retaining the released
+  `Instrumenter.Start` contract and constructor for source compatibility.
+
 - Publish schema-v2 cohesion metadata for the root authentication module and
   the optional OpenTelemetry, JWT, and OIDC modules.
 - Adopt the checksum-verified `go-library-tools` v1.3.0 CLI, expose the local

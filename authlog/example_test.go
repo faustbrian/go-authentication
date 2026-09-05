@@ -20,7 +20,7 @@ func ExampleNew() {
 		},
 	})
 	instrumenter, _ := authlog.New(slog.New(handler))
-	_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated, Duration: time.Millisecond})
 	// Output: {"level":"INFO","msg":"authentication completed","credential_kind":"bearer","outcome":"authenticated","failure_kind":"","duration_ms":1}
 }

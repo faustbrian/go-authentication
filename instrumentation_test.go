@@ -16,6 +16,123 @@ func (f instrumenterFunc) Start(ctx context.Context, kind authentication.Credent
 	return f(ctx, kind)
 }
 
+type beginInstrumenterFunc func(context.Context, authentication.CredentialKind) (context.Context, func(authentication.Event))
+
+func (f beginInstrumenterFunc) Begin(ctx context.Context, kind authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+	return f(ctx, kind)
+}
+
+func TestInstrumentedAuthenticatorUsesBeginWithoutRequiringLegacyStart(t *testing.T) {
+	t.Parallel()
+
+	result := authtest.Result(t, authentication.PrincipalSpec{Subject: "service", Method: "bearer"})
+	var began bool
+	var event authentication.Event
+	authenticator, err := authentication.NewInstrumentedWithBegin(
+		authenticatorFunc(func(ctx context.Context, _ authentication.Credential) (authentication.Result, error) {
+			if got := ctx.Value(instrumentationContextKey{}); got != "begun" {
+				t.Fatalf("instrumented context = %v, want begun", got)
+			}
+			return result, nil
+		}),
+		beginInstrumenterFunc(func(ctx context.Context, kind authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+			began = kind == authentication.CredentialBearer
+			return context.WithValue(ctx, instrumentationContextKey{}, "begun"), func(got authentication.Event) { event = got }
+		}),
+		authtest.NewClock(authtest.Epoch),
+	)
+	if err != nil {
+		t.Fatalf("NewInstrumentedWithBegin() error = %v", err)
+	}
+
+	if _, err := authenticator.Authenticate(context.Background(), authentication.NewBearerCredential("secret-token")); err != nil {
+		t.Fatalf("Authenticate() error = %v", err)
+	}
+	if !began || event.Outcome != authentication.OutcomeAuthenticated {
+		t.Fatalf("Begin() = began %v, event %#v", began, event)
+	}
+}
+
+func TestLegacyStartOnlyInstrumenterRemainsAccepted(t *testing.T) {
+	t.Parallel()
+
+	instrumenter := instrumenterFunc(func(ctx context.Context, _ authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+		return ctx, func(authentication.Event) {}
+	})
+	var _ authentication.Instrumenter = instrumenter
+	if _, err := authentication.NewInstrumented(
+		authenticatorFunc(func(context.Context, authentication.Credential) (authentication.Result, error) {
+			return authentication.AnonymousResult(), nil
+		}),
+		instrumenter,
+		authtest.NewClock(authtest.Epoch),
+	); err != nil {
+		t.Fatalf("NewInstrumented() error = %v", err)
+	}
+}
+
+func TestBeginInstrumentationCannotBreakAuthentication(t *testing.T) {
+	t.Parallel()
+
+	result := authtest.Result(t, authentication.PrincipalSpec{Subject: "service", Method: "bearer"})
+	tests := []struct {
+		name         string
+		instrumenter authentication.BeginInstrumenter
+	}{
+		{name: "begin panic", instrumenter: beginInstrumenterFunc(func(context.Context, authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+			panic("instrumentation failed")
+		})},
+		{name: "finish panic", instrumenter: beginInstrumenterFunc(func(ctx context.Context, _ authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+			return ctx, func(authentication.Event) { panic("instrumentation failed") }
+		})},
+		{name: "nil context and finish", instrumenter: beginInstrumenterFunc(func(context.Context, authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+			return nil, nil
+		})},
+	}
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			authenticator, err := authentication.NewInstrumentedWithBegin(
+				authenticatorFunc(func(context.Context, authentication.Credential) (authentication.Result, error) { return result, nil }),
+				test.instrumenter,
+				authtest.NewClock(authtest.Epoch),
+			)
+			if err != nil {
+				t.Fatalf("NewInstrumentedWithBegin() error = %v", err)
+			}
+			if _, err := authenticator.Authenticate(context.Background(), authentication.NewBearerCredential("token")); err != nil {
+				t.Fatalf("Authenticate() error = %v", err)
+			}
+		})
+	}
+}
+
+func TestNewInstrumentedWithBeginRejectsInvalidConfiguration(t *testing.T) {
+	t.Parallel()
+
+	authenticator := authenticatorFunc(func(context.Context, authentication.Credential) (authentication.Result, error) {
+		return authentication.Result{}, nil
+	})
+	instrumenter := beginInstrumenterFunc(func(ctx context.Context, _ authentication.CredentialKind) (context.Context, func(authentication.Event)) {
+		return ctx, func(authentication.Event) {}
+	})
+	clock := authtest.NewClock(authtest.Epoch)
+	if _, err := authentication.NewInstrumentedWithBegin(nil, instrumenter, clock); !errors.Is(err, authentication.ErrInvalidConfiguration) {
+		t.Fatalf("NewInstrumentedWithBegin(nil authenticator) error = %v", err)
+	}
+	if _, err := authentication.NewInstrumentedWithBegin(authenticator, nil, clock); !errors.Is(err, authentication.ErrInvalidConfiguration) {
+		t.Fatalf("NewInstrumentedWithBegin(nil instrumenter) error = %v", err)
+	}
+	if _, err := authentication.NewInstrumentedWithBegin(authenticator, instrumenter, nil); !errors.Is(err, authentication.ErrInvalidConfiguration) {
+		t.Fatalf("NewInstrumentedWithBegin(nil clock) error = %v", err)
+	}
+	var typedNil beginInstrumenterFunc
+	if _, err := authentication.NewInstrumentedWithBegin(authenticator, typedNil, clock); !errors.Is(err, authentication.ErrInvalidConfiguration) {
+		t.Fatalf("NewInstrumentedWithBegin(typed nil instrumenter) error = %v", err)
+	}
+}
+
 func TestInstrumentedAuthenticatorReportsBoundedOutcomeMetadata(t *testing.T) {
 	t.Parallel()
 
@@ -134,6 +251,10 @@ func TestInstrumentedRejectsInvalidConfiguration(t *testing.T) {
 	}
 	if _, err := authentication.NewInstrumented(authenticator, nil, authtest.NewClock(authtest.Epoch)); !errors.Is(err, authentication.ErrInvalidConfiguration) {
 		t.Fatalf("NewInstrumented(nil instrumenter) error = %v", err)
+	}
+	var typedNilInstrumenter instrumenterFunc
+	if _, err := authentication.NewInstrumented(authenticator, typedNilInstrumenter, authtest.NewClock(authtest.Epoch)); !errors.Is(err, authentication.ErrInvalidConfiguration) {
+		t.Fatalf("NewInstrumented(typed nil instrumenter) error = %v", err)
 	}
 	if _, err := authentication.NewInstrumented(authenticator, instrumenter, nil); !errors.Is(err, authentication.ErrInvalidConfiguration) {
 		t.Fatalf("NewInstrumented(nil clock) error = %v", err)
