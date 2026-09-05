@@ -39,7 +39,9 @@ func (i *Instrumenter) Begin(
 
 // Start implements the legacy authentication.Instrumenter contract.
 //
-// Deprecated: use Begin in new code.
+// Deprecated: use Begin. It matches the preferred observation vocabulary.
+// Migrate callers by replacing Start with Begin. Start remains supported
+// throughout v1; its earliest removal is v2.0.0.
 func (i *Instrumenter) Start(
 	ctx context.Context,
 	kind authentication.CredentialKind,

@@ -35,8 +35,11 @@ type BeginInstrumenter interface {
 // Instrumenter starts instrumentation for one authentication attempt.
 // Implementations must not derive attributes from credential contents.
 //
-// Deprecated: implement BeginInstrumenter and use NewInstrumentedWithBegin in
-// new code. Start remains available throughout the v1 compatibility interval.
+// Deprecated: implement BeginInstrumenter and use NewInstrumentedWithBegin.
+// Begin aligns observation naming without adding a method to this released
+// required interface. Migrate by adding Begin with the same semantics and
+// switching constructor calls. Instrumenter remains supported throughout v1;
+// its earliest removal is v2.0.0.
 type Instrumenter interface {
 	Start(context.Context, CredentialKind) (context.Context, func(Event))
 }
@@ -59,7 +62,11 @@ type Instrumented struct {
 // NewInstrumented creates an authentication instrumentation decorator for the
 // legacy Start-named observation contract.
 //
-// Deprecated: use NewInstrumentedWithBegin in new code.
+// Deprecated: use NewInstrumentedWithBegin. It accepts the preferred
+// Begin-named contract without expanding the released Instrumenter interface.
+// Migrate by supplying a BeginInstrumenter and changing the constructor call.
+// NewInstrumented remains supported throughout v1; its earliest removal is
+// v2.0.0.
 func NewInstrumented(authenticator Authenticator, instrumenter Instrumenter, clock Clock) (*Instrumented, error) {
 	if isNil(instrumenter) {
 		return nil, fmt.Errorf("%w: incomplete instrumentation", ErrInvalidConfiguration)
