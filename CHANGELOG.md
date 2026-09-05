@@ -12,6 +12,7 @@ this project follows Semantic Versioning.
 - Add the preferred `BeginInstrumenter` observation contract and
   `NewInstrumentedWithBegin` decorator while retaining the released
   `Instrumenter.Start` contract and constructor for source compatibility.
+- State Go 1.26.6 as the exact supported toolchain floor.
 
 - Publish schema-v2 cohesion metadata for the root authentication module and
   the optional OpenTelemetry, JWT, and OIDC modules.
