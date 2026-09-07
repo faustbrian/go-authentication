@@ -502,6 +502,37 @@ func TestRemoteLifecycleRejectsClosedAndCanceledOperations(t *testing.T) {
 	}
 }
 
+func TestRemoteShutdownOwnsCompleteBoundedCleanup(t *testing.T) {
+	t.Parallel()
+
+	keys, _ := rsaKeys(t, "key", jwa.RS256())
+	server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, _ *http.Request) {
+		_, _ = writer.Write(marshalJWKSet(t, keys))
+	}))
+	t.Cleanup(server.Close)
+	remote, err := authjwt.NewRemote(context.Background(), server.URL,
+		authjwt.WithInsecureHTTP(), authjwt.WithHTTPClient(server.Client()),
+	)
+	if err != nil {
+		t.Fatalf("NewRemote() error = %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	if err := remote.Shutdown(ctx); err != nil {
+		t.Fatalf("Shutdown() error = %v", err)
+	}
+	if err := remote.Shutdown(ctx); err != nil {
+		t.Fatalf("Shutdown(second) error = %v", err)
+	}
+	if _, err := remote.KeySet(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
+		t.Fatalf("KeySet(after shutdown) error = %v", err)
+	}
+	if err := remote.Close(ctx); err != nil {
+		t.Fatalf("Close(after shutdown) error = %v", err)
+	}
+}
+
 func TestRemoteRegistrationIsInitializationBounded(t *testing.T) {
 	t.Parallel()
 
@@ -546,7 +577,7 @@ func TestRemoteReportsCacheStartupCancellation(t *testing.T) {
 	}
 }
 
-func TestRemoteCloseReportsCanceledJoin(t *testing.T) {
+func TestRemoteShutdownReportsCanceledJoin(t *testing.T) {
 	t.Parallel()
 
 	keys, _ := rsaKeys(t, "key", jwa.RS256())
@@ -562,21 +593,21 @@ func TestRemoteCloseReportsCanceledJoin(t *testing.T) {
 	}
 	canceled, cancel := context.WithCancel(context.Background())
 	cancel()
-	if err := remote.Close(canceled); !errors.Is(err, context.Canceled) {
-		t.Fatalf("Close(canceled) error = %v", err)
+	if err := remote.Shutdown(canceled); !errors.Is(err, context.Canceled) {
+		t.Fatalf("Shutdown(canceled) error = %v", err)
 	}
 	if _, err := remote.KeySet(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
-		t.Fatalf("KeySet(after canceled close) error = %v", err)
+		t.Fatalf("KeySet(after canceled shutdown) error = %v", err)
 	}
 	if err := remote.Refresh(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
-		t.Fatalf("Refresh(after canceled close) error = %v", err)
+		t.Fatalf("Refresh(after canceled shutdown) error = %v", err)
 	}
 	if err := closeRemote(t, remote); err != nil {
 		t.Fatalf("Close(cleanup) error = %v", err)
 	}
 }
 
-func TestRemoteCloseDeadlineIsNotBlockedByRefreshLock(t *testing.T) {
+func TestRemoteShutdownDeadlineIsNotBlockedByRefreshLock(t *testing.T) {
 	t.Parallel()
 
 	keys, _ := rsaKeys(t, "key", jwa.RS256())
@@ -615,23 +646,23 @@ func TestRemoteCloseDeadlineIsNotBlockedByRefreshLock(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 25*time.Millisecond)
 	defer cancel()
-	closeDone := make(chan error, 1)
-	closeStarted := make(chan struct{})
+	shutdownDone := make(chan error, 1)
+	shutdownStarted := make(chan struct{})
 	go func() {
-		close(closeStarted)
-		closeDone <- remote.Close(ctx)
+		close(shutdownStarted)
+		shutdownDone <- remote.Shutdown(ctx)
 	}()
-	waitForRemoteSignal(t, closeStarted, "close call")
+	waitForRemoteSignal(t, shutdownStarted, "shutdown call")
 	select {
-	case err := <-closeDone:
+	case err := <-shutdownDone:
 		if err != nil && !errors.Is(err, context.DeadlineExceeded) {
-			t.Fatalf("Close() error = %v", err)
+			t.Fatalf("Shutdown() error = %v", err)
 		}
 	case <-time.After(2 * time.Second):
 		releaseOnce.Do(func() { close(release) })
 		waitForRemoteSignal(t, refreshDone, "refresh cleanup")
-		err := <-closeDone
-		t.Fatalf("Close() ignored deadline while waiting for refresh: %v", err)
+		err := <-shutdownDone
+		t.Fatalf("Shutdown() ignored deadline while waiting for refresh: %v", err)
 	}
 	releaseOnce.Do(func() { close(release) })
 	waitForRemoteSignal(t, refreshDone, "refresh completion")
@@ -689,7 +720,7 @@ func TestRemoteFailureRedactsEndpointQueryAndTransportError(t *testing.T) {
 	}
 }
 
-func TestRemoteLifetimeIsOwnedByClose(t *testing.T) {
+func TestRemoteLifetimeIsOwnedByShutdown(t *testing.T) {
 	t.Parallel()
 
 	keys, _ := rsaKeys(t, "key", jwa.RS256())
@@ -709,8 +740,10 @@ func TestRemoteLifetimeIsOwnedByClose(t *testing.T) {
 	if _, err := remote.KeySet(context.Background()); err != nil {
 		t.Fatalf("KeySet(after constructor cancellation) error = %v", err)
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close() error = %v", err)
+	ctx, shutdownCancel := context.WithTimeout(context.Background(), time.Second)
+	defer shutdownCancel()
+	if err := remote.Shutdown(ctx); err != nil {
+		t.Fatalf("Shutdown() error = %v", err)
 	}
 }
 

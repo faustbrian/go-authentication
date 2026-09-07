@@ -115,7 +115,7 @@ A successful refresh atomically replaces the cached set. A failed refresh
 returns `ErrAuthenticationUnavailable` and retains the last successful set.
 That fail-stale policy preserves validation for already-known keys during an
 issuer outage; it never accepts an unknown key. Applications that require
-fail-closed freshness must stop using or close the provider after their own
+fail-closed freshness must stop using or shut down the provider after their own
 freshness deadline.
 
 `Remote` is safe for concurrent validation and refresh. Automatic and explicit
@@ -123,12 +123,16 @@ refreshes use the same hardened client and never overlap remote work;
 overlapping explicit refreshes share one in-process result. Returned sets are
 deep copies. Canceling a refresh waiter stops that caller waiting. The remote
 request admitted by the cache continues under the provider lifecycle until it
-finishes or `Close` cancels the provider. Canceling the context passed to a
-successful `NewRemote` does not close the provider. Once `Close` begins, new
+finishes or `Shutdown` cancels the provider. Canceling the context passed to a
+successful `NewRemote` does not shut down the provider. Once `Shutdown` begins, new
 work remains rejected. It cancels in-flight provider operations, waits for them
-to leave the provider, and shuts down cache-owned goroutines. A canceled close
+to leave the provider, and shuts down cache-owned goroutines. A canceled shutdown
 stops that caller waiting and reports the context error; if shutdown did not finish, a later
-`Close` may retry. The caller that creates a `Remote` owns it and must close it.
+`Shutdown` may retry. A concurrent caller with a live context continues any
+cleanup left incomplete by the earlier caller rather than inheriting that
+caller's context error. The caller that creates a `Remote` owns it and must
+shut it down. Deprecated `Close(ctx)` delegates to `Shutdown(ctx)` with
+identical behavior.
 
 ## Results and errors
 

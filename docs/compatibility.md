@@ -9,7 +9,8 @@ The supported floor is Go 1.26.6. The repository contains independent modules:
 | root | Standard library only |
 | `/jwt` | JWX v3 and its owned HTTP resource cache |
 | `/oidc` | coreos/go-oidc v3 and go-jose v4 |
-| `/authotel` | Stable OpenTelemetry API; SDK only in tests |
+| `/adapters/otel` | Preferred OpenTelemetry API adapter; SDK only in tests |
+| `/authotel` | Deprecated compatible path retaining its original telemetry scope |
 
 CI tests the minimum Go line and stable Go. Optional-module matrices test their
 declared dependency versions and the latest compatible minor versions without
@@ -28,7 +29,13 @@ Generated interfaces from dependencies are not part of this project’s API.
 
 The root `Instrumenter.Start` interface remains unchanged so existing
 implementers compile. New integrations implement `BeginInstrumenter.Begin` and
-use `NewInstrumentedWithBegin`.
+use `NewInstrumentedWithBegin`. JWT `Remote.Close(ctx)` remains available and
+delegates to the preferred `Remote.Shutdown(ctx)` lifecycle name.
+
+Deprecated paths remain supported for the longer of 180 days and two
+published stable minor releases of the old path after the replacement is
+publicly consumable. Removal additionally requires migrated owned consumers,
+clean external-consumer evidence, and an authorized next-major release.
 
 ## Protocol compatibility
 

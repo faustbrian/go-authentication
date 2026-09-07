@@ -5,7 +5,15 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
-## [1.1.0]
+### Changed
+
+- Publish `adapters/otel` as the target-oriented OpenTelemetry successor and
+  retain `authotel` as a deprecated compatibility path with its original
+  instrumentation scope.
+- Adopt the checksum-verified `go-library-tools` v1.5.6 contract and its
+  exact-module release-rehearsal selector.
+
+## [1.1.0] - 2026-09-06
 
 ### Changed
 

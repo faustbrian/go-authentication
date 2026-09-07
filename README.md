@@ -26,7 +26,7 @@ graphs are opt-in.
 - `clock` v1 for deterministic time seams.
 - `jwt`: lestrrat-go/jwx v3.
 - `oidc`: coreos/go-oidc v3 and go-jose v4.
-- `authotel`: OpenTelemetry API v1.44.
+- `adapters/otel`: OpenTelemetry API v1.44.
 
 ## Install
 
@@ -39,7 +39,7 @@ Add an optional module only when needed:
 ```sh
 go get github.com/faustbrian/go-authentication/jwt
 go get github.com/faustbrian/go-authentication/oidc
-go get github.com/faustbrian/go-authentication/authotel
+go get github.com/faustbrian/go-authentication/adapters/otel
 ```
 
 ## Five-minute quickstart
@@ -97,7 +97,8 @@ it deliberately performs no role, permission, ownership, or policy checks.
 | `authtest` | Deterministic principals, clocks, authenticators, HTTP fixtures, assertions |
 | `jwt` | Optional strict JWT/JWK validation and owned remote cache |
 | `oidc` | Optional OIDC discovery and ID-token validation without background refresh |
-| `authotel` | Optional OpenTelemetry traces and bounded metrics |
+| `adapters/otel` | Preferred optional OpenTelemetry traces and bounded metrics |
+| `authotel` | Deprecated compatible path retaining its original telemetry scope |
 
 ## Security defaults
 

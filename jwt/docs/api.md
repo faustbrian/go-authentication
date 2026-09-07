@@ -33,7 +33,7 @@ for each validation attempt.
 
 `NewRemote` completes successful initialization with exactly one bounded fetch,
 starts a provider-owned cache, and returns a `KeyProvider`. The caller must
-call `Close`.
+call `Shutdown`.
 
 - `WithHTTPClient` supplies the transport policy. The client is shallow-copied
   and then hardened with no redirects, no compression, exact-URL access, and
@@ -52,9 +52,11 @@ At most 128 concurrent provider operations are admitted.
 `KeySet` returns a deep copy of the current cached set. `Refresh` requests a
 synchronous refresh; overlapping explicit refreshes share a result and all
 automatic and explicit HTTP work is serialized. Caller cancellation stops
-waiting. Once `Close` begins, it permanently rejects new operations, cancels
-admitted operations, joins them, and shuts down cache work. A canceled close
-may be retried.
+waiting. Once `Shutdown` begins, it permanently rejects new operations, cancels
+admitted operations, joins them, and shuts down cache work. A canceled shutdown
+may be retried. Concurrent callers use their own contexts; a waiter whose
+context remains live continues any cleanup left incomplete by an earlier
+canceled attempt.
 
 ## Errors
 

@@ -6,10 +6,13 @@ All notable changes to this module are documented here.
 
 ### Changed
 
+- Add `Remote.Shutdown(ctx)` as the preferred complete bounded cleanup method;
+  retain deprecated `Close(ctx)` as an equivalent compatibility delegation.
+
 - Publish schema-v2 cohesion metadata for JWT validation and remote JWK cache
   ownership, with an immutable Golib ecosystem-index entry point.
 - Reconcile `go-authentication` and `go-clock` v1.0.0 with their public SumDB
-  identities and adopt the shared v1.4.0 W14 validation contract.
+  identities and adopt the shared v1.5.6 validation contract.
 
 ### Documentation
 
@@ -43,6 +46,7 @@ All notable changes to this module are documented here.
 - JWT-DEC-009 sha256:ab5495c596db42bf31c283a6fbb43fa2bfbafb77a5e1574bc4f8a0c47c00f3f9
 - JWT-DEC-010 sha256:01dd4afda845e628c1323922793cfc05adf8ea1ccb73f0cd89a3b364a400ac6c
 - JWT-DEC-011 sha256:de8687c3208a013ccf524091f08a6b87491c9982c4457da7e5de4cedddae7ce4
+- JWT-DEC-011 sha256:8c24d0062d394b4b5599595fd64979a6da28659c2202fa1bdceec591ae3a76b0
 - JWT-DEC-012 sha256:b1618ad8d71a7d46b12e2df0c8d52b001baa3abbaf7c08de7ff2cf5f48abe48c
 - JWT-DEC-013 sha256:e615831f9bf926e4ca9e65d51e1164f2b372ff5a042c678fd194b5368b00ef47
 

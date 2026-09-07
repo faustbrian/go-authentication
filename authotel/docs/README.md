@@ -1,5 +1,8 @@
 # Documentation
 
+This module is the deprecated compatibility path. New code should use
+[`adapters/otel`](../../adapters/otel/docs/README.md).
+
 ## Getting started
 
 - [Package overview](../README.md)

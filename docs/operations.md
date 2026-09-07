@@ -10,7 +10,7 @@ fails. OIDC discovery also fails startup when metadata or its JWK URL is unsafe.
 ## Runtime
 
 Monitor bounded `credential_kind`, `outcome`, `failure_kind`, and duration
-attributes through `authlog` or `authotel`. A rise in rejected failures often
+attributes through `authlog` or `adapters/otel`. A rise in rejected failures often
 means expiration or rotation drift; unavailable failures mean a verifier,
 network, issuer, or cache problem. Do not add subject, token, claim, key,
 header, URL query, or cookie values to metrics or traces.
@@ -36,9 +36,9 @@ unavailable failures and on a rotation that never transitions to the new ID.
 
 ## Shutdown
 
-Call `jwt.Remote.Close` with a bounded shutdown context. It cancels and joins
+Call `jwt.Remote.Shutdown` with a bounded shutdown context. It cancels and joins
 cache-owned goroutines, cancels and drains admitted refreshes, rejects new
-operations after closing begins, and is repeatable. OIDC starts no background
+operations after shutdown begins, and is repeatable. OIDC starts no background
 goroutines.
 The logging and telemetry adapters own no lifecycle; shut down their parent
 `log` or `telemetry` runtime separately.

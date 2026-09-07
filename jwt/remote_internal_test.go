@@ -21,13 +21,6 @@ import (
 )
 
 func TestConcurrentCloseStateHonorsCompletionAndCancellation(t *testing.T) {
-	completed := &Remote{closing: true, closeDone: make(chan struct{})}
-	completed.closeErr = errors.New("shutdown failed")
-	close(completed.closeDone)
-	if err := completed.Close(context.Background()); err != completed.closeErr {
-		t.Fatalf("Close(completed) error = %v", err)
-	}
-
 	waiting := &Remote{closing: true, closeDone: make(chan struct{})}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -35,13 +28,19 @@ func TestConcurrentCloseStateHonorsCompletionAndCancellation(t *testing.T) {
 		t.Fatalf("Close(canceled waiter) error = %v", err)
 	}
 
-	closed := &Remote{closed: true}
-	if err := closed.closeResult(); err != nil {
-		t.Fatalf("closeResult(closed) error = %v", err)
-	}
-	failed := &Remote{closeErr: context.DeadlineExceeded}
-	if err := failed.closeResult(); !errors.Is(err, context.DeadlineExceeded) {
-		t.Fatalf("closeResult(failed) error = %v", err)
+	completed := &Remote{closing: true, closeDone: make(chan struct{})}
+	close(completed.closeDone)
+	completedResult := make(chan error, 1)
+	go func() {
+		completedResult <- completed.Close(completedCanceledContext{Context: context.Background()})
+	}()
+	select {
+	case err := <-completedResult:
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("Close(completed waiter with canceled context) error = %v", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Close ignored cancellation after the active closer completed")
 	}
 
 	busy := &Remote{operations: map[uint64]context.CancelFunc{1: func() {}}}
@@ -50,6 +49,109 @@ func TestConcurrentCloseStateHonorsCompletionAndCancellation(t *testing.T) {
 	<-deadline.Done()
 	if err := busy.Close(deadline); !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("Close(active operation deadline) error = %v", err)
+	}
+}
+
+type completedCanceledContext struct {
+	context.Context
+}
+
+func (completedCanceledContext) Done() <-chan struct{} {
+	return nil
+}
+
+func (completedCanceledContext) Err() error {
+	return context.Canceled
+}
+
+func TestRemoteConcurrentShutdownCallerContinuesCleanupAfterPriorCallerCancellation(t *testing.T) {
+	cache, err := jwk.NewCache(context.Background(), httprc.NewClient())
+	if err != nil {
+		t.Fatalf("NewCache() error = %v", err)
+	}
+	t.Cleanup(func() { _ = cache.Shutdown(context.Background()) })
+	cancellations := make(chan struct{}, 4)
+	remote := &Remote{
+		cache: cache,
+		operations: map[uint64]context.CancelFunc{
+			1: func() { cancellations <- struct{}{} },
+		},
+	}
+
+	firstContext, cancelFirst := context.WithCancel(context.Background())
+	firstDone := make(chan error, 1)
+	go func() { firstDone <- remote.Shutdown(firstContext) }()
+	select {
+	case <-cancellations:
+	case <-time.After(time.Second):
+		t.Fatal("first Shutdown did not begin cleanup")
+	}
+
+	secondWaiting := make(chan struct{}, 1)
+	secondDone := make(chan error, 1)
+	go func() {
+		secondDone <- remote.Shutdown(observedDoneContext{
+			Context: context.Background(), observed: secondWaiting,
+		})
+	}()
+	select {
+	case <-secondWaiting:
+	case <-time.After(time.Second):
+		t.Fatal("second Shutdown did not wait for the active caller")
+	}
+
+	cancelFirst()
+	if err := <-firstDone; !errors.Is(err, context.Canceled) {
+		t.Fatalf("first Shutdown error = %v", err)
+	}
+	select {
+	case <-cancellations:
+	case err := <-secondDone:
+		t.Fatalf("second Shutdown returned before continuing cleanup: %v", err)
+	case <-time.After(time.Second):
+		t.Fatal("second Shutdown did not continue cleanup")
+	}
+
+	remote.endOperation(1)
+	select {
+	case err := <-secondDone:
+		if err != nil {
+			t.Fatalf("second Shutdown error = %v", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("second Shutdown did not finish after the final operation ended")
+	}
+}
+
+type observedDoneContext struct {
+	context.Context
+	observed chan<- struct{}
+}
+
+func (ctx observedDoneContext) Done() <-chan struct{} {
+	select {
+	case ctx.observed <- struct{}{}:
+	default:
+	}
+	return ctx.Context.Done()
+}
+
+func TestRemoteShutdownCanceledCallerDoesNotLoseRaceToCompletedCache(t *testing.T) {
+	cache, err := jwk.NewCache(context.Background(), httprc.NewClient())
+	if err != nil {
+		t.Fatalf("NewCache() error = %v", err)
+	}
+	if err := cache.Shutdown(context.Background()); err != nil {
+		t.Fatalf("Cache.Shutdown() error = %v", err)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	for range 64 {
+		remote := &Remote{cache: cache}
+		if err := remote.Shutdown(ctx); !errors.Is(err, context.Canceled) {
+			t.Fatalf("Shutdown(canceled caller, completed cache) error = %v", err)
+		}
 	}
 }
 

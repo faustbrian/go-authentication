@@ -1,8 +1,6 @@
 // Package authotel adapts authentication instrumentation to bounded,
 // payload-free OpenTelemetry traces and metrics. Providers and their lifecycle
 // remain caller-owned; the package does not use global providers.
-//
-// Deprecated: use github.com/faustbrian/go-authentication/adapters/otel.
 package authotel
 
 import (
@@ -18,7 +16,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-const instrumentationName = "github.com/faustbrian/go-authentication/authotel"
+const instrumentationName = "github.com/faustbrian/go-authentication/adapters/otel"
 
 // Config supplies caller-owned providers. Both providers are required and
 // their synchronous construction and recording operations must be bounded.

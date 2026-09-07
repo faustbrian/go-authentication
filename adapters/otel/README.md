@@ -1,35 +1,24 @@
-# authotel
+# authentication OpenTelemetry adapter
 
-`authotel` is the deprecated compatibility path for the preferred
-[`adapters/otel`](https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel)
-OpenTelemetry adapter for
+`adapters/otel` is the preferred optional OpenTelemetry adapter for
 [`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication).
 It turns completed authentication attempts into bounded traces and metrics. It
 does not authenticate credentials, make authorization decisions, configure an
 SDK, or own exporters.
 
-This module retains its original instrumentation scope and behavior. The new
-module is intentionally separate so applications remaining on this path do not
-receive a silent telemetry-scope rename.
+## Requirements
 
-It is a stable v1 compatibility module with deprecated lifecycle status. It
-supports Go 1.26.6 or newer on portable Go platforms and requires explicit
-caller-owned OpenTelemetry tracer and meter providers.
+- Go 1.26.6 or newer.
+- Portable Go; no operating-system service is required.
+- Explicit caller-owned OpenTelemetry tracer and meter providers.
+
+The module is a stable, independently releasable adapter. It is safe for
+concurrent use and owns no goroutine, exporter, provider, or shutdown work.
 
 ## Install
 
-New code should install the successor:
-
 ```sh
 go get github.com/faustbrian/go-authentication/adapters/otel@v1
-```
-
-The released path remains supported for the longer of 180 days and two
-published stable minor releases after the successor is publicly consumable,
-and removal requires an authorized next-major release:
-
-```sh
-go get github.com/faustbrian/go-authentication/authotel@v1
 ```
 
 ## Quick start
@@ -55,9 +44,12 @@ The [compiling example](example_test.go) contains complete imports and setup.
 ## Package map and selection
 
 The module contains one package, whose default import identifier is `authotel`.
-Use it only to preserve the released import path and telemetry scope while
-migrating. New integrations should use `adapters/otel`. Neither path configures
-an SDK, authenticates credentials, authorizes principals, or owns providers.
+Use it when bounded authentication outcomes must become OpenTelemetry signals.
+Do not use it to configure an SDK, authenticate credentials, authorize a
+principal, or attach identity and credential contents to telemetry.
+
+Applications that do not need OpenTelemetry should not construct this adapter.
+No global or no-op provider is selected implicitly.
 
 ## Guarantees and limitations
 
@@ -69,15 +61,25 @@ additional guarantees beyond the documented module boundary.
 
 - [Documentation index](docs/README.md)
 - [Complete technical guide](docs/reference.md)
-- [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/authotel)
+- [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel)
 - [FAQ and troubleshooting](docs/reference.md#faq-and-troubleshooting)
 - [Testing helpers](https://pkg.go.dev/github.com/faustbrian/go-authentication/authtest)
-- [Parent package documentation](../docs/README.md)
+- [Parent package documentation](../../docs/README.md)
 
 ## Compatibility and support
 
 This module follows Semantic Versioning. Report vulnerabilities through the
-[parent security policy](../SECURITY.md).
+[parent security policy](../../SECURITY.md).
+
+The released `github.com/faustbrian/go-authentication/authotel` module remains
+supported for the longer of 180 days and two published stable minor releases
+after this successor is publicly consumable, and retains its original telemetry
+scope. Removal additionally requires an authorized next-major release.
+Migrating to this module preserves signal names, units, attributes, provider
+ownership, and completion behavior, while the instrumentation scope changes to
+this module's target-oriented import path. See the
+[changelog](CHANGELOG.md), [support policy](../../SUPPORT.md), and
+[migration guidance](docs/reference.md#migration-and-compatibility).
 
 For ecosystem-wide package selection, construction, ownership, and lifecycle
 guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/README.md)

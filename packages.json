@@ -51,6 +51,18 @@
       "build_tags": []
     },
     {
+      "module_directory": "adapters/otel",
+      "directory": ".",
+      "name": "authotel",
+      "import_path": "github.com/faustbrian/go-authentication/adapters/otel",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
       "module_directory": "authotel",
       "directory": ".",
       "name": "authotel",

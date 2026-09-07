@@ -28,6 +28,10 @@ if err != nil {
 principal, err := validator.ValidateBearer(ctx, compactToken)
 ```
 
+When using remote keys, the caller owns the returned `Remote` and must call
+`Shutdown(ctx)` with a bounded context. Deprecated `Close(ctx)` delegates to
+the same complete cleanup operation.
+
 The compiling examples in this module contain complete imports and setup.
 
 ## Guarantees and limitations
