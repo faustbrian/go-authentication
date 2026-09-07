@@ -108,7 +108,6 @@ type Remote struct {
 	closing       bool
 	stopping      bool
 	closeDone     chan struct{}
-	closeErr      error
 	nextOperation uint64
 	operations    map[uint64]context.CancelFunc
 	idle          chan struct{}
@@ -118,7 +117,7 @@ type Remote struct {
 }
 
 // NewRemote registers and initially fetches one exact JWK URL. The caller owns
-// the returned provider and must call Close.
+// the returned provider and must call Shutdown.
 func NewRemote(ctx context.Context, rawURL string, options ...RemoteOption) (*Remote, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, keyProviderFailure(err)
@@ -504,28 +503,37 @@ func cloneKeySet(source jwk.Set) (jwk.Set, error) {
 	return copied, nil
 }
 
-// Close cancels and joins all cache-owned background work.
-func (r *Remote) Close(ctx context.Context) error {
-	r.mutex.Lock()
-	if r.closed {
-		r.mutex.Unlock()
-		return nil
-	}
-	if r.closing {
+// Shutdown repeatably performs the complete bounded cleanup owned by the
+// remote JWK provider. Once shutdown begins, no new operations are admitted,
+// even when a caller's shutdown context expires before cleanup completes.
+func (r *Remote) Shutdown(ctx context.Context) error {
+	for {
+		r.mutex.Lock()
+		if r.closed {
+			r.mutex.Unlock()
+			return nil
+		}
+		switch r.closing {
+		case false:
+			goto beginClose
+		}
 		done := r.closeDone
 		r.mutex.Unlock()
 		select {
 		case <-done:
-			return r.closeResult()
+			if err := ctx.Err(); err != nil {
+				return err
+			}
 		case <-ctx.Done():
 			return ctx.Err()
 		}
 	}
+
+beginClose:
 	r.closing = true
 	r.stopping = true
 	r.closeDone = make(chan struct{})
 	done := r.closeDone
-	r.closeErr = nil
 	r.idle = make(chan struct{})
 	idle := r.idle
 	cancels := make([]context.CancelFunc, 0, len(r.operations))
@@ -549,8 +557,19 @@ func (r *Remote) Close(ctx context.Context) error {
 	}
 
 	err := r.cache.Shutdown(ctx)
+	if err == nil {
+		err = ctx.Err()
+	}
 	r.finishClose(done, err)
 	return err
+}
+
+// Close performs the same context-aware cleanup as Shutdown.
+//
+// Deprecated: use Shutdown. Close remains available throughout the v1
+// compatibility interval.
+func (r *Remote) Close(ctx context.Context) error {
+	return r.Shutdown(ctx)
 }
 
 func (r *Remote) beginOperation(ctx context.Context) (context.Context, *jwk.Cache, uint64, error) {
@@ -607,7 +626,6 @@ func (r *Remote) endOperation(operation uint64) {
 func (r *Remote) finishClose(done chan struct{}, err error) {
 	r.mutex.Lock()
 	r.closing = false
-	r.closeErr = err
 	r.idle = nil
 	switch err {
 	case nil:
@@ -615,15 +633,6 @@ func (r *Remote) finishClose(done chan struct{}, err error) {
 	}
 	close(done)
 	r.mutex.Unlock()
-}
-
-func (r *Remote) closeResult() error {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-	if r.closed {
-		return nil
-	}
-	return r.closeErr
 }
 
 type exactWhitelist string

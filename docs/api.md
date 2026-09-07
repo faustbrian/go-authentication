@@ -19,7 +19,8 @@ checked in CI. Use `go doc` for signatures and contracts.
 - `jwt`: strict config, validator, provider adapters, and owned remote JWK
   lifecycle.
 - `oidc`: discovery/static-key config, validator, and nonce interface.
-- `authotel`: OpenTelemetry provider config and instrumenter.
+- `adapters/otel`: preferred OpenTelemetry provider config and instrumenter.
+- `authotel`: deprecated compatible path retaining its original telemetry scope.
 
 New instrumentation integrations implement `BeginInstrumenter.Begin` and use
 `NewInstrumentedWithBegin`. The released `Instrumenter.Start` and
@@ -46,5 +47,6 @@ The examples are discoverable with:
 go test -run '^Example' ./...
 (cd jwt && go test -run '^Example' ./...)
 (cd oidc && go test -run '^Example' ./...)
+(cd adapters/otel && go test -run '^Example' ./...)
 (cd authotel && go test -run '^Example' ./...)
 ```

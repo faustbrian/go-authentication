@@ -26,7 +26,7 @@
 
 - [JWT module](../jwt/docs/README.md)
 - [OIDC module](../oidc/docs/README.md)
-- [OpenTelemetry adapter](../authotel/docs/README.md)
+- [OpenTelemetry adapter](../adapters/otel/docs/README.md)
 
 ## Operations and security
 

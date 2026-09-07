@@ -148,6 +148,7 @@
         },
         "optional_owned_dependencies": [],
         "adapters": [
+          "github.com/faustbrian/go-authentication/adapters/otel",
           "github.com/faustbrian/go-authentication/authotel"
         ],
         "companions": [
@@ -183,8 +184,8 @@
         },
         "known_good_compatibility_sets": [],
         "delivery": {
-          "implementation": "not-started",
-          "hardening": "not-started",
+          "implementation": "in-progress",
+          "hardening": "in-progress",
           "release": "not-started"
         }
       },
@@ -194,6 +195,7 @@
         "github.com/faustbrian/go-clock"
       ],
       "reverse_owned_dependencies": [
+        "github.com/faustbrian/go-authentication/adapters/otel",
         "github.com/faustbrian/go-authentication/authotel",
         "github.com/faustbrian/go-authentication/jwt",
         "github.com/faustbrian/go-authentication/oidc",
@@ -238,15 +240,15 @@
       }
     },
     {
-      "directory": "authotel",
-      "module_path": "github.com/faustbrian/go-authentication/authotel",
+      "directory": "adapters/otel",
+      "module_path": "github.com/faustbrian/go-authentication/adapters/otel",
       "go_version": "1.26.6",
       "packages": [
         {
-          "module_directory": "authotel",
+          "module_directory": "adapters/otel",
           "directory": ".",
           "name": "authotel",
-          "import_path": "github.com/faustbrian/go-authentication/authotel",
+          "import_path": "github.com/faustbrian/go-authentication/adapters/otel",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -255,9 +257,9 @@
           "build_tags": []
         }
       ],
-      "purpose": "`authotel` is the optional OpenTelemetry adapter for [`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication). It turns completed authentication attempts into bounded traces and metrics. It does not authenticate credentials, make authorization decisions, configure an SDK, or own exporters.",
+      "purpose": "`adapters/otel` is the preferred optional OpenTelemetry adapter for `authentication`. It turns completed authentication attempts into bounded traces and metrics without owning providers or exporters.",
       "lifecycle": "stable",
-      "kind": "public library",
+      "kind": "adapter",
       "releasable": true,
       "family": "service-edge",
       "family_label": "Service Edge",
@@ -276,10 +278,10 @@
         ],
         "public_package_identifier": "authotel",
         "primary_entry_packages": [
-          "github.com/faustbrian/go-authentication/authotel"
+          "github.com/faustbrian/go-authentication/adapters/otel"
         ],
         "package_selection": {
-          "github.com/faustbrian/go-authentication/authotel": "Use when authentication outcomes must produce bounded OpenTelemetry traces and metrics through caller-owned providers."
+          "github.com/faustbrian/go-authentication/adapters/otel": "Use when authentication outcomes must produce bounded OpenTelemetry traces and metrics through caller-owned providers."
         },
         "lifecycle_status": "active",
         "maturity": "stable",
@@ -314,22 +316,156 @@
         ],
         "supported_protocols": [],
         "documentation": {
-          "readme": "authotel/README.md",
-          "api": "authotel/README.md",
-          "adoption": "authotel/README.md",
+          "readme": "adapters/otel/README.md",
+          "api": "adapters/otel/docs/reference.md",
+          "adoption": "adapters/otel/docs/README.md",
           "security": "docs/security/threat-model.md",
-          "compatibility": "docs/compatibility.md",
-          "performance": null,
+          "compatibility": "adapters/otel/docs/reference.md",
+          "performance": "adapters/otel/docs/reference.md",
+          "examples": "adapters/otel/example_test.go",
+          "faq": "adapters/otel/docs/reference.md",
+          "changelog": "adapters/otel/CHANGELOG.md",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel",
+          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/README.md"
+        },
+        "known_good_compatibility_sets": [],
+        "delivery": {
+          "implementation": "in-progress",
+          "hardening": "in-progress",
+          "release": "not-started"
+        }
+      },
+      "version": "1.0.0",
+      "tag_prefix": "adapters/otel/v",
+      "owned_dependencies": [
+        "github.com/faustbrian/go-authentication",
+        "github.com/faustbrian/go-clock"
+      ],
+      "reverse_owned_dependencies": [],
+      "external_runtime_dependencies": [
+        "go.opentelemetry.io/otel",
+        "go.opentelemetry.io/otel/metric",
+        "go.opentelemetry.io/otel/trace"
+      ],
+      "required_services": [],
+      "build_tags": [],
+      "test_tags": [],
+      "interoperability_tools": [],
+      "specifications": [],
+      "conformance_corpora": [],
+      "provenance": [],
+      "goal_files": [],
+      "goal_status": "not-applicable",
+      "goal_evidence": [],
+      "gates": {
+        "api_compatibility": true,
+        "benchmarks": true,
+        "conformance": false,
+        "coverage": true,
+        "documentation": true,
+        "fuzz": true,
+        "lint": true,
+        "mutation": true,
+        "race": true,
+        "security": true,
+        "tests": true
+      }
+    },
+    {
+      "directory": "authotel",
+      "module_path": "github.com/faustbrian/go-authentication/authotel",
+      "go_version": "1.26.6",
+      "packages": [
+        {
+          "module_directory": "authotel",
+          "directory": ".",
+          "name": "authotel",
+          "import_path": "github.com/faustbrian/go-authentication/authotel",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        }
+      ],
+      "purpose": "`authotel` preserves the released OpenTelemetry adapter import path and telemetry scope during migration to `adapters/otel`.",
+      "lifecycle": "deprecated",
+      "kind": "public library",
+      "releasable": true,
+      "family": "service-edge",
+      "family_label": "Service Edge",
+      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
+      "family_order": 2,
+      "cohesion": {
+        "family": "service-edge",
+        "secondary_capabilities": [
+          "identity-and-access",
+          "observability"
+        ],
+        "responsibility": "Adapt bounded authentication observations to OpenTelemetry traces and metrics.",
+        "non_goals": [
+          "Authenticate credentials or make authorization decisions.",
+          "Configure OpenTelemetry SDKs, exporters, providers, or global state."
+        ],
+        "public_package_identifier": "authotel",
+        "primary_entry_packages": [
+          "github.com/faustbrian/go-authentication/authotel"
+        ],
+        "package_selection": {
+          "github.com/faustbrian/go-authentication/authotel": "Use only to preserve the released import path and telemetry scope during migration; new code uses adapters/otel."
+        },
+        "lifecycle_status": "deprecated",
+        "maturity": "stable",
+        "construction_styles": [
+          "new-config"
+        ],
+        "lifecycle_styles": [
+          "stateless"
+        ],
+        "ownership": {
+          "configuration": "caller",
+          "mutable_inputs": [
+            "borrow"
+          ],
+          "runtime_resources": "caller",
+          "background_work": "none"
+        },
+        "optional_owned_dependencies": [],
+        "adapters": [],
+        "companions": [
+          "github.com/faustbrian/go-authentication/adapters/otel"
+        ],
+        "supported_go": {
+          "minimum": "1.26.6",
+          "tested": [
+            "1.26.6"
+          ]
+        },
+        "supported_platforms": [
+          "portable-go"
+        ],
+        "supported_backends": [
+          "opentelemetry"
+        ],
+        "supported_protocols": [],
+        "documentation": {
+          "readme": "authotel/README.md",
+          "api": "authotel/docs/reference.md",
+          "adoption": "authotel/docs/README.md",
+          "security": "docs/security/threat-model.md",
+          "compatibility": "authotel/docs/reference.md",
+          "performance": "authotel/docs/reference.md",
           "examples": "authotel/example_test.go",
-          "faq": "docs/faq.md",
+          "faq": "authotel/docs/reference.md",
           "changelog": "authotel/CHANGELOG.md",
           "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/authotel",
           "ecosystem_index": "https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/README.md"
         },
         "known_good_compatibility_sets": [],
         "delivery": {
-          "implementation": "not-started",
-          "hardening": "not-started",
+          "implementation": "in-progress",
+          "hardening": "in-progress",
           "release": "not-started"
         }
       },
@@ -424,6 +560,7 @@
         ],
         "lifecycle_styles": [
           "close",
+          "shutdown",
           "stateless"
         ],
         "ownership": {
@@ -472,8 +609,8 @@
         },
         "known_good_compatibility_sets": [],
         "delivery": {
-          "implementation": "not-started",
-          "hardening": "not-started",
+          "implementation": "in-progress",
+          "hardening": "in-progress",
           "release": "not-started"
         }
       },

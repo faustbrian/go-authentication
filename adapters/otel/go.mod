@@ -1,4 +1,4 @@
-module github.com/faustbrian/go-authentication/authotel
+module github.com/faustbrian/go-authentication/adapters/otel
 
 go 1.26.6
 

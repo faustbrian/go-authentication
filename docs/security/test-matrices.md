@@ -20,8 +20,8 @@ sources are `authhttp/interoperability_test.go`,
 | --- | --- | --- |
 | Issuer timeout or 5xx | known OIDC key remains usable; unknown key is unavailable | `oidc/remote_test.go` |
 | Refresh stampede | one network owner, bounded cancellation-aware waiters | `oidc/remote_concurrency_test.go` |
-| JWT close during refresh | admitted work cancelled and drained before close returns | `jwt/remote_test.go` |
-| Close deadline | returns context error without admitting more work | `jwt/remote_test.go` |
+| JWT shutdown during refresh | admitted work cancelled and drained before shutdown returns | `jwt/remote_test.go` |
+| Shutdown deadline | returns context error without admitting more work | `jwt/remote_test.go` |
 | Instrumenter failure | authentication result is unchanged | instrumentation and adapter tests |
 | Callback rejection/unavailability | stable typed failure, no wrapped secret rendered | root and adapter tests |
 

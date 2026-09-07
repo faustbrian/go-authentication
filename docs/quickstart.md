@@ -18,4 +18,4 @@ accepted, `FailureInvalid` for malformed protocol data, and
 `FailureAbsent`; invalid or rejected credentials still fail closed.
 
 Before production, configure HTTPS, token or key rotation, bounded callback
-latency, fixed diagnostic messages, and either `authlog` or `authotel`.
+latency, fixed diagnostic messages, and either `authlog` or `adapters/otel`.

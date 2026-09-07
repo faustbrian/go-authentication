@@ -236,9 +236,11 @@
       "executable_evidence": [
         "TestRemoteRefreshWaitersShareResultAndHonorCancellation",
         "TestRemoteSerializesAutomaticAndExplicitRefreshWork",
-        "TestRemoteLifetimeIsOwnedByClose",
-        "TestRemoteCloseReportsCanceledJoin",
-        "TestRemoteCloseDeadlineIsNotBlockedByRefreshLock"
+        "TestRemoteLifetimeIsOwnedByShutdown",
+        "TestRemoteShutdownOwnsCompleteBoundedCleanup",
+        "TestRemoteConcurrentShutdownCallerContinuesCleanupAfterPriorCallerCancellation",
+        "TestRemoteShutdownReportsCanceledJoin",
+        "TestRemoteShutdownDeadlineIsNotBlockedByRefreshLock"
       ],
       "fixtures": [],
       "fuzz": [
@@ -247,7 +249,7 @@
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Close` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines; a canceled close reports its context and may be retried."
+        "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Shutdown` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines. Each concurrent shutdown caller is bounded by its own context; after an active attempt fails or is canceled, a waiting caller with a live context continues the remaining cleanup instead of inheriting the prior caller's result. `Close` delegates to `Shutdown` for compatibility."
       ]
     },
     {

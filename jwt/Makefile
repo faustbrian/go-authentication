@@ -12,10 +12,10 @@ differential:
 	go test ./... -run 'Differential' -count=1
 
 fault-injection:
-	go test ./... -run 'Remote.*(Failure|Outage|Redirect|Timeout|Cancellation|Rotation|Refresh|Close|Fleet)' -count=1
+	go test ./... -run 'Remote.*(Failure|Outage|Redirect|Timeout|Cancellation|Rotation|Refresh|Shutdown|Close|Fleet)' -count=1
 
 stress:
-	go test -race ./... -run 'Remote.*(Refresh|Close|Concurrent|Race)' -count=20
+	go test -race ./... -run 'Remote.*(Refresh|Shutdown|Close|Concurrent|Race)' -count=20
 
 docs:
 	go test ./... -run '^Example' -count=1

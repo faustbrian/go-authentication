@@ -10,7 +10,7 @@ import (
 	"time"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authotel"
+	"github.com/faustbrian/go-authentication/adapters/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
@@ -38,7 +38,7 @@ func TestInstrumenterEmitsBoundedTraceAndMetrics(t *testing.T) {
 		t.Fatalf("New() error = %v", err)
 	}
 
-	ctx, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	ctx, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	finish(authentication.Event{
 		Outcome:  authentication.OutcomeFailed,
 		Failure:  authentication.FailureRejected,
@@ -52,7 +52,7 @@ func TestInstrumenterEmitsBoundedTraceAndMetrics(t *testing.T) {
 	if spans[0].InstrumentationScope().Version != "" || spans[0].InstrumentationScope().SchemaURL != "" {
 		t.Fatalf("span scope mislabels adapter convention: %#v", spans[0].InstrumentationScope())
 	}
-	if got := spans[0].InstrumentationScope().Name; got != "github.com/faustbrian/go-authentication/authotel" {
+	if got := spans[0].InstrumentationScope().Name; got != "github.com/faustbrian/go-authentication/adapters/otel" {
 		t.Fatalf("span scope name = %q", got)
 	}
 	if !hasAttribute(spans[0].Attributes(), "authentication.credential.kind", "bearer") ||
@@ -74,7 +74,7 @@ func TestInstrumenterEmitsBoundedTraceAndMetrics(t *testing.T) {
 	if data.ScopeMetrics[0].Scope.Version != "" || data.ScopeMetrics[0].Scope.SchemaURL != "" {
 		t.Fatalf("metric scope mislabels adapter convention: %#v", data.ScopeMetrics[0].Scope)
 	}
-	if got := data.ScopeMetrics[0].Scope.Name; got != "github.com/faustbrian/go-authentication/authotel" {
+	if got := data.ScopeMetrics[0].Scope.Name; got != "github.com/faustbrian/go-authentication/adapters/otel" {
 		t.Fatalf("metric scope name = %q", got)
 	}
 	for _, metric := range data.ScopeMetrics[0].Metrics {

@@ -3,7 +3,7 @@ set -euo pipefail
 
 bench_time="${BENCH_TIME:-1000x}"
 bench_count="${BENCH_COUNT:-5}"
-result="$(mktemp "${TMPDIR:-/tmp}/authotel-benchmark.XXXXXX")"
+result="$(mktemp "${TMPDIR:-/tmp}/authentication-adapters-otel-benchmark.XXXXXX")"
 trap 'rm -f "${result}"' EXIT
 
 go test ./... \

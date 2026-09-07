@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authotel"
+	"github.com/faustbrian/go-authentication/adapters/otel"
 	"go.opentelemetry.io/otel/metric"
 	metricnoop "go.opentelemetry.io/otel/metric/noop"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -102,7 +102,7 @@ func newBenchmarkInstrumenter(
 		MeterProvider:  meterProvider,
 	})
 	if err != nil {
-		b.Fatalf("authotel.New() error = %v", err)
+		b.Fatalf("adapters/otel.New() error = %v", err)
 	}
 	return instrumenter
 }

@@ -26,6 +26,9 @@ api:
   - module: "."
     mode: apidiff
     path: api/root.txt
+  - module: "adapters/otel"
+    mode: apidiff
+    path: adapters/otel/api/baseline.txt
   - module: "authotel"
     mode: apidiff
     path: api/authotel.txt
@@ -78,6 +81,26 @@ operations:
     packages: ["./..."]
     benchmark: "."
     budget: 100ms
+    timeout: 20m
+- module: "adapters/otel"
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInstrumenterLifecycle$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["."]
+    fuzz: '^FuzzInstrumenterWithHostileProviders$'
+    budget: 10000x
+    timeout: 2m
+- module: "adapters/otel"
+  gate: benchmark
+  steps:
+  - type: make
+    makefile: Makefile
+    target: benchmark
     timeout: 20m
 - module: "authotel"
   gate: fuzz

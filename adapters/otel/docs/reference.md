@@ -1,20 +1,13 @@
-# authotel technical guide
+# authentication OpenTelemetry adapter technical guide
 
 This guide contains the complete behavioral and operational reference. Start
 with the [package overview](../README.md).
 
-`authotel` is the deprecated compatibility path for the preferred
-[`adapters/otel`](https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel)
-adapter for
+`adapters/otel` is the preferred optional OpenTelemetry adapter for
 [`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication).
 It turns completed authentication attempts into bounded traces and metrics. It
 does not authenticate credentials, make authorization decisions, configure an
 SDK, or own exporters.
-
-This path retains the original `github.com/faustbrian/go-authentication/authotel`
-instrumentation scope. Migrating to `adapters/otel` intentionally changes the
-scope name to the successor module path while preserving signal names, units,
-attributes, and ownership semantics.
 
 ## Quick start
 
@@ -47,7 +40,6 @@ disable emission while retaining the same wiring.
   formatting provider error or panic values.
 - `Instrumenter.Begin` implements `authentication.BeginInstrumenter` and returns the
   OpenTelemetry span context plus one completion callback.
-- Deprecated `Instrumenter.Start` delegates to `Begin` for v1 compatibility.
 
 The caller owns provider configuration, sampling, readers, exporters,
 queueing, force-flush, and shutdown. Constructing or using this adapter starts
@@ -59,7 +51,7 @@ original context is preserved.
 ## Telemetry convention
 
 The instrumentation scope is
-`github.com/faustbrian/go-authentication/authotel`. The adapter telemetry
+`github.com/faustbrian/go-authentication/adapters/otel`. The adapter telemetry
 convention documented below is version `1.0.0`. That convention is not a
 published OpenTelemetry schema and is therefore not written to
 `InstrumentationScope.Version` or `SchemaURL`; those fields are reserved for
@@ -242,18 +234,18 @@ The supplied provider is executing observer work synchronously. Use no-op,
 bounded batch, or otherwise non-blocking request-path providers as required by
 the supported-provider contract.
 
-### Why should dashboards remain on the legacy scope?
+### Why did dashboards split after migrating from `authotel`?
 
-This compatibility module intentionally preserves its released
-`github.com/faustbrian/go-authentication/authotel` scope. Migrate scope filters
-only when the application changes its import to `adapters/otel`.
+The successor intentionally uses its own module path as the instrumentation
+scope. Update scope filters while retaining the existing signal names, units,
+attributes, and completion interpretation.
 
 ## Development
 
 From the repository root, run the affected module contract with:
 
 ```sh
-golib check --module authotel
+golib check --module adapters/otel
 ```
 
 The module requires exact statement coverage and exact viable-mutant kills in
@@ -262,5 +254,5 @@ documentation, and benchmark gates.
 
 ## Related packages
 
-See the root [documentation index](../../docs/README.md) for package integration
+See the root [documentation index](../../../docs/README.md) for package integration
 and operations guidance.

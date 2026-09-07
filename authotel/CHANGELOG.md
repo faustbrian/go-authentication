@@ -6,10 +6,18 @@ All notable changes to this module are documented here.
 
 ### Changed
 
+- Publish benchmark environment, corpus, median latency, throughput, and
+  allocations for every measured path, with actual and limit values when a
+  performance budget fails.
+- Retain the complete v1 API, telemetry behavior, and instrumentation scope as
+  the deprecated compatibility path. New code should migrate imports to
+  `github.com/faustbrian/go-authentication/adapters/otel`.
+
 - Publish schema-v2 cohesion metadata for the OpenTelemetry adapter and link
   its consumer entry point to the immutable Golib ecosystem index.
-- Reconcile `go-authentication` and `go-clock` v1.0.0 with their public SumDB
-  identities and adopt the shared v1.4.0 W14 validation contract.
+- Adopt `go-authentication` v1.1.0 for the additive `BeginInstrumenter`
+  contract, retain `go-clock` v1.0.0, and adopt the shared v1.5.6
+  validation contract.
 
 ### Documentation
 

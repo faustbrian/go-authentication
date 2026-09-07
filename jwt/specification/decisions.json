@@ -459,23 +459,25 @@
       "source_authority": "rfc9110-source",
       "section": "RFC 9110 [Section 9.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.2.2) and Go's [`context` contract](https://pkg.go.dev/context)",
       "requirement_strength": "not specified",
-      "issue": "Neither JOSE nor HTTP defines cache goroutine ownership, overlapping refreshes, constructor-context lifetime, waiter cancellation, or close behavior for a Go provider.",
+      "issue": "Neither JOSE nor HTTP defines cache goroutine ownership, overlapping refreshes, constructor-context lifetime, waiter cancellation, or shutdown behavior for a Go provider.",
       "interpretations": [
-        "Let every miss fetch; overlap automatic and explicit refreshes; tie lifetime to constructor context; make close fire-and-forget; or serialize remote work under an owned lifecycle."
+        "Let every miss fetch; overlap automatic and explicit refreshes; tie lifetime to constructor context; make shutdown fire-and-forget; let concurrent callers inherit one caller's result; or serialize remote work under an owned lifecycle with caller-specific cancellation."
       ],
       "peer_behavior": "Caches and singleflight implementations coalesce work differently. Cancellation often stops only a waiter, not shared admitted work.",
-      "selected_behavior": "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Close` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines; a canceled close reports its context and may be retried.",
+      "selected_behavior": "Initial registration is bounded. Automatic and explicit refreshes share one hardened serialized transport; overlapping explicit refreshes share one result. The successful constructor context does not own provider lifetime. Once `Shutdown` begins, it permanently rejects new work, cancels admitted operations, joins them, and shuts down cache goroutines. Each concurrent shutdown caller is bounded by its own context; after an active attempt fails or is canceled, a waiting caller with a live context continues the remaining cleanup instead of inheriting the prior caller's result. `Close` delegates to `Shutdown` for compatibility.",
       "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
       "security_consequences": "At most one remote fetch proceeds per provider and admitted operation count is bounded, preventing refresh herds and shutdown leaks. Cancellation cannot silently abandon owned goroutines.",
       "resource_consequences": "At most one remote fetch proceeds per provider and admitted operation count is bounded, preventing refresh herds and shutdown leaks. Cancellation cannot silently abandon owned goroutines.",
-      "compatibility_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly close providers and must not assume canceling the constructor context destroys a successfully returned provider.",
-      "wire_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly close providers and must not assume canceling the constructor context destroys a successfully returned provider.",
+      "compatibility_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly shut down providers and must not assume canceling the constructor context destroys a successfully returned provider. Deprecated `Close` remains an equivalent delegation throughout the v1 compatibility interval.",
+      "wire_consequences": "No JWT or HTTP wire bytes change. Callers must explicitly shut down providers and must not assume canceling the constructor context destroys a successfully returned provider. Deprecated `Close` remains an equivalent delegation throughout the v1 compatibility interval.",
       "executable_evidence": [
         "TestRemoteRefreshWaitersShareResultAndHonorCancellation",
         "TestRemoteSerializesAutomaticAndExplicitRefreshWork",
-        "TestRemoteLifetimeIsOwnedByClose",
-        "TestRemoteCloseReportsCanceledJoin",
-        "TestRemoteCloseDeadlineIsNotBlockedByRefreshLock"
+        "TestRemoteLifetimeIsOwnedByShutdown",
+        "TestRemoteShutdownOwnsCompleteBoundedCleanup",
+        "TestRemoteConcurrentShutdownCallerContinuesCleanupAfterPriorCallerCancellation",
+        "TestRemoteShutdownReportsCanceledJoin",
+        "TestRemoteShutdownDeadlineIsNotBlockedByRefreshLock"
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
@@ -483,7 +485,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`NewRemote`, `Remote.Refresh`, `Remote.KeySet`, and `Remote.Close`"
+        "`NewRemote`, `Remote.Refresh`, `Remote.KeySet`, `Remote.Shutdown`, and deprecated `Remote.Close`"
       ],
       "documentation": [
         "jwt/docs/specification-decisions.md"

@@ -12,7 +12,7 @@ import (
 	"time"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authotel"
+	"github.com/faustbrian/go-authentication/adapters/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	metricnoop "go.opentelemetry.io/otel/metric/noop"
