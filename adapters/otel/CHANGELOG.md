@@ -2,7 +2,7 @@
 
 All notable changes to this module are documented here.
 
-## Unreleased
+## 1.0.0 - 2026-09-08
 
 ### Added
 
