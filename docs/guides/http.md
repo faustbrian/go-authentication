@@ -1,6 +1,6 @@
 # HTTP authentication
 
-`authhttp.NewExtractor` evaluates all explicitly configured sources in order
+`authenticationhttp.NewExtractor` evaluates all explicitly configured sources in order
 and requires exactly one credential. Duplicate Authorization fields, repeated
 query parameters or cookies, partial API keys, and credentials present in more
 than one source are rejected.
@@ -29,4 +29,4 @@ fallback challenge also returns 503 because RFC 9110 forbids a bare 401.
 Configure fallback challenges with `WithChallenges`. Challenges are sorted and
 quoted safely.
 
-The middleware does not authorize. See `authhttp.ExampleNewMiddleware`.
+The middleware does not authorize. See `authenticationhttp.ExampleNewMiddleware`.

@@ -1,4 +1,4 @@
-package authlog_test
+package authenticationslog_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authlog"
+	authlog "github.com/faustbrian/go-authentication/adapters/slog"
 )
 
 func ExampleNew() {

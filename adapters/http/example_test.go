@@ -1,4 +1,4 @@
-package authhttp_test
+package authenticationhttp_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authhttp"
+	authhttp "github.com/faustbrian/go-authentication/adapters/http"
 	"github.com/faustbrian/go-authentication/bearer"
 )
 

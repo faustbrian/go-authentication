@@ -1,11 +1,11 @@
-package authhttp_test
+package authenticationhttp_test
 
 import (
 	"net/http"
 	"net/url"
 	"testing"
 
-	"github.com/faustbrian/go-authentication/authhttp"
+	authhttp "github.com/faustbrian/go-authentication/adapters/http"
 )
 
 func BenchmarkBearerAuthorizationExtraction(b *testing.B) {

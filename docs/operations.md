@@ -10,7 +10,7 @@ fails. OIDC discovery also fails startup when metadata or its JWK URL is unsafe.
 ## Runtime
 
 Monitor bounded `credential_kind`, `outcome`, `failure_kind`, and duration
-attributes through `authlog` or `adapters/otel`. A rise in rejected failures often
+attributes through `adapters/slog` or `adapters/otel`. A rise in rejected failures often
 means expiration or rotation drift; unavailable failures mean a verifier,
 network, issuer, or cache problem. Do not add subject, token, claim, key,
 header, URL query, or cookie values to metrics or traces.

@@ -1,4 +1,4 @@
-package authhttp_test
+package authenticationhttp_test
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authhttp"
+	authhttp "github.com/faustbrian/go-authentication/adapters/http"
 )
 
 func TestRFC7617BasicCredentialVectors(t *testing.T) {

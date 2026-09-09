@@ -11,7 +11,7 @@
 | Static keys | current/previous overlap and atomic replacement | revoked, unknown, duplicate, empty, oversized sets |
 
 The exact static data is recorded in [vectors.md](vectors.md). Executable
-sources are `authhttp/interoperability_test.go`,
+sources are `adapters/http/interoperability_test.go`,
 `jwt/interoperability_test.go`, and `oidc/interoperability_test.go`.
 
 ## Failure injection and lifecycle

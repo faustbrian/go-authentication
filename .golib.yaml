@@ -55,22 +55,22 @@ operations:
     budget: 10000x
     timeout: 2m
   - type: go-test
-    packages: ["./authhttp"]
+    packages: ["./adapters/http"]
     fuzz: '^FuzzAuthorizationExtraction$'
     budget: 10000x
     timeout: 2m
   - type: go-test
-    packages: ["./authhttp"]
+    packages: ["./adapters/http"]
     fuzz: '^FuzzCredentialHeaderSet$'
     budget: 10000x
     timeout: 2m
   - type: go-test
-    packages: ["./authhttp"]
+    packages: ["./adapters/http"]
     fuzz: '^FuzzChallengeFormatting$'
     budget: 10000x
     timeout: 2m
   - type: go-test
-    packages: ["./authhttp"]
+    packages: ["./adapters/http"]
     fuzz: '^FuzzBearerQueryExtraction$'
     budget: 10000x
     timeout: 2m

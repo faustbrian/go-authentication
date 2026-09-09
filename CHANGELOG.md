@@ -7,6 +7,10 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Add `adapters/http` and `adapters/slog` as the target-oriented owners of HTTP
+  and structured-log integration. Retain `authhttp` and `authlog` as deprecated,
+  type-identical compatibility facades; consumers may migrate by changing only
+  their imports and package identifiers.
 - Publish `adapters/otel` as the target-oriented OpenTelemetry successor and
   retain `authotel` as a deprecated compatibility path with its original
   instrumentation scope.

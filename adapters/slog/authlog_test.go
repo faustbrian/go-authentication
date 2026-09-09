@@ -1,4 +1,4 @@
-package authlog_test
+package authenticationslog_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"time"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authlog"
+	authlog "github.com/faustbrian/go-authentication/adapters/slog"
 )
 
 func TestInstrumenterLogsOnlyBoundedMetadata(t *testing.T) {

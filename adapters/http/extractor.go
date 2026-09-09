@@ -1,6 +1,6 @@
-// Package authhttp provides strict HTTP credential extraction, challenges,
+// Package authenticationhttp provides strict HTTP credential extraction, challenges,
 // and authentication-only middleware for net/http.
-package authhttp
+package authenticationhttp
 
 import (
 	"encoding/base64"

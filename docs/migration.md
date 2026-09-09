@@ -1,10 +1,24 @@
 # Migration
 
+## From the legacy HTTP and logging adapter paths
+
+Replace imports without changing constructor calls or option ordering:
+
+```text
+github.com/faustbrian/go-authentication/authhttp -> github.com/faustbrian/go-authentication/adapters/http
+github.com/faustbrian/go-authentication/authlog  -> github.com/faustbrian/go-authentication/adapters/slog
+```
+
+The preferred package identifiers are `authenticationhttp` and
+`authenticationslog`. The legacy paths remain deprecated, importable facades;
+their exported types are aliases of the successors, so assignments, interface
+satisfaction, error traversal, and reflection identity remain unchanged.
+
 ## From ad hoc middleware
 
 1. Inventory accepted credential locations and disable accidental query or
    cookie support.
-2. Move parsing to `authhttp.Extractor`.
+2. Move parsing to `authenticationhttp.Extractor`.
 3. Move verification to a protocol authenticator.
 4. Replace user or session maps in context with `Principal`.
 5. Move role and permission checks to authorization after authentication.

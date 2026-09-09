@@ -12,3 +12,9 @@ the exception.
 Silent behavior changes, undocumented aliases, and indefinite deprecated code
 are prohibited. Deprecations are checked during compatibility and release
 review.
+
+The root-module `authhttp` and `authlog` paths are deprecated in favor of
+`adapters/http` and `adapters/slog`. They remain supported for the longer of
+180 days after successor publication and two later stable root minor releases.
+Removal also requires owned-consumer migration, external-consumer evidence,
+and an authorized major release; the earliest possible removal is v2.0.0.
