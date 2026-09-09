@@ -3,7 +3,7 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/) and
 this project follows Semantic Versioning.
 
-## [Unreleased]
+## [1.2.0] - 2026-09-09
 
 ### Changed
 
