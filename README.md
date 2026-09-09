@@ -45,7 +45,7 @@ go get github.com/faustbrian/go-authentication/adapters/otel
 ## Five-minute quickstart
 
 ```go
-extractor, err := authhttp.NewExtractor(authhttp.BearerAuthorization())
+extractor, err := authenticationhttp.NewExtractor(authenticationhttp.BearerAuthorization())
 if err != nil {
 	return err
 }
@@ -66,7 +66,7 @@ if err != nil {
 	return err
 }
 
-middleware, err := authhttp.NewMiddleware(extractor, authenticator)
+middleware, err := authenticationhttp.NewMiddleware(extractor, authenticator)
 if err != nil {
 	return err
 }
@@ -92,8 +92,10 @@ it deliberately performs no role, permission, ownership, or policy checks.
 | `basic` | Constant-work static Basic authentication |
 | `bearer` | Callback and interface adapters for opaque tokens |
 | `apikey` | Callback and atomically rotatable static API keys |
-| `authhttp` | Strict extraction, challenges, and authentication-only middleware |
-| `authlog` | Secret-safe standard `log/slog` instrumentation |
+| `adapters/http` (`authenticationhttp`) | Preferred strict extraction, challenges, and authentication-only middleware |
+| `adapters/slog` (`authenticationslog`) | Preferred secret-safe standard `log/slog` instrumentation |
+| `authhttp` | Deprecated compatibility facade for `adapters/http` |
+| `authlog` | Deprecated compatibility facade for `adapters/slog` |
 | `authtest` | Deterministic principals, clocks, authenticators, HTTP fixtures, assertions |
 | `jwt` | Optional strict JWT/JWK validation and owned remote cache |
 | `oidc` | Optional OIDC discovery and ID-token validation without background refresh |

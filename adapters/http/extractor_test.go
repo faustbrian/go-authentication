@@ -1,4 +1,4 @@
-package authhttp_test
+package authenticationhttp_test
 
 import (
 	"encoding/base64"
@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authhttp"
+	authhttp "github.com/faustbrian/go-authentication/adapters/http"
 )
 
 func TestBasicAuthorizationExtractionIsStrict(t *testing.T) {

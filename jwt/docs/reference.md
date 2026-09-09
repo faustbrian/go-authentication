@@ -162,7 +162,7 @@ remain available through the standard error chain.
 
 ## Adoption and migration
 
-Keep transport extraction in `authentication/authhttp` or another adapter and
+Keep transport extraction in `authentication/adapters/http` or another adapter and
 pass only the bearer credential to this package. Keep OIDC discovery and ID
 token policy in `authentication/oidc`. Migrate permissive JWT parsers by first
 inventorying issuers, audiences, algorithms, key IDs, clock skew, and required

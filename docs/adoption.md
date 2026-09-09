@@ -10,7 +10,7 @@
    nonce validation for interactive OIDC flows.
 5. Keep the authentication result separate from authorization policy. Check
    permissions, ownership, and tenant boundaries after authentication.
-6. Emit only bounded outcome metadata through `authlog` or `adapters/otel`; never
+6. Emit only bounded outcome metadata through `adapters/slog` or `adapters/otel`; never
    add credentials, claims, principals, key data, or URLs.
 7. Rotate with a brief overlap, unique key IDs, issuer cache awareness, and a
    tested rollback. Shut down every owned `jwt.Remote` with a deadline.

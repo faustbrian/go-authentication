@@ -1,4 +1,4 @@
-package authhttp_test
+package authenticationhttp_test
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authhttp"
+	authhttp "github.com/faustbrian/go-authentication/adapters/http"
 )
 
 func FuzzAuthorizationExtraction(f *testing.F) {

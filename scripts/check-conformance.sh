@@ -69,6 +69,6 @@ if [[ "${count}" -ne 3 ]]; then
 fi
 
 cd "${root}"
-GOWORK=off go test ./authhttp \
+GOWORK=off go test ./adapters/http \
 	-run '^(TestRFC7617BasicCredentialVectors|TestRFC6750BearerHeaderVector)$' \
 	-count=1

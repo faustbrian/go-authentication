@@ -28,6 +28,30 @@
     },
     {
       "module_directory": ".",
+      "directory": "adapters/http",
+      "name": "authenticationhttp",
+      "import_path": "github.com/faustbrian/go-authentication/adapters/http",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
+      "directory": "adapters/slog",
+      "name": "authenticationslog",
+      "import_path": "github.com/faustbrian/go-authentication/adapters/slog",
+      "kind": "public",
+      "production": true,
+      "executable": true,
+      "coverage_required": true,
+      "build_required": true,
+      "build_tags": []
+    },
+    {
+      "module_directory": ".",
       "directory": "authhttp",
       "name": "authhttp",
       "import_path": "github.com/faustbrian/go-authentication/authhttp",

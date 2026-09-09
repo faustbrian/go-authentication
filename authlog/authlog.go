@@ -1,53 +1,23 @@
-// Package authlog adapts authentication instrumentation to log/slog.
+// Package authlog preserves the original structured-log adapter import path.
+// New code should import github.com/faustbrian/go-authentication/adapters/slog.
+//
+// Deprecated: use github.com/faustbrian/go-authentication/adapters/slog.
 package authlog
 
 import (
-	"context"
-	"fmt"
 	"log/slog"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authenticationslog "github.com/faustbrian/go-authentication/adapters/slog"
 )
 
 // Instrumenter emits one bounded structured log record per attempt.
-type Instrumenter struct {
-	logger *slog.Logger
-}
+//
+// Deprecated: use authenticationslog.Instrumenter.
+type Instrumenter = authenticationslog.Instrumenter
 
 // New creates a structured authentication log instrumenter.
-func New(logger *slog.Logger) (*Instrumenter, error) {
-	if logger == nil {
-		return nil, fmt.Errorf("%w: nil logger", authentication.ErrInvalidConfiguration)
-	}
-	return &Instrumenter{logger: logger}, nil
-}
-
-// Begin starts one bounded authentication observation.
-func (i *Instrumenter) Begin(
-	ctx context.Context,
-	kind authentication.CredentialKind,
-) (context.Context, func(authentication.Event)) {
-	return ctx, func(event authentication.Event) {
-		i.logger.InfoContext(ctx, "authentication completed",
-			"credential_kind", kind,
-			"outcome", event.Outcome,
-			"failure_kind", event.Failure,
-			"duration_ms", event.Duration.Milliseconds(),
-		)
-	}
-}
-
-// Start implements the legacy authentication.Instrumenter contract.
 //
-// Deprecated: use Begin. It matches the preferred observation vocabulary.
-// Migrate callers by replacing Start with Begin. Start remains supported
-// throughout v1; its earliest removal is v2.0.0.
-func (i *Instrumenter) Start(
-	ctx context.Context,
-	kind authentication.CredentialKind,
-) (context.Context, func(authentication.Event)) {
-	return i.Begin(ctx, kind)
+// Deprecated: use authenticationslog.New.
+func New(logger *slog.Logger) (*Instrumenter, error) {
+	return authenticationslog.New(logger)
 }
-
-var _ authentication.Instrumenter = (*Instrumenter)(nil)
-var _ authentication.BeginInstrumenter = (*Instrumenter)(nil)

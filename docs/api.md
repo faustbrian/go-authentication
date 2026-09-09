@@ -11,9 +11,10 @@ checked in CI. Use `go doc` for signatures and contracts.
   atomically replaceable constant-work static token authenticator.
 - `apikey`: callback validator, atomically replaceable static entries, and
   bounds.
-- `authhttp`: explicit sources, bearer compatibility options, extractor,
+- `adapters/http` (`authenticationhttp`): explicit sources, bearer compatibility options, extractor,
   challenge formatting, and middleware policies.
-- `authlog`: standard `slog` instrumenter.
+- `adapters/slog` (`authenticationslog`): standard `slog` instrumenter.
+- `authhttp` and `authlog`: deprecated type-identical compatibility facades.
 - `authtest`: deterministic principals, results, clock, scripted authenticator,
   HTTP fixture, and assertions.
 - `jwt`: strict config, validator, provider adapters, and owned remote JWK
@@ -36,7 +37,7 @@ values select safe defaults.
 deprecated for new designs because credential-bearing URLs can be retained
 outside this package.
 
-`authhttp.NewMiddleware` emits `401 Unauthorized` only when a failure-specific
+`authenticationhttp.NewMiddleware` emits `401 Unauthorized` only when a failure-specific
 or configured fallback challenge can populate `WWW-Authenticate`. If a
 credential failure has no valid challenge, it returns the secret-safe
 `503 Service Unavailable` response instead of producing an invalid bare 401.

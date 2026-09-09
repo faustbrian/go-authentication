@@ -34,6 +34,30 @@
         },
         {
           "module_directory": ".",
+          "directory": "adapters/http",
+          "name": "authenticationhttp",
+          "import_path": "github.com/faustbrian/go-authentication/adapters/http",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
+          "directory": "adapters/slog",
+          "name": "authenticationslog",
+          "import_path": "github.com/faustbrian/go-authentication/adapters/slog",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
           "directory": "authhttp",
           "name": "authhttp",
           "import_path": "github.com/faustbrian/go-authentication/authhttp",
@@ -122,8 +146,10 @@
         "package_selection": {
           "github.com/faustbrian/go-authentication": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
           "github.com/faustbrian/go-authentication/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
-          "github.com/faustbrian/go-authentication/authhttp": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
-          "github.com/faustbrian/go-authentication/authlog": "Use to emit bounded secret-safe authentication observations through log/slog.",
+          "github.com/faustbrian/go-authentication/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
+          "github.com/faustbrian/go-authentication/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
+          "github.com/faustbrian/go-authentication/authhttp": "Deprecated compatibility path for adapters/http.",
+          "github.com/faustbrian/go-authentication/authlog": "Deprecated compatibility path for adapters/slog.",
           "github.com/faustbrian/go-authentication/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
           "github.com/faustbrian/go-authentication/basic": "Use for constant-work static Basic authentication.",
           "github.com/faustbrian/go-authentication/bearer": "Use for opaque bearer-token validators and bounded static token sets."
@@ -148,7 +174,11 @@
         },
         "optional_owned_dependencies": [],
         "adapters": [
+          "github.com/faustbrian/go-authentication/adapters/http",
           "github.com/faustbrian/go-authentication/adapters/otel",
+          "github.com/faustbrian/go-authentication/adapters/slog",
+          "github.com/faustbrian/go-authentication/authhttp",
+          "github.com/faustbrian/go-authentication/authlog",
           "github.com/faustbrian/go-authentication/authotel"
         ],
         "companions": [

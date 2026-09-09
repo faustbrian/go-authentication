@@ -41,7 +41,7 @@ clean external-consumer evidence, and an authorized next-major release.
 
 Basic follows RFC 7617 extraction shape without negotiating a charset. Bearer
 header grammar follows RFC 6750 `b64token` by default.
-`authhttp.WithBearerPipe` explicitly permits pipe-delimited opaque tokens for
+`authenticationhttp.WithBearerPipe` explicitly permits pipe-delimited opaque tokens for
 legacy contracts without weakening the default. Challenges use safely quoted
 and escaped auth parameters. Middleware never emits 401 without at least one
 valid `WWW-Authenticate` challenge; missing challenge metadata maps to 503 as a

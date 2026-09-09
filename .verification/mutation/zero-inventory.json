@@ -1,4 +1,21 @@
 {
   "schema_version": 1,
-  "packages": []
+  "packages": [
+    {
+      "module_directory": ".",
+      "package_directory": "authhttp",
+      "source_digest": "aee972e0163db723a4cfa248f67934b12fb22ddeec2e27ccafaa931fda5ffca7",
+      "gremlins_version": "v0.6.0",
+      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+      "reason": "The deprecated facade contains type aliases and direct successor delegations; the complete enabled Gremlins operator set discovers no viable transformation."
+    },
+    {
+      "module_directory": ".",
+      "package_directory": "authlog",
+      "source_digest": "d3c5d59bbffe786ab25667a05c31d7e90e125a664f2df47ec1384edc8afa9373",
+      "gremlins_version": "v0.6.0",
+      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
+      "reason": "The deprecated facade contains one type alias and one direct successor delegation; the complete enabled Gremlins operator set discovers no viable transformation."
+    }
+  ]
 }

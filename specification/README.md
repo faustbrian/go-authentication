@@ -1,7 +1,7 @@
 # Specification provenance
 
 `manifest.tsv` pins the exact RFC 7617 and RFC 6750 interoperability vectors
-executed by `authhttp/interoperability_test.go`. Digests and byte counts apply
+executed by `adapters/http/interoperability_test.go`. Digests and byte counts apply
 to the encoded credential or token string exactly as embedded in the test.
 
 The canonical
