@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
   "repository": "github.com/faustbrian/go-authentication",
-  "go_version": "1.26.6",
+  "go_version": "1.27.0",
   "modules": [
     {
       "directory": ".",
       "module_path": "github.com/faustbrian/go-authentication",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": ".",
@@ -186,9 +186,9 @@
           "github.com/faustbrian/go-authentication/oidc"
         ],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
-            "1.26.6"
+            "1.27.0"
           ]
         },
         "supported_platforms": [
@@ -272,7 +272,7 @@
     {
       "directory": "adapters/otel",
       "module_path": "github.com/faustbrian/go-authentication/adapters/otel",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "adapters/otel",
@@ -333,9 +333,9 @@
         "adapters": [],
         "companions": [],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
-            "1.26.6"
+            "1.27.0"
           ]
         },
         "supported_platforms": [
@@ -404,7 +404,7 @@
     {
       "directory": "authotel",
       "module_path": "github.com/faustbrian/go-authentication/authotel",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "authotel",
@@ -467,9 +467,9 @@
           "github.com/faustbrian/go-authentication/adapters/otel"
         ],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
-            "1.26.6"
+            "1.27.0"
           ]
         },
         "supported_platforms": [
@@ -540,7 +540,7 @@
     {
       "directory": "jwt",
       "module_path": "github.com/faustbrian/go-authentication/jwt",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "jwt",
@@ -608,9 +608,9 @@
           "github.com/faustbrian/go-authentication/oidc"
         ],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
-            "1.26.6"
+            "1.27.0"
           ]
         },
         "supported_platforms": [
@@ -703,7 +703,7 @@
     {
       "directory": "oidc",
       "module_path": "github.com/faustbrian/go-authentication/oidc",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "oidc",
@@ -769,9 +769,9 @@
           "github.com/faustbrian/go-authentication/jwt"
         ],
         "supported_go": {
-          "minimum": "1.26.6",
+          "minimum": "1.27.0",
           "tested": [
-            "1.26.6"
+            "1.27.0"
           ]
         },
         "supported_platforms": [

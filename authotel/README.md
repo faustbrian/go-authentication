@@ -13,7 +13,7 @@ module is intentionally separate so applications remaining on this path do not
 receive a silent telemetry-scope rename.
 
 It is a stable v1 compatibility module with deprecated lifecycle status. It
-supports Go 1.26.6 or newer on portable Go platforms and requires explicit
+supports Go 1.27.0 or newer on portable Go platforms and requires explicit
 caller-owned OpenTelemetry tracer and meter providers.
 
 ## Install

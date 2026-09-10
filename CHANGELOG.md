@@ -3,6 +3,12 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/) and
 this project follows Semantic Versioning.
 
+## Unreleased
+
+### Changed
+
+- Require Go 1.27.0 for development, builds, and downstream consumers.
+
 ## [1.2.0] - 2026-09-09
 
 ### Changed
