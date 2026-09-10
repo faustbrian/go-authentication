@@ -8,7 +8,7 @@ SDK, or own exporters.
 
 ## Requirements
 
-- Go 1.26.6 or newer.
+- Go 1.27.0 or newer.
 - Portable Go; no operating-system service is required.
 - Explicit caller-owned OpenTelemetry tracer and meter providers.
 
