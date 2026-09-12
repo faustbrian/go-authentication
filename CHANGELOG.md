@@ -5,6 +5,11 @@ this project follows Semantic Versioning.
 
 ## [Unreleased]
 
+### Changed
+
+- Register maintained API baselines and typed compatibility operations for the
+  root authentication module and its independently releasable adapters.
+
 ### Documentation
 
 - Replace archived monorepo links with a package-owned documentation index.

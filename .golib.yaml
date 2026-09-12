@@ -1,0 +1,155 @@
+schema_version: 1
+tool_version: v1.4.0
+tool_checksums_sha256: ba1b71d41dc9b58d5bfb411bc89ae2d45b6f3f778152714bfd1afeab0bef2f33
+manifest:
+  modules: modules.json
+  packages: packages.json
+evidence:
+  root: ".verification"
+api:
+  baselines:
+  - module: "."
+    mode: apidiff
+    path: api/root.txt
+  - module: authotel
+    mode: apidiff
+    path: authotel/api/baseline.txt
+  - module: jwt
+    mode: apidiff
+    path: jwt/api/baseline.txt
+  - module: oidc
+    mode: apidiff
+    path: oidc/api/baseline.txt
+operations:
+- module: "."
+  gate: test
+  steps:
+  - type: make
+    makefile: .golib/package.mk
+    target: api
+    timeout: 20m
+- module: "."
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages:
+    - "./..."
+    fuzz: '^Fuzz'
+    budget: 100x
+    timeout: 20m
+- module: "."
+  gate: conformance
+  steps:
+  - type: make
+    makefile: .golib/package.mk
+    target: conformance
+    timeout: 20m
+- module: "."
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages:
+    - "./..."
+    benchmark: "."
+    budget: 100ms
+    timeout: 20m
+- module: authotel
+  gate: test
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    timeout: 20m
+- module: authotel
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    fuzz: '^Fuzz'
+    budget: 100x
+    timeout: 20m
+- module: authotel
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    benchmark: "."
+    budget: 100ms
+- module: jwt
+  gate: test
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    timeout: 20m
+- module: jwt
+  gate: conformance
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    timeout: 20m
+- module: jwt
+  gate: interoperability
+  steps:
+  - type: make
+    makefile: jwt/Makefile
+    target: interoperability
+    timeout: 20m
+- module: jwt
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    fuzz: '^Fuzz'
+    budget: 100x
+    timeout: 20m
+- module: jwt
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    benchmark: "."
+    budget: 100ms
+- module: oidc
+  gate: test
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    timeout: 20m
+- module: oidc
+  gate: conformance
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    timeout: 20m
+- module: oidc
+  gate: interoperability
+  steps:
+  - type: make
+    makefile: oidc/Makefile
+    target: interoperability
+    timeout: 20m
+- module: oidc
+  gate: fuzz
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    fuzz: '^Fuzz'
+    budget: 100x
+    timeout: 20m
+- module: oidc
+  gate: benchmark
+  steps:
+  - type: go-test
+    packages:
+    - "."
+    benchmark: "."
+    budget: 100ms

@@ -39,3 +39,6 @@ check() {
 }
 
 check . github.com/faustbrian/go-authentication api/root.txt
+check authotel github.com/faustbrian/go-authentication/authotel authotel/api/baseline.txt
+check jwt github.com/faustbrian/go-authentication/jwt jwt/api/baseline.txt
+check oidc github.com/faustbrian/go-authentication/oidc oidc/api/baseline.txt
