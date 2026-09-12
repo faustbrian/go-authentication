@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "repository": "github.com/faustbrian/go-authentication",
-  "go_version": "1.26.6",
+  "go_version": "1.27.0",
   "modules": [
     {
       "directory": ".",
       "module_path": "github.com/faustbrian/go-authentication",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": ".",
@@ -153,7 +153,7 @@
     {
       "directory": "authotel",
       "module_path": "github.com/faustbrian/go-authentication/authotel",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "authotel",
@@ -217,7 +217,7 @@
     {
       "directory": "jwt",
       "module_path": "github.com/faustbrian/go-authentication/jwt",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "jwt",
@@ -297,7 +297,7 @@
     {
       "directory": "oidc",
       "module_path": "github.com/faustbrian/go-authentication/oidc",
-      "go_version": "1.26.6",
+      "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": "oidc",
