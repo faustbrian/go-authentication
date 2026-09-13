@@ -38,6 +38,16 @@ endpoint on 2026-08-09. It is immutable interoperability evidence for that
 observed provider document, not a claim about Google's current or certified
 state after that date.
 
+## Upstream review history
+
+### 2026-09-13
+
+RFC 9111 Erratum 9004 was reported as a technical clarification: the
+`proxy-revalidate` directive controls revalidation after staleness but does not
+authorize shared-cache storage of authenticated responses. OIDC discovery and
+JWKS refresh do not use shared-cache storage authorization, so their selected
+freshness behavior and decision bindings remain unchanged.
+
 ## Fixture maintenance
 
 - `oidc-core-section-2.json` is a minimal manual transcription of the claims in

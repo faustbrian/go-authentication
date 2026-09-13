@@ -27,6 +27,16 @@ exact compact value or JWK from the linked RFC, remove formatting whitespace,
 run `shasum -a 256` and `wc -c` over that exact byte sequence, update its
 manifest row, and rerun `make conformance`.
 
+## Upstream review history
+
+### 2026-09-13
+
+RFC 9111 Erratum 9004 was reported as a technical clarification: the
+`proxy-revalidate` directive controls revalidation after staleness but does not
+authorize shared-cache storage of authenticated responses. JWT remote-key
+refresh does not use shared-cache storage authorization, so its selected
+freshness behavior and decision bindings remain unchanged.
+
 
 ## Decision conformance matrix
 
