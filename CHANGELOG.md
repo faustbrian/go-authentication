@@ -55,6 +55,11 @@ this project follows Semantic Versioning.
   The required specification lane remains independent of module-resolution
   failures in the broader repository gate.
 
+### Changed
+
+- Register maintained API baselines and typed compatibility operations for the
+  root authentication module and its independently releasable adapters.
+
 ### Documentation
 
 - Link the root and optional modules to the immutable v1.4.0 Golib ecosystem
