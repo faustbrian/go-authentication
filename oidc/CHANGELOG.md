@@ -6,6 +6,10 @@ All notable changes to this module are documented here.
 
 ### Changed
 
+- Adopt coreos/go-oidc v3.21.0. Caller-supplied upstream `RemoteKeySet`
+  implementations now ignore unsupported JWK types alongside usable signing
+  keys, rather than rejecting the entire key set. The package-owned discovery
+  and JWKS parser used by `New` retains its existing strict policy.
 - Publish schema-v2 cohesion metadata for OIDC discovery and validation, with
   an immutable Golib ecosystem-index entry point.
 - Reconcile `go-authentication` and `go-clock` v1.0.0 with their public SumDB
