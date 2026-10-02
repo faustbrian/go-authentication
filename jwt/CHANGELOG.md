@@ -4,6 +4,13 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Security
+
+- Adopt JWX 3.3.0 so defensive JWK copies escape custom JSON member names
+  instead of allowing them to inject registered key metadata or corrupt the
+  copied document. Static and remote key sets retain literal extension names;
+  the supported algorithm policy is unchanged.
+
 ### Changed
 
 - Back off automatic remote key-set retries after network or response-policy
