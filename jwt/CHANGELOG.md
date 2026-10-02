@@ -2,6 +2,15 @@
 
 All notable changes to this module are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Back off automatic remote key-set retries after network or response-policy
+  failures by the configured minimum refresh interval, one minute by default,
+  instead of retrying roughly every second. Previously cached keys remain
+  available after a failed refresh; explicit `Refresh` still fetches immediately.
+
 ## 1.1.0 - 2026-09-08
 
 ### Changed
