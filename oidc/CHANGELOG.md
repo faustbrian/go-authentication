@@ -6,10 +6,6 @@ All notable changes to this module are documented here.
 
 ### Changed
 
-- Adopt coreos/go-oidc v3.21.0. Caller-supplied upstream `RemoteKeySet`
-  implementations now ignore unsupported JWK types alongside usable signing
-  keys, rather than rejecting the entire key set. The package-owned discovery
-  and JWKS parser used by `New` retains its existing strict policy.
 - Publish schema-v2 cohesion metadata for OIDC discovery and validation, with
   an immutable Golib ecosystem-index entry point.
 - Reconcile `go-authentication` and `go-clock` v1.0.0 with their public SumDB
@@ -67,6 +63,15 @@ All notable changes to this module are documented here.
 - OIDC-DEC-010 sha256:f7909c473937446e2ae83dcc52f5020bd22c3a94bb0f56e18ed058d47b395215
 - OIDC-DEC-011 sha256:818c068a1c4bbca20d91854a6dd5146b760bd2b9a909637b31199e7eef5983a2
 - OIDC-DEC-012 sha256:afba367424b1bb76c608a91d80f2f54244ba67ad4f267b6fc861987813fb5204
+
+## [1.0.2] - 2026-10-03
+
+### Changed
+
+- Adopt coreos/go-oidc v3.21.0. Caller-supplied upstream `RemoteKeySet`
+  implementations now ignore unsupported JWK types alongside usable signing
+  keys, rather than rejecting the entire key set. The package-owned discovery
+  and JWKS parser used by `New` retains its existing strict policy.
 
 ## 1.0.0 - 2026-08-25
 
@@ -137,3 +142,6 @@ All notable changes to this module are documented here.
   changed, preserving isolated module verification.
 - Refreshed the canonical authentication checksum after its API compatibility
   baseline was normalized to the module boundary.
+
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/oidc/v1.0.2...HEAD
+[1.0.2]: https://github.com/faustbrian/go-authentication/compare/oidc/v1.0.1...oidc/v1.0.2

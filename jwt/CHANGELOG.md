@@ -4,6 +4,8 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-10-03
+
 ### Security
 
 - Adopt JWX 3.3.0 so defensive JWK copies escape custom JSON member names
@@ -149,3 +151,6 @@ All notable changes to this module are documented here.
   changed, preserving isolated module verification.
 - Refreshed the canonical authentication checksum after its API compatibility
   baseline was normalized to the module boundary.
+
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.2...HEAD
+[1.1.2]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.1...jwt/v1.1.2
