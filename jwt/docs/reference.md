@@ -113,6 +113,11 @@ under the documented fail-stale policy.
 
 A successful refresh atomically replaces the cached set. A failed refresh
 returns `ErrAuthenticationUnavailable` and retains the last successful set.
+Automatic network and response-policy failures defer the next attempt by the
+configured minimum refresh interval, one minute by default. HTTP error responses
+retain their cache-header scheduling within the configured bounds. Recovery and
+new-key discovery therefore wait for the next successful scheduled attempt;
+explicit `Refresh` bypasses that waiting interval.
 That fail-stale policy preserves validation for already-known keys during an
 issuer outage; it never accepts an unknown key. Applications that require
 fail-closed freshness must stop using or shut down the provider after their own
