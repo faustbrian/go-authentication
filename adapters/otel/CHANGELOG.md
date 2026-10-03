@@ -2,6 +2,15 @@
 
 All notable changes to this module are documented here.
 
+## [Unreleased]
+
+## [1.0.2] - 2026-10-03
+
+### Changed
+
+- Refresh the indirect go-clock dependency while preserving telemetry signal
+  names, instrumentation scope, and caller-owned provider lifecycle.
+
 ## 1.0.0 - 2026-09-08
 
 ### Added
@@ -20,3 +29,6 @@ All notable changes to this module are documented here.
   signal names, units, attributes, and completion behavior remain unchanged.
   The instrumentation scope becomes the successor module path, and deprecated
   `Start` remains available throughout the compatibility interval.
+
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/adapters/otel/v1.0.2...HEAD
+[1.0.2]: https://github.com/faustbrian/go-authentication/compare/adapters/otel/v1.0.1...adapters/otel/v1.0.2

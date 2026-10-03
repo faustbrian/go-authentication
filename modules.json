@@ -219,7 +219,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.2.0",
+      "version": "1.2.2",
       "tag_prefix": "v",
       "owned_dependencies": [
         "github.com/faustbrian/go-clock"
@@ -365,7 +365,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.0.0",
+      "version": "1.0.2",
       "tag_prefix": "adapters/otel/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -499,7 +499,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.1.0",
+      "version": "1.1.2",
       "tag_prefix": "authotel/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -644,7 +644,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.1.0",
+      "version": "1.1.2",
       "tag_prefix": "jwt/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -661,7 +661,7 @@
       "test_tags": [],
       "interoperability_tools": [
         "golang-jwt/jwt v5.3.1",
-        "lestrrat-go/jwx v3.1.1"
+        "lestrrat-go/jwx v3.3.0"
       ],
       "specifications": [
         "RFC 7515 JSON Web Signature",
@@ -803,7 +803,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.0.0",
+      "version": "1.0.2",
       "tag_prefix": "oidc/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",

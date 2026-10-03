@@ -2,6 +2,16 @@
 
 All notable changes to this module are documented here.
 
+## [Unreleased]
+
+## [1.1.2] - 2026-10-03
+
+### Changed
+
+- Adopt go-authentication v1.2.1 and refresh the indirect go-clock dependency
+  while retaining the deprecated adapter API, telemetry behavior, and legacy
+  instrumentation scope.
+
 ## 1.1.0 - 2026-09-08
 
 ### Changed
@@ -85,3 +95,6 @@ All notable changes to this module are documented here.
   instrumentation start-and-finish path.
 - Add bounded fuzz coverage for arbitrary credential, outcome, failure, and
   duration values across the complete instrumentation lifecycle.
+
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/authotel/v1.1.2...HEAD
+[1.1.2]: https://github.com/faustbrian/go-authentication/compare/authotel/v1.1.1...authotel/v1.1.2
