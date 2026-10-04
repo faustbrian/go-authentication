@@ -37,11 +37,31 @@ type Static struct {
 	digestKey [sha256.Size]byte
 	keyOnce   sync.Once
 	set       atomic.Pointer[keySet]
+	limits    config
 }
 
-// NewStatic validates and copies the initial active key set.
+// NewStatic validates and copies the initial active key set with inclusive raw
+// limits of 256 bytes per ID and 8 KiB per key. Principal limits are independent.
 func NewStatic(entries []Entry) (*Static, error) {
-	authenticator := &Static{}
+	return NewStaticWithOptions(entries)
+}
+
+// NewStaticWithOptions validates and copies entries with immutable credential
+// byte limits. WithMaxKeyIDBytes and WithMaxKeyBytes may reduce, but not exceed,
+// the defaults of 256 bytes and 8 KiB. Zero or negative limits are invalid.
+// Replace and Authenticate use the same limits for this owner's lifetime.
+func NewStaticWithOptions(entries []Entry, options ...Option) (*Static, error) {
+	configuration := config{maxKeyIDBytes: defaultMaxKeyIDBytes, maxKeyBytes: defaultMaxKeyBytes}
+	for _, option := range options {
+		if option != nil {
+			option(&configuration)
+		}
+	}
+	if configuration.maxKeyIDBytes <= 0 || configuration.maxKeyIDBytes > defaultMaxKeyIDBytes ||
+		configuration.maxKeyBytes <= 0 || configuration.maxKeyBytes > defaultMaxKeyBytes {
+		return nil, fmt.Errorf("%w: API-key size bounds", authentication.ErrInvalidConfiguration)
+	}
+	authenticator := &Static{limits: configuration}
 	if err := authenticator.Replace(entries); err != nil {
 		return nil, err
 	}
@@ -49,10 +69,12 @@ func NewStatic(entries []Entry) (*Static, error) {
 }
 
 // Replace atomically replaces all active keys after validating the complete
-// candidate set. A failed replacement leaves the previous set active.
+// candidate set, admitting all credential bytes before hashing or copying
+// principals. A failed replacement leaves the previous set and limits active.
+// The zero-value Static uses the default limits and can install its first set.
 func (s *Static) Replace(entries []Entry) error {
 	digestKey := s.key()
-	built, err := buildKeySet(entries, digestKey)
+	built, err := buildKeySet(entries, digestKey, s.byteLimits())
 	if err != nil {
 		return err
 	}
@@ -60,7 +82,9 @@ func (s *Static) Replace(entries []Entry) error {
 	return nil
 }
 
-// Authenticate validates one API key against a single immutable key-set snapshot.
+// Authenticate admits raw ID/key bytes before hashing, then validates against a
+// single immutable key-set snapshot. Oversized fields fail invalid; cancellation
+// takes precedence.
 func (s *Static) Authenticate(ctx context.Context, credential authentication.Credential) (authentication.Result, error) {
 	if err := ctx.Err(); err != nil {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureUnavailable,
@@ -68,6 +92,10 @@ func (s *Static) Authenticate(ctx context.Context, credential authentication.Cre
 	}
 	apiKey, ok := credential.(authentication.APIKeyCredential)
 	if !ok || apiKey.KeyID() == "" || apiKey.Key() == "" {
+		return authentication.Result{}, authentication.NewFailure(authentication.FailureInvalid)
+	}
+	limits := s.byteLimits()
+	if len(apiKey.KeyID()) > limits.maxKeyIDBytes || len(apiKey.Key()) > limits.maxKeyBytes {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureInvalid)
 	}
 
@@ -96,9 +124,14 @@ func (s *Static) Authenticate(ctx context.Context, credential authentication.Cre
 	return result, nil
 }
 
-func buildKeySet(entries []Entry, digestKey []byte) (*keySet, error) {
+func buildKeySet(entries []Entry, digestKey []byte, limits config) (*keySet, error) {
 	if len(entries) == 0 || len(entries) > MaxEntries {
 		return nil, fmt.Errorf("%w: API-key entry count", authentication.ErrInvalidConfiguration)
+	}
+	for index := range entries {
+		if len(entries[index].ID) > limits.maxKeyIDBytes || len(entries[index].Key) > limits.maxKeyBytes {
+			return nil, fmt.Errorf("%w: API-key credential size", authentication.ErrInvalidConfiguration)
+		}
 	}
 
 	built := make([]staticEntry, 0, len(entries))
@@ -134,6 +167,17 @@ func buildKeySet(entries []Entry, digestKey []byte) (*keySet, error) {
 	}
 
 	return &keySet{entries: built}, nil
+}
+
+func (s *Static) byteLimits() config {
+	limits := s.limits
+	if limits.maxKeyIDBytes == 0 {
+		limits.maxKeyIDBytes = defaultMaxKeyIDBytes
+	}
+	if limits.maxKeyBytes == 0 {
+		limits.maxKeyBytes = defaultMaxKeyBytes
+	}
+	return limits
 }
 
 func (s *Static) key() []byte {

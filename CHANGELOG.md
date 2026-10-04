@@ -8,6 +8,18 @@ this project follows Semantic Versioning.
 ### Changed
 
 - Require Go 1.27.0 for development, builds, and downstream consumers.
+- Bound static Basic usernames/passwords at 8 KiB each and static API-key
+  identifiers/keys at 256 bytes/8 KiB before credential processing. Add
+  `NewStaticWithOptions` for smaller positive limits. Oversized direct
+  credentials are invalid; failed API-key replacement retains the active set.
+  Previously accepted values above these defaults require credential migration
+  before adopting the next major release.
+- Bound Principal retention at 8 KiB per string, 256 entries per identity list,
+  64 KiB of retained string occurrences, and 4096 recursive claim values.
+  Add `NewPrincipalWithOptions` for smaller positive limits, clone retained
+  string storage, and preserve typed scalar claims and defensive accessors.
+  Previously accepted identities above these defaults require producer
+  migration before adopting the next major release; no data is truncated.
 
 ### Fixed
 

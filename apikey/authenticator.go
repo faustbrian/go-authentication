@@ -31,15 +31,17 @@ type config struct {
 	maxKeyBytes   int
 }
 
-// Option configures an Authenticator.
+// Option configures an Authenticator or a Static through NewStaticWithOptions.
 type Option func(*config)
 
-// WithMaxKeyIDBytes sets the inclusive key-ID size bound.
+// WithMaxKeyIDBytes sets the inclusive raw key-ID byte bound. For Static, the
+// maximum must be between one and the default 256 bytes.
 func WithMaxKeyIDBytes(maximum int) Option {
 	return func(configuration *config) { configuration.maxKeyIDBytes = maximum }
 }
 
-// WithMaxKeyBytes sets the inclusive key size bound.
+// WithMaxKeyBytes sets the inclusive raw key byte bound. For Static, the maximum
+// must be between one and the default 8 KiB.
 func WithMaxKeyBytes(maximum int) Option {
 	return func(configuration *config) { configuration.maxKeyBytes = maximum }
 }

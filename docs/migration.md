@@ -1,5 +1,53 @@
 # Migration
 
+## Static credential byte admission in the next major release
+
+Existing `basic.NewStatic` and `apikey.NewStatic` signatures remain available,
+but their accepted input domain is narrower. Static Basic usernames and
+passwords each have an inclusive 8 KiB raw-byte ceiling. Static API-key IDs have
+an inclusive 256-byte ceiling, and keys an inclusive 8 KiB ceiling. Inventory
+configured and incoming credential lengths before rollout; rotate values above
+these defaults. These limits do not replace independent Principal admission.
+
+Use `basic.NewStaticWithOptions` with `basic.WithMaxUsernameBytes` and
+`basic.WithMaxPasswordBytes`, or `apikey.NewStaticWithOptions` with
+`apikey.WithMaxKeyIDBytes` and `apikey.WithMaxKeyBytes`, to select smaller limits.
+Explicit limits must be positive and cannot exceed the static defaults. The
+existing callback API-key authenticator's option behavior is unchanged.
+
+Construction and API-key replacement refuse oversized configured credentials
+with `authentication.ErrInvalidConfiguration`, without exposing their values.
+Direct authentication refuses oversized fields with `FailureInvalid`; canceled
+contexts retain precedence and their original cause. API-key replacement
+validates the complete candidate before publication, retaining the old active
+set and its immutable limits on failure. A zero-value API-key `Static` uses the
+default limits when its first set is installed. Bearer credential-byte admission
+is unchanged.
+
+## Principal admission in the next major release
+
+`NewPrincipal` retains its signature but now admits at most 8 KiB per retained
+string, 256 entries in each audience/tenant-hint/scope list, 64 KiB of retained
+string occurrences, and 4096 recursive claim-value occurrences shared across
+top-level claims. Existing claim count, depth, and collection limits remain.
+Repeated strings, keys, and shared collections are charged for each output
+occurrence; interface wrappers add no claim occurrence or depth.
+
+`NewPrincipalWithOptions` and its Principal-local `WithMaxPrincipal…` options
+select smaller positive limits, not an override of the ceilings. Admission
+failures match `ErrInvalidPrincipal`; invalid options also match
+`ErrInvalidConfiguration`. Refusal never truncates identity data or drops claims.
+Inventory authoritative static/callback/JWT/OIDC identity producers and their
+downstream claim requirements before rollout; do not silently truncate
+security-relevant data to fit the new accepted-input contract.
+
+Retained strings have independent backing storage, defined scalar-string types
+such as `json.Number` remain intact, and accessors return defensive containers.
+`AuthenticatedAt` and its `time.Location` remain unchanged trusted
+clock/application metadata outside these budgets. See
+[Principal admission and ownership](guides/principal-limits.md) for exact
+accounting, caller synchronization, and upstream ownership boundaries.
+
 ## From the legacy HTTP and logging adapter paths
 
 Replace imports without changing constructor calls or option ordering:
