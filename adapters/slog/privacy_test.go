@@ -101,7 +101,8 @@ func TestCategoricalPrivacyPreservesAuthentication(t *testing.T) {
 				if constructor == "Begin" {
 					wrapped, err = authentication.NewInstrumentedWithBegin(base, instrumenter, privacyClock{})
 				} else {
-					wrapped, err = authentication.NewInstrumented(base, instrumenter, privacyClock{})
+					//lint:ignore SA1019 The supported legacy constructor remains regression-covered.
+					wrapped, err = authentication.NewInstrumented(base, instrumenter, privacyClock{}) //nolint:staticcheck // SA1019: supported legacy constructor coverage.
 				}
 				if err != nil {
 					t.Fatal("constructing decorated authenticator failed")

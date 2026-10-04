@@ -50,7 +50,8 @@ func TestLegacyFacadeCategoricalPrivacy(t *testing.T) {
 			}
 			begin := instrumenter.Begin
 			if method == "Start" {
-				begin = instrumenter.Start
+				//lint:ignore SA1019 The supported retained Start contract remains regression-covered.
+				begin = instrumenter.Start //nolint:staticcheck // SA1019: supported retained Start coverage.
 			}
 			ctx := context.Background()
 			next, finish := begin(ctx, "ordinary-kind")
