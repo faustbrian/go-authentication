@@ -9,6 +9,14 @@ this project follows Semantic Versioning.
 
 - Require Go 1.27.0 for development, builds, and downstream consumers.
 
+### Fixed
+
+- Project structured authentication log categories to fixed built-in values
+  or `unknown` in `adapters/slog` and retained `authlog`. Admit the credential
+  kind before retaining the completion callback. Built-in categories, empty
+  failures, and authentication behavior remain unchanged; custom category
+  strings no longer appear in these records.
+
 ## [1.2.2] - 2026-10-03
 
 ### Changed

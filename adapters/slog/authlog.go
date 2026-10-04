@@ -22,18 +22,67 @@ func New(logger *slog.Logger) (*Instrumenter, error) {
 	return &Instrumenter{logger: logger}, nil
 }
 
-// Begin starts one bounded authentication observation.
+// Begin starts one bounded authentication observation. Categories are projected
+// to built-in constants or "unknown"; an empty failure remains empty.
 func (i *Instrumenter) Begin(
 	ctx context.Context,
 	kind authentication.CredentialKind,
 ) (context.Context, func(authentication.Event)) {
+	// Project before creating the callback so it never retains caller-owned
+	// category storage, even when its contents match a built-in kind.
+	admittedKind := boundedCredentialKind(kind)
 	return ctx, func(event authentication.Event) {
 		i.logger.InfoContext(ctx, "authentication completed",
-			"credential_kind", kind,
-			"outcome", event.Outcome,
-			"failure_kind", event.Failure,
+			"credential_kind", admittedKind,
+			"outcome", boundedOutcome(event.Outcome),
+			"failure_kind", boundedFailureKind(event.Failure),
 			"duration_ms", event.Duration.Milliseconds(),
 		)
+	}
+}
+
+func boundedCredentialKind(kind authentication.CredentialKind) authentication.CredentialKind {
+	switch kind {
+	case authentication.CredentialBasic:
+		return authentication.CredentialBasic
+	case authentication.CredentialBearer:
+		return authentication.CredentialBearer
+	case authentication.CredentialAPIKey:
+		return authentication.CredentialAPIKey
+	default:
+		return "unknown"
+	}
+}
+
+func boundedOutcome(outcome authentication.Outcome) authentication.Outcome {
+	switch outcome {
+	case authentication.OutcomeAuthenticated:
+		return authentication.OutcomeAuthenticated
+	case authentication.OutcomeAnonymous:
+		return authentication.OutcomeAnonymous
+	case authentication.OutcomeFailed:
+		return authentication.OutcomeFailed
+	default:
+		return "unknown"
+	}
+}
+
+func boundedFailureKind(kind authentication.FailureKind) authentication.FailureKind {
+	switch kind {
+	case "":
+		return ""
+	case authentication.FailureAbsent:
+		return authentication.FailureAbsent
+	case authentication.FailureInvalid:
+		return authentication.FailureInvalid
+	case authentication.FailureRejected:
+		return authentication.FailureRejected
+	case authentication.FailureUnavailable:
+		return authentication.FailureUnavailable
+	case authentication.FailureAmbiguous:
+		return authentication.FailureAmbiguous
+	default:
+		return "unknown"
 	}
 }
 

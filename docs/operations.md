@@ -15,6 +15,17 @@ means expiration or rotation drift; unavailable failures mean a verifier,
 network, issuer, or cache problem. Do not add subject, token, claim, key,
 header, URL query, or cookie values to metrics or traces.
 
+The `adapters/slog` adapter and retained `authlog` facade project categorical
+inputs to fixed values. Credential kinds are `basic`, `bearer`, or `api_key`;
+outcomes are `authenticated`, `anonymous`, or `failed`; failure kinds are
+`absent`, `invalid`, `rejected`, `unavailable`, or `ambiguous`. Unrecognized
+values become `unknown`, while an empty failure remains empty, including on
+successful and anonymous attempts. `Begin` projects the credential kind before
+retaining it in the completion callback; `Start` delegates to the same boundary.
+This changes only the log representation, not authentication inputs, results,
+errors, or contexts. Applications still own logger configuration, handler
+behavior, and any additional attributes they attach outside this adapter.
+
 Set HTTP client timeouts and request deadlines appropriate to the service.
 OIDC adds a 30-second client timeout only when the supplied client has none.
 OIDC remote keys use conditional requests and bounded HTTP freshness. Configure

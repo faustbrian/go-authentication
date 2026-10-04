@@ -14,6 +14,12 @@ The preferred package identifiers are `authenticationhttp` and
 their exported types are aliases of the successors, so assignments, interface
 satisfaction, error traversal, and reflection identity remain unchanged.
 
+Both logging paths now represent unfamiliar credential kinds, outcomes, and
+nonempty failure kinds as `unknown` instead of logging caller-supplied strings.
+Built-in categories and empty failures retain their existing representation.
+Adjust log queries that relied on custom category strings; authentication
+behavior and the logging record's keys, message, and duration are unchanged.
+
 ## From ad hoc middleware
 
 1. Inventory accepted credential locations and disable accidental query or
