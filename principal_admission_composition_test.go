@@ -10,7 +10,8 @@ import (
 	authentication "github.com/faustbrian/go-authentication/v2"
 	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 	"github.com/faustbrian/go-authentication/v2/apikey"
-	"github.com/faustbrian/go-authentication/v2/authhttp"
+	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+	"github.com/faustbrian/go-authentication/v2/authhttp" //nolint:staticcheck // Retained facade compatibility coverage.
 	"github.com/faustbrian/go-authentication/v2/basic"
 	"github.com/faustbrian/go-authentication/v2/bearer"
 )
@@ -77,11 +78,13 @@ func TestPrincipalAdmissionSmallPolicyHTTPConsumers(t *testing.T) {
 	if err != nil {
 		t.Fatal("canonical middleware configuration failed")
 	}
-	retained, err := authhttp.NewExtractor(authhttp.BearerAuthorization())
+	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+	retained, err := authhttp.NewExtractor(authhttp.BearerAuthorization()) //nolint:staticcheck // Retained facade compatibility coverage.
 	if err != nil {
 		t.Fatal("retained extractor configuration failed")
 	}
-	retainedMiddleware, err := authhttp.NewMiddleware(retained, authenticator)
+	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+	retainedMiddleware, err := authhttp.NewMiddleware(retained, authenticator) //nolint:staticcheck // Retained facade compatibility coverage.
 	if err != nil {
 		t.Fatal("retained middleware configuration failed")
 	}

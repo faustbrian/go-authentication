@@ -10,7 +10,8 @@ import (
 	authentication "github.com/faustbrian/go-authentication/v2"
 	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 	"github.com/faustbrian/go-authentication/v2/apikey"
-	legacyhttp "github.com/faustbrian/go-authentication/v2/authhttp"
+	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+	legacyhttp "github.com/faustbrian/go-authentication/v2/authhttp" //nolint:staticcheck // Retained facade compatibility coverage.
 	"github.com/faustbrian/go-authentication/v2/basic"
 	"github.com/faustbrian/go-authentication/v2/bearer"
 )
@@ -63,7 +64,8 @@ func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
 					request.SetBasicAuth("user", "open")
 					source = authenticationhttp.BasicAuthorization()
 					if path == "retained" {
-						source = legacyhttp.BasicAuthorization()
+						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+						source = legacyhttp.BasicAuthorization() //nolint:staticcheck // Retained facade compatibility coverage.
 					}
 				case "api_key":
 					authenticator, err = apikey.NewStaticWithOptions([]apikey.Entry{{
@@ -73,7 +75,8 @@ func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
 					request.Header.Set("X-Key", "open")
 					source = authenticationhttp.APIKeyHeader("X-Key-ID", "X-Key")
 					if path == "retained" {
-						source = legacyhttp.APIKeyHeader("X-Key-ID", "X-Key")
+						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+						source = legacyhttp.APIKeyHeader("X-Key-ID", "X-Key") //nolint:staticcheck // Retained facade compatibility coverage.
 					}
 				case "bearer":
 					authenticator, err = bearer.NewStatic([]bearer.Entry{{
@@ -82,7 +85,8 @@ func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
 					request.Header.Set("Authorization", "Bearer open")
 					source = authenticationhttp.BearerAuthorization()
 					if path == "retained" {
-						source = legacyhttp.BearerAuthorization()
+						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+						source = legacyhttp.BearerAuthorization() //nolint:staticcheck // Retained facade compatibility coverage.
 					}
 				}
 				if err != nil {
@@ -91,8 +95,10 @@ func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
 				newExtractor := authenticationhttp.NewExtractor
 				newMiddleware := authenticationhttp.NewMiddleware
 				if path == "retained" {
-					newExtractor = legacyhttp.NewExtractor
-					newMiddleware = legacyhttp.NewMiddleware
+					//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+					newExtractor = legacyhttp.NewExtractor //nolint:staticcheck // Retained facade compatibility coverage.
+					//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
+					newMiddleware = legacyhttp.NewMiddleware //nolint:staticcheck // Retained facade compatibility coverage.
 				}
 				extractor, err := newExtractor(source)
 				if err != nil {
