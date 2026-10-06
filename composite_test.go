@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 type authenticatorFunc func(context.Context, authentication.Credential) (authentication.Result, error)

@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authenticationhttp "github.com/faustbrian/go-authentication/adapters/http"
-	legacy "github.com/faustbrian/go-authentication/authhttp"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
+	legacy "github.com/faustbrian/go-authentication/v2/authhttp"
 )
 
 func TestLegacyFacadePreservesHTTPTypeIdentityAndExtraction(t *testing.T) {

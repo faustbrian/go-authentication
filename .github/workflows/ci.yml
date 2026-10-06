@@ -48,9 +48,10 @@ jobs:
 
   ci:
     needs: qualification-inputs
-    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@be0fd7d09b02c9dff29e6b00a5245ceac3cdfdfb # v1.8.5
+    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@1bdc21ced96f6a1ea2870d40b9b60ade160ac529 # reviewed development tooling
     with:
-      tooling_sha: be0fd7d09b02c9dff29e6b00a5245ceac3cdfdfb
+      tooling_sha: 1bdc21ced96f6a1ea2870d40b9b60ade160ac529
+      source_bootstrap: true
       release_dry_run: ${{ inputs.release_dry_run || false }}
       release_module: ${{ inputs.release_module || '' }}
 
@@ -82,7 +83,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: faustbrian/go-library-tools
-          ref: dbce31aab4f15b3440e0559d3e2bad8912b6e567
+          ref: 1bdc21ced96f6a1ea2870d40b9b60ade160ac529
           persist-credentials: false
           path: tooling
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -112,7 +113,7 @@ jobs:
         working-directory: tooling
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = dbce31aab4f15b3440e0559d3e2bad8912b6e567
+          test "$(git rev-parse HEAD)" = 1bdc21ced96f6a1ea2870d40b9b60ade160ac529
           go build -trimpath -buildvcs=false -o "${QUALIFICATION_TASK}/golib" ./cmd/golib
           test "$("${QUALIFICATION_TASK}/golib" --version)" = dev
       - name: Qualify the complete root contract

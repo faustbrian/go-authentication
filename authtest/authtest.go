@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 	"github.com/faustbrian/go-clock/manual"
 )
 

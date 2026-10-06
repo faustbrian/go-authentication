@@ -9,7 +9,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // MaxEntries bounds the work performed for one static Basic authentication.

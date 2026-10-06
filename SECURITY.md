@@ -3,16 +3,20 @@
 ## Supported versions
 
 Security fixes are applied to the latest stable v1 release.
-the latest major release receives fixes unless a longer window is announced.
+The prepared root v2 release is not yet published. Its admission safeguards
+must not be attributed to published v1 roots or the retained v1 optional
+modules. Publication of v2 does not withdraw the latest-stable-v1 support
+promise above.
 
 | Version | Supported |
 | --- | --- |
-| Unreleased | Yes |
+| Latest stable root v1 (`v1.2.2`) | Yes |
+| Prepared root v2 (`v2.0.0`, unpublished) | Under development |
 
 ## Reporting a vulnerability
 
 Do not open a public issue. Use GitHub private vulnerability reporting for
-`faustbrian/authentication`. Include the affected version, reproduction,
+`faustbrian/go-authentication`. Include the affected version, reproduction,
 realistic impact, possible credential exposure, and any embargo constraints.
 Expect acknowledgement within five business days.
 

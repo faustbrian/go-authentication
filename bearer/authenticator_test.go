@@ -8,8 +8,8 @@ import (
 	"sync"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/bearer"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	"github.com/faustbrian/go-authentication/v2/bearer"
 )
 
 func TestStaticRotatesBoundedBearerKeysAtomically(t *testing.T) {

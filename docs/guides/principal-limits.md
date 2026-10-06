@@ -87,10 +87,11 @@ adopting this change. Do not silently truncate security-relevant identity or
 claim data to make it fit. This behavior belongs in the coordinated major
 release's migration notes.
 
-Static Basic, API-key, and bearer producers continue to use `NewPrincipal` and
-therefore its defaults. JWT and OIDC producers also reach the shared default
-owner and fail closed when a constructed identity exceeds its admission limits.
-Callback producers can select smaller limits with `NewPrincipalWithOptions`.
-Canonical HTTP middleware and the retained `authhttp` facade keep the same
+Root-v2 static Basic, API-key, and bearer producers use `NewPrincipal` and
+therefore its defaults. Retained JWT and OIDC modules still use root-v1
+construction; they do not receive these new limits until separately migrated
+to root v2. Root-v2 callback producers can select smaller limits with
+`NewPrincipalWithOptions`. Root-v2 canonical HTTP middleware and the retained
+`authhttp` facade keep the same
 Principal/result/context representation; they do not bypass admission or
 introduce a second Principal policy.

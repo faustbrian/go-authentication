@@ -1,4 +1,4 @@
-module github.com/faustbrian/go-authentication
+module github.com/faustbrian/go-authentication/v2
 
 go 1.27.0
 

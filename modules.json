@@ -5,14 +5,14 @@
   "modules": [
     {
       "directory": ".",
-      "module_path": "github.com/faustbrian/go-authentication",
+      "module_path": "github.com/faustbrian/go-authentication/v2",
       "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": ".",
           "directory": ".",
           "name": "authentication",
-          "import_path": "github.com/faustbrian/go-authentication",
+          "import_path": "github.com/faustbrian/go-authentication/v2",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -24,7 +24,7 @@
           "module_directory": ".",
           "directory": "apikey",
           "name": "apikey",
-          "import_path": "github.com/faustbrian/go-authentication/apikey",
+          "import_path": "github.com/faustbrian/go-authentication/v2/apikey",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -36,7 +36,7 @@
           "module_directory": ".",
           "directory": "adapters/http",
           "name": "authenticationhttp",
-          "import_path": "github.com/faustbrian/go-authentication/adapters/http",
+          "import_path": "github.com/faustbrian/go-authentication/v2/adapters/http",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -48,7 +48,7 @@
           "module_directory": ".",
           "directory": "adapters/slog",
           "name": "authenticationslog",
-          "import_path": "github.com/faustbrian/go-authentication/adapters/slog",
+          "import_path": "github.com/faustbrian/go-authentication/v2/adapters/slog",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -60,7 +60,7 @@
           "module_directory": ".",
           "directory": "authhttp",
           "name": "authhttp",
-          "import_path": "github.com/faustbrian/go-authentication/authhttp",
+          "import_path": "github.com/faustbrian/go-authentication/v2/authhttp",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -72,7 +72,7 @@
           "module_directory": ".",
           "directory": "authlog",
           "name": "authlog",
-          "import_path": "github.com/faustbrian/go-authentication/authlog",
+          "import_path": "github.com/faustbrian/go-authentication/v2/authlog",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -84,7 +84,7 @@
           "module_directory": ".",
           "directory": "authtest",
           "name": "authtest",
-          "import_path": "github.com/faustbrian/go-authentication/authtest",
+          "import_path": "github.com/faustbrian/go-authentication/v2/authtest",
           "kind": "test support",
           "production": false,
           "executable": true,
@@ -96,7 +96,7 @@
           "module_directory": ".",
           "directory": "basic",
           "name": "basic",
-          "import_path": "github.com/faustbrian/go-authentication/basic",
+          "import_path": "github.com/faustbrian/go-authentication/v2/basic",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -108,7 +108,7 @@
           "module_directory": ".",
           "directory": "bearer",
           "name": "bearer",
-          "import_path": "github.com/faustbrian/go-authentication/bearer",
+          "import_path": "github.com/faustbrian/go-authentication/v2/bearer",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -141,18 +141,18 @@
         ],
         "public_package_identifier": "authentication",
         "primary_entry_packages": [
-          "github.com/faustbrian/go-authentication"
+          "github.com/faustbrian/go-authentication/v2"
         ],
         "package_selection": {
-          "github.com/faustbrian/go-authentication": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
-          "github.com/faustbrian/go-authentication/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
-          "github.com/faustbrian/go-authentication/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
-          "github.com/faustbrian/go-authentication/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
-          "github.com/faustbrian/go-authentication/authhttp": "Deprecated compatibility path for adapters/http.",
-          "github.com/faustbrian/go-authentication/authlog": "Deprecated compatibility path for adapters/slog.",
-          "github.com/faustbrian/go-authentication/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
-          "github.com/faustbrian/go-authentication/basic": "Use for constant-work static Basic authentication.",
-          "github.com/faustbrian/go-authentication/bearer": "Use for opaque bearer-token validators and bounded static token sets."
+          "github.com/faustbrian/go-authentication/v2": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
+          "github.com/faustbrian/go-authentication/v2/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
+          "github.com/faustbrian/go-authentication/v2/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
+          "github.com/faustbrian/go-authentication/v2/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
+          "github.com/faustbrian/go-authentication/v2/authhttp": "Deprecated compatibility path for adapters/http.",
+          "github.com/faustbrian/go-authentication/v2/authlog": "Deprecated compatibility path for adapters/slog.",
+          "github.com/faustbrian/go-authentication/v2/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
+          "github.com/faustbrian/go-authentication/v2/basic": "Use for constant-work static Basic authentication.",
+          "github.com/faustbrian/go-authentication/v2/bearer": "Use for opaque bearer-token validators and bounded static token sets."
         },
         "lifecycle_status": "active",
         "maturity": "stable",
@@ -174,11 +174,11 @@
         },
         "optional_owned_dependencies": [],
         "adapters": [
-          "github.com/faustbrian/go-authentication/adapters/http",
+          "github.com/faustbrian/go-authentication/v2/adapters/http",
           "github.com/faustbrian/go-authentication/adapters/otel",
-          "github.com/faustbrian/go-authentication/adapters/slog",
-          "github.com/faustbrian/go-authentication/authhttp",
-          "github.com/faustbrian/go-authentication/authlog",
+          "github.com/faustbrian/go-authentication/v2/adapters/slog",
+          "github.com/faustbrian/go-authentication/v2/authhttp",
+          "github.com/faustbrian/go-authentication/v2/authlog",
           "github.com/faustbrian/go-authentication/authotel"
         ],
         "companions": [
@@ -209,7 +209,7 @@
           "examples": "example_test.go",
           "faq": "docs/faq.md",
           "changelog": "CHANGELOG.md",
-          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/v2",
           "ecosystem_index": "https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem"
         },
         "known_good_compatibility_sets": [],
@@ -219,7 +219,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.2.2",
+      "version": "2.0.0",
       "tag_prefix": "v",
       "owned_dependencies": [
         "github.com/faustbrian/go-clock"

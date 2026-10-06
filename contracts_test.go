@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 type externalPrincipalContextKey struct{}

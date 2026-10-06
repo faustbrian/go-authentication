@@ -7,12 +7,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authenticationhttp "github.com/faustbrian/go-authentication/adapters/http"
-	"github.com/faustbrian/go-authentication/apikey"
-	legacyhttp "github.com/faustbrian/go-authentication/authhttp"
-	"github.com/faustbrian/go-authentication/basic"
-	"github.com/faustbrian/go-authentication/bearer"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
+	"github.com/faustbrian/go-authentication/v2/apikey"
+	legacyhttp "github.com/faustbrian/go-authentication/v2/authhttp"
+	"github.com/faustbrian/go-authentication/v2/basic"
+	"github.com/faustbrian/go-authentication/v2/bearer"
 )
 
 func TestStaticByteAdmissionIsTerminalInComposite(t *testing.T) {

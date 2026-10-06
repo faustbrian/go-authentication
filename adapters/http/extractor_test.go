@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authhttp "github.com/faustbrian/go-authentication/adapters/http"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
 func TestBasicAuthorizationExtractionIsStrict(t *testing.T) {

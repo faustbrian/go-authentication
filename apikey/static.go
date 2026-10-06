@@ -11,7 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // MaxEntries bounds active key candidates and per-request comparison work.

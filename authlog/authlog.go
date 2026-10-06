@@ -1,13 +1,13 @@
 // Package authlog preserves the original structured-log adapter import path.
-// New code should import github.com/faustbrian/go-authentication/adapters/slog.
+// New code should import github.com/faustbrian/go-authentication/v2/adapters/slog.
 //
-// Deprecated: use github.com/faustbrian/go-authentication/adapters/slog.
+// Deprecated: use github.com/faustbrian/go-authentication/v2/adapters/slog.
 package authlog
 
 import (
 	"log/slog"
 
-	authenticationslog "github.com/faustbrian/go-authentication/adapters/slog"
+	authenticationslog "github.com/faustbrian/go-authentication/v2/adapters/slog"
 )
 
 // Instrumenter emits one bounded structured log record per attempt.
