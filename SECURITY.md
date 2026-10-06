@@ -2,16 +2,16 @@
 
 ## Supported versions
 
-Security fixes are applied to the latest stable v1 release.
-The prepared root v2 release is not yet published. Its admission safeguards
-must not be attributed to published v1 roots or the retained v1 optional
-modules. Publication of v2 does not withdraw the latest-stable-v1 support
-promise above.
+Security fixes are applied to the latest stable root release in each supported
+major line below. Root v2 support begins with publication of `v2.0.0`; its
+admission safeguards must not be attributed to published v1 roots or the
+retained v1 optional modules. Publication of v2 does not withdraw the
+latest-stable-v1 support promise.
 
 | Version | Supported |
 | --- | --- |
 | Latest stable root v1 (`v1.2.2`) | Yes |
-| Prepared root v2 (`v2.0.0`, unpublished) | Under development |
+| Latest stable root v2 (starting with `v2.0.0`) | Yes, once published |
 
 ## Reporting a vulnerability
 
@@ -69,9 +69,10 @@ this package cannot undo that disclosure.
 
 ## Dependency and release policy
 
-The default module has no external runtime dependencies. Optional modules pin
-their protocol and telemetry dependencies. CI runs vulnerability and dependency
-review, exact coverage, race, fuzz smoke, API compatibility, and reproducible
+The root module pins `github.com/faustbrian/go-clock v1.1.0` for its runtime
+clock contract. Optional modules pin their protocol and telemetry dependencies.
+CI runs vulnerability and dependency review, exact coverage, race, fuzz smoke,
+API compatibility, and reproducible
 archive checks. Release tags are annotated and never force-updated.
 
 OIDC remote refresh is synchronous, single-flight, capacity-bounded,
