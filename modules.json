@@ -174,12 +174,12 @@
         },
         "optional_owned_dependencies": [],
         "adapters": [
-          "github.com/faustbrian/go-authentication/v2/adapters/http",
           "github.com/faustbrian/go-authentication/adapters/otel",
+          "github.com/faustbrian/go-authentication/authotel",
+          "github.com/faustbrian/go-authentication/v2/adapters/http",
           "github.com/faustbrian/go-authentication/v2/adapters/slog",
           "github.com/faustbrian/go-authentication/v2/authhttp",
-          "github.com/faustbrian/go-authentication/v2/authlog",
-          "github.com/faustbrian/go-authentication/authotel"
+          "github.com/faustbrian/go-authentication/v2/authlog"
         ],
         "companions": [
           "github.com/faustbrian/go-authentication/jwt",
