@@ -25,7 +25,7 @@ api:
   baselines:
   - module: "."
     mode: apidiff
-    path: api/root.txt
+    path: api/root-v2.txt
   - module: "adapters/otel"
     mode: apidiff
     path: adapters/otel/api/baseline.txt

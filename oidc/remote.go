@@ -83,7 +83,7 @@ func New(ctx context.Context, configuration Config) (*Validator, error) {
 		issuer: configuration.Issuer, insecureHTTP: configuration.InsecureHTTP,
 		algorithms: joseAlgorithms(configuration.Algorithms), allowed: algorithms,
 		maxBodyBytes: configuration.MaxHTTPBodyBytes, maxKeys: configuration.MaxKeys,
-		jitter:             rand.Uint64(),
+		jitter:             rand.Uint64(), // #nosec G404 -- Per-instance refresh scheduling only, never credentials, keys, nonces, or authorization decisions.
 		clock:              configuration.Clock,
 		minRefreshInterval: configuration.MinRefreshInterval,
 		maxRefreshInterval: configuration.MaxRefreshInterval,
@@ -556,7 +556,7 @@ func (set *remoteKeySet) acceptKeyTransition(keys []jose.JSONWebKey) bool {
 
 func (set *remoteKeySet) refreshLifetime(lifetime, minimum time.Duration) time.Duration {
 	window := max((lifetime-minimum)/10, time.Duration(0))
-	offset := time.Duration(set.jitter % uint64(window+1))
+	offset := time.Duration(set.jitter % uint64(window+1)) // #nosec G115 -- Validated refresh bounds cap lifetime at 24h; the nonnegative window and remainder stay within the signed duration range.
 	return lifetime - offset
 }
 
@@ -1009,8 +1009,8 @@ func (body *boundedBody) Read(buffer []byte) (int, error) {
 	if body.exceeded {
 		return 0, errHTTPBodyTooLarge
 	}
-	probe, _ := bits.Add64(uint64(body.remaining), 1, 0)
-	limit := min(int64(len(buffer)), int64(probe))
+	probe, _ := bits.Add64(uint64(body.remaining), 1, 0) // #nosec G115 -- Validated body budget is at most 16MiB; conforming Reader counts preserve nonnegative remaining bytes.
+	limit := min(int64(len(buffer)), int64(probe))       // #nosec G115 -- The probe is at most 16MiB+1 and a nonnegative buffer length fits int64 on supported architectures.
 	read, err := body.body.Read(buffer[:limit])
 	if int64(read) > body.remaining {
 		allowed := int(body.remaining)

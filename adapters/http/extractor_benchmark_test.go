@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"testing"
 
-	authhttp "github.com/faustbrian/go-authentication/adapters/http"
+	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
 func BenchmarkBearerAuthorizationExtraction(b *testing.B) {

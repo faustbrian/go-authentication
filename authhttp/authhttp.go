@@ -1,14 +1,14 @@
 // Package authhttp preserves the original HTTP authentication adapter import
-// path. New code should import github.com/faustbrian/go-authentication/adapters/http.
+// path. New code should import github.com/faustbrian/go-authentication/v2/adapters/http.
 //
-// Deprecated: use github.com/faustbrian/go-authentication/adapters/http.
+// Deprecated: use github.com/faustbrian/go-authentication/v2/adapters/http.
 package authhttp
 
 import (
 	"net/http"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authenticationhttp "github.com/faustbrian/go-authentication/adapters/http"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
 // Source is an explicitly enabled HTTP credential location.

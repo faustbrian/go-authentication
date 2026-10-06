@@ -7,7 +7,26 @@ this project follows Semantic Versioning.
 
 ### Changed
 
+- Prepare the root `v2.0.0` module at
+  `github.com/faustbrian/go-authentication/v2` for the narrower Principal and
+  static-credential admission contract. Root package imports and composed
+  public types require coordinated migration. Independent JWT, OIDC and
+  OpenTelemetry modules retain their published v1 APIs and dependencies;
+  root v2 is not yet published.
+
 - Require Go 1.27.0 for development, builds, and downstream consumers.
+- Bound static Basic usernames/passwords at 8 KiB each and static API-key
+  identifiers/keys at 256 bytes/8 KiB before credential processing. Add
+  `NewStaticWithOptions` for smaller positive limits. Oversized direct
+  credentials are invalid; failed API-key replacement retains the active set.
+  Previously accepted values above these defaults require credential migration
+  before adopting the next major release.
+- Bound Principal retention at 8 KiB per string, 256 entries per identity list,
+  64 KiB of retained string occurrences, and 4096 recursive claim values.
+  Add `NewPrincipalWithOptions` for smaller positive limits, clone retained
+  string storage, and preserve typed scalar claims and defensive accessors.
+  Previously accepted identities above these defaults require producer
+  migration before adopting the next major release; no data is truncated.
 
 ### Fixed
 

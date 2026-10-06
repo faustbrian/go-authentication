@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/bearer"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	"github.com/faustbrian/go-authentication/v2/bearer"
 )
 
 func BenchmarkStaticAuthenticate(b *testing.B) {

@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // FormatChallenge serializes a challenge for a WWW-Authenticate field value.

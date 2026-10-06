@@ -7,8 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/apikey"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	"github.com/faustbrian/go-authentication/v2/apikey"
 )
 
 func TestStaticAuthenticatesKeyByDeterministicID(t *testing.T) {

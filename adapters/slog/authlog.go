@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // Instrumenter emits one bounded structured log record per attempt.

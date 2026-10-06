@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authhttp "github.com/faustbrian/go-authentication/adapters/http"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
 func TestRFC7617BasicCredentialVectors(t *testing.T) {

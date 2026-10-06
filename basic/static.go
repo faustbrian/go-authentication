@@ -9,7 +9,7 @@ import (
 	"crypto/subtle"
 	"fmt"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // MaxEntries bounds the work performed for one static Basic authentication.
@@ -33,12 +33,32 @@ type staticEntry struct {
 type Static struct {
 	digestKey []byte
 	entries   []staticEntry
+	limits    config
 }
 
-// NewStatic validates and copies entries.
+// NewStatic validates and copies entries with inclusive 8 KiB raw-byte limits
+// for each username and password. Principal limits are independent.
 func NewStatic(entries []Entry) (*Static, error) {
+	return NewStaticWithOptions(entries)
+}
+
+// NewStaticWithOptions validates and copies entries with immutable credential
+// byte limits. Options may reduce, but not exceed, the default 8 KiB per field.
+// Oversized credentials fail with ErrInvalidConfiguration before scanning or
+// hashing credential contents or copying principals.
+func NewStaticWithOptions(entries []Entry, options ...Option) (*Static, error) {
+	configuration, err := staticConfiguration(options)
+	if err != nil {
+		return nil, err
+	}
 	if len(entries) == 0 || len(entries) > MaxEntries {
 		return nil, fmt.Errorf("%w: Basic entry count", authentication.ErrInvalidConfiguration)
+	}
+	for index := range entries {
+		if len(entries[index].Username) > configuration.maxUsernameBytes ||
+			len(entries[index].Password) > configuration.maxPasswordBytes {
+			return nil, fmt.Errorf("%w: Basic credential size", authentication.ErrInvalidConfiguration)
+		}
 	}
 
 	digestKey := []byte(rand.Text())
@@ -72,7 +92,7 @@ func NewStatic(entries []Entry) (*Static, error) {
 		built = append(built, staticEntry{username: username, password: password, result: result})
 	}
 
-	return &Static{digestKey: digestKey, entries: built}, nil
+	return &Static{digestKey: digestKey, entries: built, limits: configuration}, nil
 }
 
 func containsControl(value string) bool {
@@ -84,8 +104,8 @@ func containsControl(value string) bool {
 	return false
 }
 
-// Authenticate validates one Basic credential in constant work relative to
-// the configured entry count.
+// Authenticate admits raw credential bytes before hashing, then compares every
+// configured entry. Oversized fields fail invalid; cancellation takes precedence.
 func (s *Static) Authenticate(ctx context.Context, credential authentication.Credential) (authentication.Result, error) {
 	if err := ctx.Err(); err != nil {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureUnavailable,
@@ -93,6 +113,11 @@ func (s *Static) Authenticate(ctx context.Context, credential authentication.Cre
 	}
 	basicCredential, ok := credential.(authentication.BasicCredential)
 	if !ok || basicCredential.Username() == "" || basicCredential.Password() == "" {
+		return authentication.Result{}, authentication.NewFailure(authentication.FailureInvalid)
+	}
+	limits := s.byteLimits()
+	if len(basicCredential.Username()) > limits.maxUsernameBytes ||
+		len(basicCredential.Password()) > limits.maxPasswordBytes {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureInvalid)
 	}
 
@@ -113,6 +138,17 @@ func (s *Static) Authenticate(ctx context.Context, credential authentication.Cre
 	}
 
 	return result, nil
+}
+
+func (s *Static) byteLimits() config {
+	limits := s.limits
+	if limits.maxUsernameBytes == 0 {
+		limits.maxUsernameBytes = defaultMaxUsernameBytes
+	}
+	if limits.maxPasswordBytes == 0 {
+		limits.maxPasswordBytes = defaultMaxPasswordBytes
+	}
+	return limits
 }
 
 type credentialDigest struct {

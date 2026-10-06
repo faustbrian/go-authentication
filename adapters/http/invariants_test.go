@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 type invariantSource struct {

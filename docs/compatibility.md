@@ -27,6 +27,12 @@ user-visible change even if Go signatures remain compatible.
 API baselines are maintained separately for the root and each optional module.
 Generated interfaces from dependencies are not part of this project’s API.
 
+The prepared root v2 release uses the `/v2` module/import suffix for its
+narrower Principal and static-credential admission contract. Root v1 remains
+published separately; optional modules retain their existing v1 nominal APIs
+until their own major migration. The historical root API baseline is retained
+alongside the separately generated v2 baseline.
+
 The root `Instrumenter.Start` interface remains unchanged so existing
 implementers compile. New integrations implement `BeginInstrumenter.Begin` and
 use `NewInstrumentedWithBegin`. JWT `Remote.Close(ctx)` remains available and

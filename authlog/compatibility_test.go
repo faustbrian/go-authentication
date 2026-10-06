@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	authenticationslog "github.com/faustbrian/go-authentication/adapters/slog"
-	legacy "github.com/faustbrian/go-authentication/authlog"
+	authentication "github.com/faustbrian/go-authentication/v2"
+	authenticationslog "github.com/faustbrian/go-authentication/v2/adapters/slog"
+	legacy "github.com/faustbrian/go-authentication/v2/authlog"
 )
 
 func TestLegacyFacadePreservesSlogTypeIdentityAndBehavior(t *testing.T) {

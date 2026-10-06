@@ -10,7 +10,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
 // MaxEntries bounds active static bearer candidates and per-request work.
