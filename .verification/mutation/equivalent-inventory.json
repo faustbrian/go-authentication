@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "packages": [
+    {
+      "module_directory": ".",
+      "package_directory": ".",
+      "source_digest": "dad1179de700c71ac38b1fc913e69353449369193feb2b208654c146bb79af63",
+      "gremlins_version": "v0.6.0",
+      "gremlins_verifier_sha256": "c28707fd4ce35dd228260de564107c1fb7726e42d4e9ea2bf9e988083e1f3b5b",
+      "mutations": [
+        {
+          "file_name": "principal.go",
+          "type": "INVERT_LOOPCTRL",
+          "line": 237,
+          "column": 4,
+          "contract_domain": "Principal claim-value admission through admitClaimValue interface-wrapper traversal and finite depth/node/string accounting",
+          "reason": "The selected break follows assignment of an invalid reflect.Value when an interface wrapper is nil. Replacing break with continue only rechecks the loop condition: value.IsValid is false, so short-circuit evaluation does not call Kind or Elem and immediately exits the loop. Both forms reach the same depth check, claim-node admission and decrement, then the same invalid-value return, without altering value, depth, string budget, claim-node budget, validation, normalization or copying. No caller callback or additional retained claim occurrence is introduced."
+        }
+      ]
+    }
+  ]
+}
