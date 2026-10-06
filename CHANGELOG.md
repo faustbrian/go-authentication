@@ -5,6 +5,8 @@ this project follows Semantic Versioning.
 
 ## Unreleased
 
+## [2.0.0] - 2026-10-06
+
 ### Changed
 
 - Prepare the root `v2.0.0` module at
