@@ -223,7 +223,7 @@ func hardenedRemoteHTTPClient(configuration remoteConfig) *http.Client {
 		minRefresh: configuration.minRefresh, maxRefresh: configuration.maxRefresh,
 		refreshJitter: configuration.refreshJitter, refreshGate: make(chan struct{}, 1),
 	}
-	policy.jitterState.Store(rand.Uint64())
+	policy.jitterState.Store(rand.Uint64()) // #nosec G404 -- Seed refresh scheduling only, never tokens, keys, nonces, or authorization decisions.
 	client.Transport = policy
 	return client
 }
@@ -380,8 +380,8 @@ func jitterDuration(base, minimum, maximum time.Duration, fraction float64, seed
 	if upper <= lower {
 		return lower
 	}
-	span := uint64(upper - lower)
-	return lower + time.Duration(seed%span)
+	span := uint64(upper - lower)           // #nosec G115 -- Validated positive duration bounds and upper > lower keep the difference within MaxInt64.
+	return lower + time.Duration(seed%span) // #nosec G115 -- The remainder is below span; adding it stays in the validated [lower, upper) duration interval.
 }
 
 func mixJitter(value uint64) uint64 {
