@@ -20,6 +20,14 @@ Do not open a public issue. Use GitHub private vulnerability reporting for
 realistic impact, possible credential exposure, and any embargo constraints.
 Expect acknowledgement within five business days.
 
+The repository maintainer follows the shared
+[vulnerability-management policy](https://github.com/faustbrian/go-library-tools/blob/5ad0adb193a46306b4500b8b59cee9ec110fdee3/docs/ecosystem/security/vulnerability-management.md)
+for severity assessment, remediation targets, private embargo handling,
+advisories and coordinated affected-module releases. Critical and High reports
+use that policy's stricter acknowledgement targets; the five-business-day
+commitment above also applies to Low reports. Record precise affected and fixed
+versions, or explicitly retain uncertainty, before publishing an advisory.
+
 ## Threat model
 
 The library treats credentials, tokens, headers, issuer responses, JWK sets,

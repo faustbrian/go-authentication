@@ -69,6 +69,11 @@ credential transport, logging or retention policy changes, or new evidence
 shows source-level disclosure. The maintainer reviews API changes; the
 deploying operator reviews deployment changes and any recorded exposure.
 
+The maintainer's next scheduled acceptance review is 2026-11-07; the conditions
+above require earlier review when triggered. That review must reassess the
+deprecation, mitigation and any newly established exposure rather than silently
+extend this acceptance. Deployment operators retain their own review cadence.
+
 ## Rejected boundary findings
 
 - Authorization is intentionally absent: the authenticated principal is an
