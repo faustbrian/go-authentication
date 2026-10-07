@@ -3,7 +3,7 @@
 ## Supported versions
 
 Security fixes are applied to the latest stable root release in each supported
-major line below. Root v2 support begins with publication of `v2.0.0`; its
+major line below. Root v2 support began with publication of `v2.0.0`; its
 admission safeguards must not be attributed to published v1 roots or the
 retained v1 optional modules. Publication of v2 does not withdraw the
 latest-stable-v1 support promise.
@@ -11,7 +11,7 @@ latest-stable-v1 support promise.
 | Version | Supported |
 | --- | --- |
 | Latest stable root v1 (`v1.2.2`) | Yes |
-| Latest stable root v2 (starting with `v2.0.0`) | Yes, once published |
+| Latest stable root v2 (starting with `v2.0.0`) | Yes |
 
 ## Reporting a vulnerability
 

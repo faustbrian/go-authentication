@@ -9,12 +9,12 @@ this project follows Semantic Versioning.
 
 ### Changed
 
-- Prepare the root `v2.0.0` module at
+- Publish the root `v2.0.0` module at
   `github.com/faustbrian/go-authentication/v2` for the narrower Principal and
   static-credential admission contract. Root package imports and composed
   public types require coordinated migration. Independent JWT, OIDC and
   OpenTelemetry modules retain their published v1 APIs and dependencies;
-  root v2 is not yet published.
+  root v2 was published on 2026-10-06.
 
 - Require Go 1.27.0 for development, builds, and downstream consumers.
 - Bound static Basic usernames/passwords at 8 KiB each and static API-key
