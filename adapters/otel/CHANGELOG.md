@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Adopt OpenTelemetry 1.47.0, go-authentication v1.2.1 and x/sys v0.48.0
+  while preserving bounded telemetry signals and caller-owned providers.
+
 ## [1.0.2] - 2026-10-03
 
 ### Changed

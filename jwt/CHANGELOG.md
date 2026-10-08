@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Refresh the indirect x/sys dependency to v0.48.0 while preserving JWT trust
+  decisions and remote key-set lifecycle behavior.
+
 ## [1.1.2] - 2026-10-03
 
 ### Security
