@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- Adopt OpenTelemetry 1.47.0 and x/sys v0.48.0 while retaining the deprecated
+  adapter API, legacy instrumentation scope and caller-owned providers.
+
 ## [1.1.2] - 2026-10-03
 
 ### Changed
