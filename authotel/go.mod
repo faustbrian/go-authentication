@@ -3,7 +3,7 @@ module github.com/faustbrian/go-authentication/authotel
 go 1.27.0
 
 require (
-	github.com/faustbrian/go-authentication v1.2.1
+	github.com/faustbrian/go-authentication v1.2.2
 	go.opentelemetry.io/otel v1.47.0
 	go.opentelemetry.io/otel/metric v1.47.0
 	go.opentelemetry.io/otel/sdk v1.47.0
