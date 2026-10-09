@@ -34,10 +34,15 @@ Do not add package-local workflows, permanent replacements, machine-specific
 paths, bypass flags, broad mutation exclusions, or aggregate quality metrics
 that hide a failing package.
 
-Repository verification is provided by the pinned released `go-library-tools`
-workflow and CLI. Use `make inventory`, `make check`, and `make ci` for the
-repository contract; keep package-specific fixtures and typed verification
-operations in this repository rather than copying shared tooling.
+Repository and CI verification use the immutable `go-library-tools` source
+selected by `tooling_sha` in `.github/workflows/ci.yml`, built with Go 1.27.2.
+The source-built CLI reports `dev`; `.golib.yaml` retains the published
+bootstrap release and checksum, not the development verifier identity.
+
+Use `make inventory`, `make check`, and `make ci` with `GOLIB` pointing to a
+CLI built from that exact source for the repository contract. Keep
+package-specific fixtures and typed verification operations in this
+repository rather than copying shared tooling.
 
 ## Verification
 

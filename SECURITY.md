@@ -77,7 +77,7 @@ this package cannot undo that disclosure.
 
 ## Dependency and release policy
 
-The root module pins `github.com/faustbrian/go-clock v1.1.0` for its runtime
+The root module pins `github.com/faustbrian/go-clock v1.2.0` for its runtime
 clock contract. Optional modules pin their protocol and telemetry dependencies.
 CI runs vulnerability and dependency review, exact coverage, race, fuzz smoke,
 API compatibility, and reproducible

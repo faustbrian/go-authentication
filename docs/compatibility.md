@@ -6,15 +6,16 @@ The supported floor is Go 1.27.0. The repository contains independent modules:
 
 | Module | Runtime dependency policy |
 | --- | --- |
-| root | Standard library only |
+| root | Standard library and the explicit go-clock v1 contract |
 | `/jwt` | JWX v3 and its owned HTTP resource cache |
 | `/oidc` | coreos/go-oidc v3 and go-jose v4 |
 | `/adapters/otel` | Preferred OpenTelemetry API adapter; SDK only in tests |
 | `/authotel` | Deprecated compatible path retaining its original telemetry scope |
 
-CI tests the minimum Go line and stable Go. Optional-module matrices test their
-declared dependency versions and the latest compatible minor versions without
-changing the root dependency graph.
+The public module floor remains Go 1.27.0; development and CI use patched
+Go 1.27.2. Each optional module resolves its declared dependency graph
+independently of the root module. Applications must be rebuilt with a
+patched compiler to receive standard-library security fixes.
 
 ## API stability
 
@@ -27,7 +28,7 @@ user-visible change even if Go signatures remain compatible.
 API baselines are maintained separately for the root and each optional module.
 Generated interfaces from dependencies are not part of this project’s API.
 
-The prepared root v2 release uses the `/v2` module/import suffix for its
+The published root v2 release uses the `/v2` module/import suffix for its
 narrower Principal and static-credential admission contract. Root v1 remains
 published separately; optional modules retain their existing v1 nominal APIs
 until their own major migration. The historical root API baseline is retained
@@ -62,7 +63,6 @@ separate registers because they are independent modules and standards surfaces.
 ## Audited dependency lines
 
 The July 2026 audit used Go 1.26.6 with JWX v3.1.1, `httprc` v3.0.5,
-coreos/go-oidc v3.20.0, go-jose v4.1.4, and OpenTelemetry v1.44.0. CI's
-optional-module matrices test the declared versions and latest compatible
-minor versions. This list records the audited baseline; module files and CI
-remain the authoritative current inputs.
+coreos/go-oidc v3.20.0, go-jose v4.1.4, and OpenTelemetry v1.44.0. This list
+records that historical audit; module files and the immutable CI source
+selection remain the authoritative current inputs.

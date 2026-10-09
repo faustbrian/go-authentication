@@ -219,7 +219,7 @@
           "release": "not-started"
         }
       },
-      "version": "2.0.0",
+      "version": "2.0.1",
       "tag_prefix": "v",
       "owned_dependencies": [
         "github.com/faustbrian/go-clock"
@@ -365,7 +365,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.0.2",
+      "version": "1.0.3",
       "tag_prefix": "adapters/otel/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -499,7 +499,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.1.2",
+      "version": "1.1.3",
       "tag_prefix": "authotel/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -644,7 +644,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.1.2",
+      "version": "1.1.3",
       "tag_prefix": "jwt/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",
@@ -803,7 +803,7 @@
           "release": "not-started"
         }
       },
-      "version": "1.0.2",
+      "version": "1.0.3",
       "tag_prefix": "oidc/v",
       "owned_dependencies": [
         "github.com/faustbrian/go-authentication",

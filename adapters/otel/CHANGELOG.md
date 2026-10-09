@@ -4,9 +4,17 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-10-09
+
 ### Changed
 
-- Adopt OpenTelemetry 1.47.0, go-authentication v1.2.1 and x/sys v0.48.0
+- Adopt go-clock v1.2.0 and retain go-authentication v1.2.2 with the
+  published root-v1 nominal types.
+- Use Go 1.27.2 for development and CI while retaining Go 1.27.0 as
+  the public module minimum. Rebuild applications with the patched compiler
+  to receive standard-library security fixes.
+
+- Adopt OpenTelemetry 1.47.0, go-authentication v1.2.2 and x/sys v0.48.0
   while preserving bounded telemetry signals and caller-owned providers.
 
 ## [1.0.2] - 2026-10-03

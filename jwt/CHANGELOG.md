@@ -4,7 +4,15 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-10-09
+
 ### Changed
+
+- Adopt go-clock v1.2.0 and retain go-authentication v1.2.2 with the
+  published root-v1 nominal types.
+- Use Go 1.27.2 for development and CI while retaining Go 1.27.0 as
+  the public module minimum. Rebuild applications with the patched compiler
+  to receive standard-library security fixes.
 
 - Refresh the indirect x/sys dependency to v0.48.0 while preserving JWT trust
   decisions and remote key-set lifecycle behavior.
