@@ -26,13 +26,12 @@ graphs are opt-in.
 - `clock` v1 for deterministic time seams.
 - `jwt`: lestrrat-go/jwx v3.
 - `oidc`: coreos/go-oidc v3 and go-jose v4.
-- `adapters/otel`: OpenTelemetry API v1.44.
+- `adapters/otel`: OpenTelemetry API v1.47.
 
 ## Install
 
-The root security-contract release is prepared as `v2.0.0`; it is not yet
-published. The latest published root is `v1.2.2`. After the v2 release is
-published, select its major-qualified import path:
+The root security-contract release `v2.0.0` is published. Select its
+major-qualified import path:
 
 ```sh
 go get github.com/faustbrian/go-authentication/v2@v2.0.0

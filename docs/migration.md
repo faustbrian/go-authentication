@@ -2,9 +2,8 @@
 
 ## Root v2 import identity
 
-The prepared root release is `v2.0.0`, not yet published. The latest public root
-remains `v1.2.2`. After publication, change the root and its Basic, API-key,
-bearer, HTTP, logging and test-package imports to
+The root release `v2.0.0` is published. To migrate from root v1, change the
+root and its Basic, API-key, bearer, HTTP, logging and test-package imports to
 `github.com/faustbrian/go-authentication/v2` and the corresponding subpackage
 paths. Root v1 and v2 Principal, Credential, Result and authenticator contracts
 have distinct Go type identities; migrate each composed boundary together.
@@ -16,7 +15,7 @@ Use their existing v1 route until a separately qualified compatible major is
 public. In particular, do not replace a published consumer's exported v1
 Authenticator field with a v2 type in a patch release.
 
-## Static credential byte admission in the prepared root v2 release
+## Static credential byte admission in the published root v2 release
 
 Existing `basic.NewStatic` and `apikey.NewStatic` signatures remain available,
 but their accepted input domain is narrower. Static Basic usernames and
@@ -40,7 +39,7 @@ set and its immutable limits on failure. A zero-value API-key `Static` uses the
 default limits when its first set is installed. Bearer credential-byte admission
 is unchanged.
 
-## Principal admission in the prepared root v2 release
+## Principal admission in the published root v2 release
 
 `NewPrincipal` retains its signature but now admits at most 8 KiB per retained
 string, 256 entries in each audience/tenant-hint/scope list, 64 KiB of retained

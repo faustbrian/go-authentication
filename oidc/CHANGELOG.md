@@ -64,6 +64,17 @@ All notable changes to this module are documented here.
 - OIDC-DEC-011 sha256:818c068a1c4bbca20d91854a6dd5146b760bd2b9a909637b31199e7eef5983a2
 - OIDC-DEC-012 sha256:afba367424b1bb76c608a91d80f2f54244ba67ad4f267b6fc861987813fb5204
 
+## [1.0.3] - 2026-10-09
+
+### Changed
+
+- Adopt go-authentication v1.2.2 and go-clock v1.2.0 while preserving
+  issuer, nonce, discovery, remote-key refresh, and caller-owned lifecycle
+  contracts. The adapter retains its published root-v1 nominal types.
+- Use Go 1.27.2 for development and CI while retaining Go 1.27.0 as
+  the public module minimum. Rebuild applications with the patched compiler
+  to receive standard-library security fixes.
+
 ## [1.0.2] - 2026-10-03
 
 ### Changed

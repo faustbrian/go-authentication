@@ -5,7 +5,14 @@ this project follows Semantic Versioning.
 
 ## Unreleased
 
+## [2.0.1]
+
+2026-10-09
+
 ### Changed
+
+- Adopt go-clock v1.2.0 while preserving the root-v2 time-source and
+  authentication contracts.
 
 - Run development and CI with Go 1.27.2 to receive standard-library
   security fixes while retaining the public Go 1.27.0 module minimums.
@@ -238,7 +245,7 @@ this project follows Semantic Versioning.
   enforce explicit parameter and field bounds.
 - Query credential constructors are deprecated for new designs.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v2.0.0...HEAD
 [1.1.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.1.0
 [1.0.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.0.0
 [1.2.2]: https://github.com/faustbrian/go-authentication/compare/v1.2.1...v1.2.2
