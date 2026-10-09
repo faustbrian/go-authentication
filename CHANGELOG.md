@@ -5,6 +5,13 @@ this project follows Semantic Versioning.
 
 ## Unreleased
 
+### Changed
+
+- Run development and CI with Go 1.27.2 to receive standard-library
+  security fixes while retaining the public Go 1.27.0 module minimums.
+  Use immutable source tooling with compatible mandatory analyzers.
+  Existing binaries need rebuilding with the patched compiler.
+
 ## [2.0.0] - 2026-10-06
 
 ### Changed
