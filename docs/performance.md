@@ -3,8 +3,11 @@
 Benchmarks live beside the hot paths and run with allocation reporting:
 
 ```sh
-make check
+make check-full
 ```
+
+Ordinary `make check` and `make ci` use bounded local verification, not the full
+benchmark campaign. Select the full route when qualifying hot-path performance.
 
 Static Basic and API-key validation hash incoming values once and compare fixed
 digests across every entry. Work grows linearly with the configured set by

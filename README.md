@@ -3,7 +3,7 @@
 [![CI](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
 [![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-100%25_required-blue)](CONTRIBUTING.md#verification)
-[![Mutation](https://img.shields.io/badge/mutation-100%25_required-blue)](CONTRIBUTING.md#verification)
+[![Mutation](https://img.shields.io/badge/mutation-local_and_scheduled-blue)](CONTRIBUTING.md#verification)
 [![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-authentication/v2.svg)](https://pkg.go.dev/github.com/faustbrian/go-authentication/v2)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-authentication?sort=semver)](https://github.com/faustbrian/go-authentication/releases)
@@ -151,6 +151,22 @@ Security reports follow [SECURITY.md](SECURITY.md), and contributions follow
 For ecosystem-wide package selection, construction, ownership, and lifecycle
 guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem)
 and its [Service edge family](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md#package-families-and-selection).
+
+## Development
+
+Use Go 1.27.2 and start with `GOWORK=off go test ./...` in the affected module.
+Install the published `golib` release declared by `.golib.yaml`, without building
+it from source. `make check` and `make ci` are bounded ordinary routes across
+five modules, including the pinned RFC vector guard and selected JWT shutdown
+race tests. The catalog has no required external services; OIDC retains its
+`integration` tag and configured-provider skip behavior.
+
+Base-free local checks run deterministic fuzz seeds/corpus, not active fuzz
+campaigns. Use a focused native 2-second fuzz command for an affected parser;
+changed-source CI selects active smoke for affected targets. `make check-full`
+retains full campaigns, including explicit provider interoperability. See
+[CONTRIBUTING.md](CONTRIBUTING.md) for standalone commands, optional one-package
+mutation and local release qualification.
 
 ## License
 

@@ -25,18 +25,24 @@ sources are `adapters/http/interoperability_test.go`,
 | Instrumenter failure | authentication result is unchanged | instrumentation and adapter tests |
 | Callback rejection/unavailability | stable typed failure, no wrapped secret rendered | root and adapter tests |
 
-## Required local gates
+## Ordinary and full verification
 
 | Gate | Command |
 | --- | --- |
-| Format, vet, tests, boundaries, examples, API | `make check` |
-| Exact statement coverage | `make check` |
-| Race detector | `make check` |
-| Fuzz smoke | `make check` |
-| Vulnerabilities | `make check` |
-| Static analysis | `make check` |
-| Workflow and shell syntax | `make ci` |
+| Bounded local checks, deterministic tests and fuzz seeds | `make check` |
+| Pinned RFC vector identity/digests and two focused protocol tests | `make conformance` (also required by ordinary Make and CI) |
+| Two selected JWT shutdown race tests | `make check` |
+| Explicit active JWT parser smoke | `(cd jwt && GOWORK=off go test . -run '^$' -fuzz '^FuzzInspectCompactJWT$' -fuzztime=2s -timeout=2m)` |
+| Repository/cohesion checks plus bounded local verification | `make ci` |
+| Original coverage, full fuzz, mutation, benchmarks, conformance and interoperability | `make check-full` |
+| API compatibility | `golib api check` |
+| Online specification authority | `golib specification check --online` |
 | Reproducible archive | build twice and compare SHA-256 output |
+
+Base-free local checks do not run active fuzz campaigns; changed-source CI
+selects bounded active smoke for affected targets. Keep external-provider and
+container prerequisites for the explicit interoperability route. Release
+qualification remains available locally through `golib release dry-run`.
 
 Benchmarks in the repository cover static authentication, extraction, JWT,
 and OIDC validation. They are regression signals rather than timing-side-

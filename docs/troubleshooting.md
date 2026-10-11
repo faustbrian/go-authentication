@@ -38,6 +38,8 @@ credential or make the client authenticate successfully.
 
 ## Coverage falls below 100%
 
-Run `make check` to identify the failing module and package. Add a behavioral
+Run `make check-full` to identify the failing module and package in the selected
+full coverage campaign. Ordinary local checks do not require exact coverage.
+Add a behavioral
 test or remove a branch that is proven unreachable by an upstream contract; do
 not exclude production files or round the percentage.

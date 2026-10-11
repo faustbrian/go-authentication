@@ -48,13 +48,85 @@ jobs:
 
   ci:
     needs: qualification-inputs
-    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@e8c0c51cc517dfede5475858bb417f0e7a21f39d # reviewed development tooling
+    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@eff8b2127c361ee2f422123824a1d337cc277ac4 # v2.1.1
     with:
-      tooling_sha: e8c0c51cc517dfede5475858bb417f0e7a21f39d
-      source_bootstrap: true
+      tooling_sha: eff8b2127c361ee2f422123824a1d337cc277ac4
+      source_bootstrap: false
       public_dependencies: true
       release_dry_run: ${{ inputs.release_dry_run || false }}
       release_module: ${{ inputs.release_module || '' }}
+
+  protocol-boundary:
+    name: Protocol boundary
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GOENV: 'off'
+      GOWORK: 'off'
+      GOTOOLCHAIN: local
+      GOMAXPROCS: '2'
+      GOFLAGS: -p=1
+      GOPROXY: https://proxy.golang.org
+      GOSUMDB: sum.golang.org
+      GOPRIVATE: ''
+      GONOPROXY: ''
+      GONOSUMDB: ''
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.27.2'
+          cache: false
+      - name: Prepare private protocol workspace
+        run: |
+          set -euo pipefail
+          task="$(mktemp -d "${RUNNER_TEMP}/authentication-protocol-boundary.XXXXXX")"
+          {
+            echo "PROTOCOL_TASK=${task}"
+            echo "GOCACHE=${task}/cache"
+            echo "GOMODCACHE=${task}/mod"
+            echo "GOTMPDIR=${task}/tmp"
+            echo "TMPDIR=${task}/tmp"
+          } >>"${GITHUB_ENV}"
+          mkdir -p "${task}/cache" "${task}/mod" "${task}/tmp"
+      - name: Verify pinned protocol vectors
+        run: |
+          set -euo pipefail
+          case "${PROTOCOL_TASK}" in
+            "${RUNNER_TEMP}"/authentication-protocol-boundary.*) ;;
+            *) echo 'unexpected protocol workspace' >&2; exit 1 ;;
+          esac
+          cleanup() {
+            status=$?
+            if [[ -d "${PROTOCOL_TASK}" ]]; then
+              chmod -R u+w "${PROTOCOL_TASK}" || status=1
+              find "${PROTOCOL_TASK}" -depth -delete || status=1
+            fi
+            test ! -e "${PROTOCOL_TASK}" || status=1
+            exit "${status}"
+          }
+          trap cleanup EXIT
+          make -f verification/package.mk conformance
+      - name: Remove private protocol workspace
+        if: always()
+        run: |
+          set -euo pipefail
+          if [[ -z "${PROTOCOL_TASK:-}" ]]; then
+            exit 0
+          fi
+          case "${PROTOCOL_TASK}" in
+            "${RUNNER_TEMP}"/authentication-protocol-boundary.*) ;;
+            *) echo 'unexpected protocol workspace' >&2; exit 1 ;;
+          esac
+          if [[ -d "${PROTOCOL_TASK}" ]]; then
+            chmod -R u+w "${PROTOCOL_TASK}"
+            find "${PROTOCOL_TASK}" -depth -delete
+          fi
+          test ! -e "${PROTOCOL_TASK}"
 
   root-qualification:
     name: Root qualification
@@ -84,7 +156,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: faustbrian/go-library-tools
-          ref: e8c0c51cc517dfede5475858bb417f0e7a21f39d
+          ref: eff8b2127c361ee2f422123824a1d337cc277ac4
           persist-credentials: false
           path: tooling
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
@@ -114,7 +186,7 @@ jobs:
         working-directory: tooling
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = e8c0c51cc517dfede5475858bb417f0e7a21f39d
+          test "$(git rev-parse HEAD)" = eff8b2127c361ee2f422123824a1d337cc277ac4
           go build -trimpath -buildvcs=false -o "${QUALIFICATION_TASK}/golib" ./cmd/golib
           test "$("${QUALIFICATION_TASK}/golib" --version)" = dev
       - name: Qualify the complete root contract
@@ -156,19 +228,21 @@ jobs:
   required:
     name: Required
     if: always()
-    needs: [ci, qualification-inputs, root-qualification]
+    needs: [ci, protocol-boundary, qualification-inputs, root-qualification]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Require shared workflow
         env:
           CI_RESULT: ${{ needs.ci.result }}
+          PROTOCOL_RESULT: ${{ needs.protocol-boundary.result }}
           INPUT_RESULT: ${{ needs.qualification-inputs.result }}
           ROOT_QUALIFICATION: ${{ inputs.root_qualification || false }}
           QUALIFICATION_RESULT: ${{ needs.root-qualification.result }}
         run: |
           set -euo pipefail
           test "${CI_RESULT}" = success
+          test "${PROTOCOL_RESULT}" = success
           test "${INPUT_RESULT}" = success
           if [[ "${ROOT_QUALIFICATION}" == true ]]; then
             test "${QUALIFICATION_RESULT}" = success
