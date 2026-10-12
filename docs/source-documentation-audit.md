@@ -175,3 +175,12 @@ valid. Pinned Gitleaks v8.30.1 with retained native policy found zero findings
 on all48 staged added/new-file inputs; no findings, policy or ignore entries
 were suppressed. Its owned private output/report/snapshot was removed. The
 explicit-path Intent commit and parent-owned delivery remain separate states.
+
+## Objective Enforcement
+
+The checksum-pinned public Tools v2.4.0 verifier now supplies
+`make source-docs-check` as a prerequisite of the existing local and CI Make
+routes. Ordinary shared CI selects strict source-documentation checking and
+requires its result. Native prerequisites, operation budgets, security and
+release controls are retained. Hosted exact-head evidence is recorded by the
+coordination ledger; configuration alone does not establish green delivery.
