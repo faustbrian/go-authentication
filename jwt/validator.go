@@ -1,4 +1,10 @@
-// Package jwt provides strict JWT and JWK authentication using lestrrat-go/jwx.
+// Package jwt validates signed compact JWTs with pinned lestrrat-go/jwx v3
+// dependencies and published root-v1 principals. New requires explicit issuer,
+// audience, algorithms, clock and one trusted key source; NewRemote optionally
+// owns a background JWK cache requiring Shutdown. RFC7515/7517/7519 profiles and
+// unsupported features are recorded in docs/specification-decisions.md. This
+// package does not select authorization, nonce/replay policy, or fetch token-
+// supplied key references. Borrowed clock/providers must cooperate with callers.
 package jwt
 
 import (
@@ -54,21 +60,36 @@ type Clock interface {
 
 // Config defines a strict JWT trust boundary.
 type Config struct {
-	Issuer         string
-	Audience       string
-	Algorithms     []jwa.SignatureAlgorithm
-	KeySet         jwk.Set
-	Provider       KeyProvider
-	Clock          Clock
-	Skew           time.Duration
-	MaxTokenBytes  int
-	MaxClaims      int
-	MaxClaimDepth  int
-	MaxKeys        int
-	Subjects       []string
+	// Issuer is required exact issuer text; New does not validate its URL or normalize it.
+	Issuer string
+	// Audience is required expected audience text; no discovery or authorization is implied.
+	Audience string
+	// Algorithms is an explicit unique allowlist; none, deprecated and ES256K are refused, with key material checked separately.
+	Algorithms []jwa.SignatureAlgorithm
+	// KeySet is the static source, copied by JSON serialization/reparse; configure exactly one of KeySet or Provider.
+	KeySet jwk.Set
+	// Provider is a borrowed dynamic source whose returned sets are copied/revalidated per attempt; its IO/lifetime are caller-owned.
+	Provider KeyProvider
+	// Clock is required borrowed time state; concurrent safety and prompt, nonpanicking Now calls remain provider obligations.
+	Clock Clock
+	// Skew is nonnegative acceptable time skew, default zero.
+	Skew time.Duration
+	// MaxTokenBytes is a positive compact-token byte bound, default 16 KiB; it is not a provider-set serialization budget.
+	MaxTokenBytes int
+	// MaxClaims caps members of each inspected JSON object, default published-v1 MaxClaims (128), not a total recursive-node budget.
+	MaxClaims int
+	// MaxClaimDepth caps inspected JSON container depth, default published-v1 MaxClaimDepth (8).
+	MaxClaimDepth int
+	// MaxKeys caps accepted JWK count after copying/parsing, default 64; trusted source encoding occurs before this check.
+	MaxKeys int
+	// Subjects is an optional copied unique nonempty subject allowlist; empty permits any valid subject.
+	Subjects []string
+	// RequiredClaims is a copied unique nonempty list in addition to mandatory aud/exp/iat/iss/sub; do not repeat mandatory names.
 	RequiredClaims []string
-	ScopeClaim     string
-	TenantClaim    string
+	// ScopeClaim defaults to scope; strings are split with strings.Fields, arrays retain their supplied values.
+	ScopeClaim string
+	// TenantClaim defaults to tenant and must differ from ScopeClaim; resulting tenant hints are non-authoritative.
+	TenantClaim string
 }
 
 // Validator authenticates signed compact JWT bearer credentials.
@@ -90,7 +111,12 @@ type Validator struct {
 	tenantClaim    string
 }
 
-// New validates and defensively copies a static JWK trust configuration.
+// New applies defaults and copies policy/key data while borrowing Clock/Provider.
+// Static/provider JWK sets are serialized before key-count/material admission;
+// trusted source objects must stay stable and bound their encoding work. Nil
+// Clock is refused but typed-nil Clock is not detected. Provider/clock/JWK
+// panics and noncooperative blocking are not contained. Validator owns no
+// provider shutdown; reuse requires collaborator concurrency safety.
 func New(configuration Config) (*Validator, error) {
 	applyDefaults(&configuration)
 	algorithms, err := validateConfig(configuration)
@@ -142,7 +168,16 @@ func (v *Validator) Authenticate(ctx context.Context, credential authentication.
 	return authentication.NewAuthenticatedResult(principal)
 }
 
-// ValidateBearer verifies a bounded compact JWT and constructs an immutable principal.
+// ValidateBearer preflights strict unpadded Base64url, UTF-8/surrogates, duplicate
+// JSON names, configured budgets, required alg/kid and prohibited key-reference/
+// critical headers before obtaining trusted keys. NumericDates use integral
+// JSON-number syntax. It verifies mandatory claims/signature through pinned JWX
+// and constructs a published-v1 principal: AuthenticatedAt is iat, not call time.
+// Existing preflight does not require EOF on malformed trailing-data errors,
+// so a malformed suffix can reach Provider. This is a validation-order
+// limitation, not a supported wire profile; final trust still depends on JWX.
+// Syntax/policy/signature failures are rejected; source failures are unavailable
+// with redacted/context causes. No retry or callback preemption is imposed.
 func (v *Validator) ValidateBearer(ctx context.Context, token string) (authentication.Principal, error) {
 	if err := ctx.Err(); err != nil {
 		return authentication.Principal{}, authentication.NewFailure(authentication.FailureUnavailable,
@@ -226,13 +261,18 @@ func safeStandardsError(err error) error {
 
 // KeyProvider returns a current read-only JWK set for one validation attempt.
 type KeyProvider interface {
+	// KeySet must return trusted verification keys stable during copying, and
+	// cooperate with a nonnil caller context. Bound serialization and IO before
+	// returning; concurrent use/lifetime/shutdown remain provider-owned. Errors
+	// are projected to redacted/context causes, but provider panics propagate.
 	KeySet(context.Context) (jwk.Set, error)
 }
 
 // KeyProviderFunc adapts a function to KeyProvider.
 type KeyProviderFunc func(context.Context) (jwk.Set, error)
 
-// KeySet calls f.
+// KeySet directly invokes the borrowed function; nil functions/panics propagate
+// and the adapter adds no timeout, copying or shutdown semantics.
 func (f KeyProviderFunc) KeySet(ctx context.Context) (jwk.Set, error) { return f(ctx) }
 
 func (v *Validator) keySet(ctx context.Context) (jwk.Set, error) {
@@ -626,6 +666,9 @@ func verificationOnlyOperation(operations jwk.KeyOperationList) bool {
 	return len(operations) == 1 && operations[0] == jwk.KeyOpVerify
 }
 
+// Preflight before upstream parsing/key access: duplicate-name rejection and
+// strict encoding avoid decoder disagreements; issuer-trusted keys are never
+// selected from jku/jwk/x5* references in attacker-controlled JOSE headers.
 func inspectCompactJWT(token string, algorithms map[string]struct{}, maxClaims, maxDepth int) error {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 || parts[0] == "" || parts[1] == "" || parts[2] == "" {
@@ -649,10 +692,12 @@ func inspectCompactJWT(token string, algorithms map[string]struct{}, maxClaims, 
 		return err
 	}
 	var fields map[string]json.RawMessage
-	// inspectJSONObject has already proven that header is valid JSON.
+	// Preflight admits the structural object; a malformed trailing suffix can
+	// still make this full unmarshal fail, which leaves required fields absent.
 	_ = json.Unmarshal(header, &fields)
 	var claims map[string]json.RawMessage
-	// inspectJSONObject has already proven that payload is valid JSON.
+	// Full-unmarshal failure is ignored here after structural prefix admission;
+	// preflight does not establish EOF for every malformed trailing suffix.
 	_ = json.Unmarshal(payload, &claims)
 	if err := validateNumericDateClaims(claims); err != nil {
 		return err
@@ -731,6 +776,9 @@ func inspectJSONObject(encoded []byte, maxMembers, maxDepth int) error {
 	if err := inspectJSONValue(decoder, 0, maxMembers, maxDepth, true); err != nil {
 		return err
 	}
+	// Existing behavior treats every decoder error here as end-of-data, not
+	// just EOF. Malformed trailing data can therefore reach trusted providers
+	// before upstream token parsing. This is a limitation, not JSON conformance.
 	if _, err := decoder.Token(); err == nil {
 		return errors.New("trailing JSON data")
 	}

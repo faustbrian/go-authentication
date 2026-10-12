@@ -42,11 +42,16 @@ var (
 type FailureKind string
 
 const (
-	FailureAbsent      FailureKind = "absent"
-	FailureInvalid     FailureKind = "invalid"
-	FailureRejected    FailureKind = "rejected"
+	// FailureAbsent identifies absence from enabled credential sources.
+	FailureAbsent FailureKind = "absent"
+	// FailureInvalid identifies malformed or inadmissible credential data.
+	FailureInvalid FailureKind = "invalid"
+	// FailureRejected identifies a well-formed credential refused by policy.
+	FailureRejected FailureKind = "rejected"
+	// FailureUnavailable identifies an attempt that could not be completed.
 	FailureUnavailable FailureKind = "unavailable"
-	FailureAmbiguous   FailureKind = "ambiguous"
+	// FailureAmbiguous identifies multiple credentials where one was required.
+	FailureAmbiguous FailureKind = "ambiguous"
 )
 
 // Failure is a secret-safe, typed authentication failure.
@@ -72,7 +77,9 @@ func WithChallenges(challenges ...Challenge) FailureOption {
 	}
 }
 
-// NewFailure creates a classified, secret-safe failure.
+// NewFailure preserves the supplied kind/cause/challenges without validating
+// kind or limiting challenge count. Nil options are ignored. Default Error
+// text is fixed, but Kind, Unwrap and Challenges can expose application data.
 func NewFailure(kind FailureKind, options ...FailureOption) *Failure {
 	failure := &Failure{kind: kind}
 	for _, option := range options {
@@ -103,7 +110,9 @@ func (f *Failure) Error() string {
 	return "authentication: failure"
 }
 
-// Unwrap returns the underlying operational cause, if any.
+// Unwrap returns the borrowed cause unchanged, including on nil receivers.
+// Default formatting is redacted, not explicit cause introspection; callers
+// must restrict or sanitize the underlying provider error before disclosure.
 func (f *Failure) Unwrap() error {
 	if f == nil {
 		return nil
@@ -151,7 +160,10 @@ type Challenge struct {
 	parameters map[string]string
 }
 
-// NewChallenge validates and copies challenge protocol data.
+// NewChallenge validates bounded ASCII tokens and quoted-text bytes, then
+// copies parameters. Values allow HTAB and high bytes but reject other controls;
+// no UTF-8 normalization or confidentiality classification is performed. The
+// zero Challenge is not valid protocol data. See docs/specification-decisions.md.
 func NewChallenge(scheme string, parameters map[string]string) (Challenge, error) {
 	if len(scheme) > MaxChallengeSchemeBytes || !isToken(scheme) {
 		return Challenge{}, ErrInvalidChallenge
@@ -210,8 +222,10 @@ func isToken(value string) bool {
 type ResultState string
 
 const (
+	// ResultAuthenticated marks a concrete identity, not an authorization grant.
 	ResultAuthenticated ResultState = "authenticated"
-	ResultAnonymous     ResultState = "anonymous"
+	// ResultAnonymous marks explicitly permitted absence of an identity.
+	ResultAnonymous ResultState = "anonymous"
 )
 
 // Result is the outcome of successful authentication policy evaluation.
@@ -243,17 +257,24 @@ func (r Result) Principal() (Principal, bool) {
 
 // Authenticator validates one typed credential.
 type Authenticator interface {
+	// Authenticate borrows a nonnil caller context and credential. Implementations
+	// must bound/cooperate with IO, protect secret-bearing errors and support any
+	// concurrent reuse. A nil error must accompany a meaningful Result; no generic
+	// panic containment, input copy or provider shutdown is imposed by this interface.
 	Authenticate(context.Context, Credential) (Result, error)
 }
 
 type principalContextKey struct{}
 
-// ContextWithPrincipal returns a child context containing principal.
+// ContextWithPrincipal stores the immutable Principal value in a child of a
+// nonnil context, including anonymous values. It does not authenticate that
+// value or make claims authoritative. Nil parent panics through context.WithValue.
 func ContextWithPrincipal(ctx context.Context, principal Principal) context.Context {
 	return context.WithValue(ctx, principalContextKey{}, principal)
 }
 
-// PrincipalFromContext retrieves a principal stored by ContextWithPrincipal.
+// PrincipalFromContext retrieves the exact stored value; found can be true
+// for anonymous identities. Nil context panics; use IsAnonymous separately.
 func PrincipalFromContext(ctx context.Context) (Principal, bool) {
 	principal, ok := ctx.Value(principalContextKey{}).(Principal)
 	return principal, ok

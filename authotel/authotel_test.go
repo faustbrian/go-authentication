@@ -562,6 +562,8 @@ func TestStartPreservesContextWhenTracerReturnsNil(t *testing.T) {
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 }
 
+// FuzzInstrumenterLifecycle checks context preservation and repeat completion with noop
+// providers and bounded labels; it is not a provider-delivery or latency oracle.
 func FuzzInstrumenterLifecycle(f *testing.F) {
 	instrumenter, err := authotel.New(authotel.Config{
 		TracerProvider: tracenoop.NewTracerProvider(),

@@ -1,5 +1,7 @@
 // Package authhttp preserves the original HTTP authentication adapter import
 // path. New code should import github.com/faustbrian/go-authentication/v2/adapters/http.
+// Types are aliases and calls forward to the canonical adapter; ownership,
+// parsing/provider caveats and lifecycle are identical, not separate implementations.
 //
 // Deprecated: use github.com/faustbrian/go-authentication/v2/adapters/http.
 package authhttp

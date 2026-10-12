@@ -27,7 +27,12 @@ only; fractional and exponent forms are rejected.
 
 `KeyProvider` exposes one context-aware `KeySet` operation. `KeyProviderFunc`
 adapts a function to that contract. Provider sets are copied and revalidated
-for each validation attempt.
+for each validation attempt. Their JSON serialization occurs before key-count
+admission; provider objects must remain stable and bound that trusted work.
+The existing preflight also treats non-EOF trailing decoder errors as end-of-
+data, so malformed suffixes can reach the provider before final parsing. This
+is a validation-order limitation, not supported JWT syntax or conformance; no
+final-authentication acceptance follows from the provider-order observation.
 
 ## Remote provider
 

@@ -7,6 +7,9 @@ import (
 	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
+// FuzzPrincipalClaims exercises bounded JSON-derived claim graphs through admission and copy;
+// rejected inputs return and accepted outputs are copied, without a full
+// confidentiality or principal-semantics oracle.
 func FuzzPrincipalClaims(f *testing.F) {
 	f.Add([]byte(`{"tenant":"north","groups":["operator"]}`))
 	f.Add([]byte(`{"nested":{"one":{"two":true}}}`))

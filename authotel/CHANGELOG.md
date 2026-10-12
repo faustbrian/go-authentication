@@ -4,6 +4,11 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Documentation
+
+- Clarify source ownership, callback/provider obligations and actual admission/
+  lifecycle limits without changing executable behavior or published bindings.
+
 ## [1.1.3] - 2026-10-09
 
 ### Changed

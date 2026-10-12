@@ -8,6 +8,8 @@ import (
 	"github.com/faustbrian/go-authentication/v2/bearer"
 )
 
+// BenchmarkStaticAuthenticate measures a two-entry rotation-overlap snapshot matching the older
+// token; setup is excluded, so do not compare directly to one-entry workloads.
 func BenchmarkStaticAuthenticate(b *testing.B) {
 	authenticator, err := bearer.NewStatic([]bearer.Entry{
 		{Token: "current", Principal: authentication.PrincipalSpec{Subject: "service"}},

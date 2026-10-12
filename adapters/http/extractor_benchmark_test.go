@@ -8,6 +8,8 @@ import (
 	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
+// BenchmarkBearerAuthorizationExtraction measures one reusable header request
+// and extractor; setup is excluded and it does not measure request decoding.
 func BenchmarkBearerAuthorizationExtraction(b *testing.B) {
 	extractor, err := authhttp.NewExtractor(authhttp.BearerAuthorization())
 	if err != nil {

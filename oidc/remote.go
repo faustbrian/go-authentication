@@ -45,7 +45,13 @@ const maximumHTTPHeaderBytes = 64 << 10
 const maximumTrackedJWKs = 4 * maximumJWKCount
 
 // New discovers an OIDC provider and creates a synchronous, bounded key-set
-// validator. It starts no background goroutines.
+// validator. It starts no package-owned background goroutines; HTTP transports
+// may own their normal connections/workers. Initial discovery plus keys share
+// DiscoveryTimeout; later refreshes use caller context and hardened client
+// timeout. Fresh known keys avoid IO; misses/staleness can trigger single-flight
+// discovery/JWK refresh with bounded participants/cooldown. No Close/Shutdown
+// API is provided; no use of last good keys after stale-refresh failure is
+// promised. Custom transport/clock blocking or panic is not preempted.
 func New(ctx context.Context, configuration Config) (*Validator, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, authentication.NewFailure(authentication.FailureUnavailable,
@@ -423,6 +429,9 @@ func (set *remoteKeySet) VerifySignature(ctx context.Context, rawToken string) (
 			return nil, errors.New("OIDC key ID not found")
 		}
 
+		// Recheck the observed generation under the lock before claiming fetch
+		// ownership. IO runs unlocked; completion publishes state then closes the
+		// generation channel. Followers own only their cancellable waiting slot.
 		set.mutex.Lock()
 		claimed := !refreshStateChanged(set.refreshing, set.nextAttempt, set.nextRefresh, nextAttempt, nextRefresh)
 		var etag, lastModified string
@@ -524,6 +533,9 @@ func (set *remoteKeySet) finishRefresh(started time.Time, result fetchResult, er
 	close(set.refreshDone)
 }
 
+// Fingerprints, not kid labels, track retired key material: changing kid must
+// not resurrect a removed key. Bounded history can refuse further transitions
+// rather than silently forgetting anti-rollback state (OIDC decision register).
 func (set *remoteKeySet) acceptKeyTransition(keys []jose.JSONWebKey) bool {
 	next := make(map[string]struct{}, len(keys))
 	for _, key := range keys {

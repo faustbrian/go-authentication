@@ -1,5 +1,7 @@
 // Package authlog preserves the original structured-log adapter import path.
 // New code should import github.com/faustbrian/go-authentication/v2/adapters/slog.
+// Instrumenter is a type-identical alias and New forwards; logger/handler
+// ownership, synchronous callbacks and privacy projection are canonical behavior.
 //
 // Deprecated: use github.com/faustbrian/go-authentication/v2/adapters/slog.
 package authlog

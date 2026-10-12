@@ -5,6 +5,11 @@ this project follows Semantic Versioning.
 
 ## Unreleased
 
+### Documentation
+
+- Clarify source ownership, callback/provider obligations and actual admission/
+  lifecycle limits without changing executable behavior or published bindings.
+
 ## [2.0.1]
 
 2026-10-09

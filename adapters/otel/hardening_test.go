@@ -376,6 +376,8 @@ func TestSDKExporterErrorsDoNotChangeAuthenticationResult(t *testing.T) {
 	}
 }
 
+// FuzzInstrumenterWithHostileProviders checks bounded label/context/completion refusal through
+// fixed hostile provider modes, without preempting an actually blocked provider.
 func FuzzInstrumenterWithHostileProviders(f *testing.F) {
 	f.Add(byte(0), "bearer", "authenticated", "", int64(0))
 	f.Add(byte(5), "hostile-kind", "failed", "hostile-failure", int64(-1))

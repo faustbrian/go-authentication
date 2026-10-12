@@ -13,6 +13,9 @@ All notable changes to this module are documented here.
 
 ### Documentation
 
+- Clarify source ownership, callback/provider obligations and actual admission/
+  lifecycle limits without changing executable behavior or published bindings.
+
 - Link ecosystem and Service edge family guidance to the immutable v1.4.0
   documentation release.
 - Record the behavior-neutral review of reported RFC 9110 Erratum 9162 without

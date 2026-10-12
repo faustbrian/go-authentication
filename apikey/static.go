@@ -1,4 +1,8 @@
-// Package apikey provides static and callback API-key authenticators.
+// Package apikey provides New/NewStatic for key-ID/key credentials. Static owns
+// atomically published immutable principal/digest snapshots; callback providers
+// remain borrowed. It does not own transport extraction, authorization, provider
+// shutdown or secret erasure. Digest comparison scans all entries without
+// promising whole-call constant-time behavior.
 package apikey
 
 import (
@@ -19,8 +23,11 @@ const MaxEntries = 256
 
 // Entry configures one active key with a deterministic non-secret identifier.
 type Entry struct {
-	ID        string
-	Key       string
+	// ID is a required raw identifier, not automatically confidentiality-classified.
+	ID string
+	// Key is plaintext construction input; Static retains a keyed digest rather than this string.
+	Key string
+	// Principal is copied identity data; an empty Method becomes api_key and a conflicting Method rejects.
 	Principal authentication.PrincipalSpec
 }
 
@@ -33,6 +40,9 @@ type staticEntry struct {
 type keySet struct{ entries []staticEntry }
 
 // Static validates API keys against an atomically replaceable bounded key set.
+// Replace and Authenticate can run concurrently; never copy a Static after first
+// use. Concurrent replacements publish in completion order, without version
+// fencing. The owner retains its random HMAC key for life, with no erase/Close API.
 type Static struct {
 	digestKey [sha256.Size]byte
 	keyOnce   sync.Once
@@ -72,6 +82,8 @@ func NewStaticWithOptions(entries []Entry, options ...Option) (*Static, error) {
 // candidate set, admitting all credential bytes before hashing or copying
 // principals. A failed replacement leaves the previous set and limits active.
 // The zero-value Static uses the default limits and can install its first set.
+// Caller entry graphs must remain stable during admission/copying. Successful
+// concurrent replacements are last-store-wins; no retired-key history is kept.
 func (s *Static) Replace(entries []Entry) error {
 	digestKey := s.key()
 	built, err := buildKeySet(entries, digestKey, s.byteLimits())

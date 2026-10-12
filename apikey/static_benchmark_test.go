@@ -8,6 +8,8 @@ import (
 	"github.com/faustbrian/go-authentication/v2/apikey"
 )
 
+// BenchmarkStaticAuthenticate measures one-entry ID/key hashing/comparison; construction and
+// credential setup are excluded, with success checks in the measured loop.
 func BenchmarkStaticAuthenticate(b *testing.B) {
 	authenticator, err := apikey.NewStatic([]apikey.Entry{{
 		ID: "primary", Key: "secret",

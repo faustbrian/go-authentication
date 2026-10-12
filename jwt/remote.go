@@ -53,7 +53,9 @@ type remoteConfig struct {
 type RemoteOption func(*remoteConfig)
 
 // WithHTTPClient supplies an HTTP client. JWX timeout and redirect hardening
-// is layered onto a shallow copy of the client.
+// is layered onto a shallow copy of the client; a standard Transport is cloned.
+// Custom transports are borrowed and must honor cancellation/Reader contracts.
+// The caller client is not closed or mutated by this option.
 func WithHTTPClient(client *http.Client) RemoteOption {
 	return func(configuration *remoteConfig) { configuration.client = client }
 }
@@ -99,7 +101,11 @@ func WithInitializationTimeout(timeout time.Duration) RemoteOption {
 	return func(configuration *remoteConfig) { configuration.initTimeout = timeout }
 }
 
-// Remote owns a bounded JWK cache and all of its background goroutines.
+// Remote owns a bounded JWX cache and its background work; construct with
+// NewRemote and call Shutdown. KeySet/Refresh/Shutdown support concurrent use
+// under one instance lock, never held across cache/network operations. A zero
+// Remote is not initialized. HTTP client/transport implementations remain trusted
+// collaborators; context deadlines do not preempt their arbitrary blocking code.
 type Remote struct {
 	cache         *jwk.Cache
 	url           string
@@ -117,7 +123,14 @@ type Remote struct {
 }
 
 // NewRemote registers and initially fetches one exact JWK URL. The caller owns
-// the returned provider and must call Shutdown.
+// the returned provider and must call Shutdown. Require a nonnil context; the
+// initialization timeout defaults to ten seconds and does not own later cache
+// lifetime. HTTPS with no user-info/fragment and exact URL matching is enforced,
+// not private-IP/DNS egress policy. Options execute synchronously without panic
+// containment. Construction failure attempts cache shutdown using init context;
+// if that context expired, the pinned producer cancels but can return before
+// joining. This existing failure-path join gap does not return an owner to retry
+// and is not a complete-cleanup guarantee.
 func NewRemote(ctx context.Context, rawURL string, options ...RemoteOption) (*Remote, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, keyProviderFailure(err)
@@ -248,6 +261,8 @@ type jwkResponseTransport struct {
 }
 
 func (transport *jwkResponseTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	// One transport fetch at a time, including automatic refreshes. The token is
+	// released on return; waiting honors request context, not an extra goroutine.
 	if transport.refreshGate != nil {
 		select {
 		case transport.refreshGate <- struct{}{}:
@@ -434,7 +449,10 @@ func validateRemoteJWKBody(encoded []byte, maximum int) error {
 	return nil
 }
 
-// KeySet returns the current cached JWK set without transferring ownership.
+// KeySet returns a detached JSON-reparsed copy of the current cached JWK set;
+// callers may mutate that copy without changing the cache. It admits at most
+// 128 concurrent operations, with unavailable/context failures on refusal or
+// cache error. A cache lookup does not promise revocation freshness or refresh.
 func (r *Remote) KeySet(ctx context.Context) (jwk.Set, error) {
 	operationCtx, cache, operation, err := r.beginOperation(ctx)
 	if err != nil {
@@ -449,7 +467,9 @@ func (r *Remote) KeySet(ctx context.Context) (jwk.Set, error) {
 }
 
 // Refresh synchronously refreshes the cached JWK set. A failed refresh keeps
-// the previously cached set available.
+// the previously cached set available. Concurrent calls coalesce while a fetch
+// is active; followers may cancel their waits, and the leader context owns the
+// fetch. Old keys remaining cached are not proof of current revocation status.
 func (r *Remote) Refresh(ctx context.Context) error {
 	operationCtx, cache, operation, err := r.beginOperation(ctx)
 	if err != nil {
@@ -506,6 +526,10 @@ func cloneKeySet(source jwk.Set) (jwk.Set, error) {
 // Shutdown repeatably performs the complete bounded cleanup owned by the
 // remote JWK provider. Once shutdown begins, no new operations are admitted,
 // even when a caller's shutdown context expires before cleanup completes.
+// Cancellation/draining occur outside the admission lock. A timed-out call
+// leaves stopping sticky and can be retried with a fresh nonnil context; nil
+// return means cleanup completed, not merely that admission stopped. Custom
+// transports must cooperate for their blocked operations to finish.
 func (r *Remote) Shutdown(ctx context.Context) error {
 	for {
 		r.mutex.Lock()

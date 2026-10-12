@@ -18,7 +18,9 @@ const MaxEntries = 256
 
 // Entry configures one active static bearer token and its principal.
 type Entry struct {
-	Token     string
+	// Token is required plaintext construction input, bounded to 8 KiB.
+	Token string
+	// Principal is copied identity data; an empty Method becomes bearer and a conflicting Method rejects.
 	Principal authentication.PrincipalSpec
 }
 
@@ -31,7 +33,9 @@ type tokenSet struct{ entries []staticEntry }
 
 // Static validates bearer tokens against an atomically replaceable bounded
 // token set. Every well-formed credential is compared with every active entry.
-// A Static must not be copied after first use.
+// A Static must not be copied after first use. Replace/Authenticate support
+// concurrent use; replacement is last-store-wins, without version fencing or
+// retained retired-token history. No erasure, worker or Close lifecycle exists.
 type Static struct {
 	digestKey [sha256.Size]byte
 	keyOnce   sync.Once
@@ -48,7 +52,9 @@ func NewStatic(entries []Entry) (*Static, error) {
 }
 
 // Replace atomically replaces all active tokens after validating the complete
-// candidate set. A failed replacement leaves the previous set active.
+// candidate set. A failed replacement leaves the previous set active. Caller
+// entry graphs must remain stable during construction; a zero Static may install
+// its first set, while Authenticate before installation fails unavailable.
 func (s *Static) Replace(entries []Entry) error {
 	built, err := buildTokenSet(entries, s.key())
 	if err != nil {

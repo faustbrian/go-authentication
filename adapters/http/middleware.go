@@ -11,6 +11,10 @@ import (
 
 // CredentialExtractor extracts one typed credential from an HTTP request.
 type CredentialExtractor interface {
+	// Extract must refuse malformed/ambiguous input and identify absent credentials
+	// with ErrCredentialsAbsent. Borrow request/body without mutation or hidden IO;
+	// providers reused across requests must support concurrency. The middleware
+	// does not contain collaborator panics or preempt their blocking work.
 	Extract(*http.Request) (authentication.Credential, error)
 }
 
@@ -44,7 +48,13 @@ func WithChallenges(challenges ...authentication.Challenge) MiddlewareOption {
 	}
 }
 
-// NewMiddleware creates fail-closed authentication-only net/http middleware.
+// NewMiddleware validates nonnil/typed-nil collaborators and creates
+// authentication-only middleware. Optional anonymous access applies only to
+// extraction absence; other failures never authorize access. A 401 requires a
+// valid failure/fallback challenge; otherwise refusal is a fixed-text 503. It
+// shallow-copies request context, borrowing body/headers and next handler.
+// Provider/handler/writer panics propagate, no additional cancellation barrier
+// is imposed, and caller owns concurrency, request limits and lifetimes.
 func NewMiddleware(extractor CredentialExtractor, authenticator authentication.Authenticator, options ...MiddlewareOption) (func(http.Handler) http.Handler, error) {
 	if isNilInterface(extractor) || isNilInterface(authenticator) {
 		return nil, fmt.Errorf("%w: HTTP middleware dependency", authentication.ErrInvalidConfiguration)

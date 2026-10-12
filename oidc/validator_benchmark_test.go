@@ -16,6 +16,8 @@ import (
 	authoidc "github.com/faustbrian/go-authentication/oidc"
 )
 
+// BenchmarkValidateBearer measures static RSA token verification; key generation/signing
+// and configuration are excluded.
 func BenchmarkValidateBearer(b *testing.B) {
 	private, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -43,6 +45,8 @@ func BenchmarkValidateBearer(b *testing.B) {
 	}
 }
 
+// BenchmarkDiscoveryInitialization includes synchronous local discovery/initial-key IO in
+// each timed constructor call; server/key setup is excluded.
 func BenchmarkDiscoveryInitialization(b *testing.B) {
 	private, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -66,6 +70,8 @@ func BenchmarkDiscoveryInitialization(b *testing.B) {
 	}
 }
 
+// BenchmarkRotationMiss times successful local unknown-key refresh/verification; per-
+// iteration initial discovery and synthetic clock advance are outside timing.
 func BenchmarkRotationMiss(b *testing.B) {
 	first, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -108,6 +114,8 @@ func BenchmarkRotationMiss(b *testing.B) {
 	}
 }
 
+// BenchmarkRefreshContention runs parallel fresh cached validation; its name does not
+// guarantee overlapping network refreshes, which the fixed cache may avoid.
 func BenchmarkRefreshContention(b *testing.B) {
 	private, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
@@ -141,6 +149,7 @@ func BenchmarkRefreshContention(b *testing.B) {
 	})
 }
 
+// BenchmarkHostileTokenRejection measures over-bound token refusal with setup excluded.
 func BenchmarkHostileTokenRejection(b *testing.B) {
 	private, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {

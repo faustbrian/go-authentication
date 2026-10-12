@@ -8,6 +8,8 @@ import (
 	"github.com/faustbrian/go-authentication/v2/basic"
 )
 
+// BenchmarkStaticAuthenticate measures one-entry Basic hashing/comparison; construction/credentials
+// are outside timing, and success checks remain inside the loop.
 func BenchmarkStaticAuthenticate(b *testing.B) {
 	authenticator, err := basic.NewStatic([]basic.Entry{{
 		Username: "service", Password: "password",

@@ -1,5 +1,11 @@
 // Package oidc provides strict OpenID Connect ID-token authentication using
-// coreos/go-oidc and go-jose.
+// coreos/go-oidc and go-jose with published root-v1 principals. New performs
+// bounded discovery/initial keys; NewWithKeySet borrows an explicit provider.
+// No package-started background goroutines or Close lifecycle exist. Provider
+// IO/cancellation/concurrency and deployment egress policy remain caller-owned.
+// See docs/specification-decisions.md for the OpenID Connect Core/Discovery 1.0
+// profile, claim policy and unsupported flows; this is not an OAuth login/session
+// manager or authorization engine.
 package oidc
 
 import (
@@ -64,13 +70,18 @@ type Clock interface {
 
 // NonceValidator validates the per-authentication-flow OIDC nonce.
 type NonceValidator interface {
+	// ValidateNonce must bind the token nonce to trusted per-flow state and enforce
+	// its own replay/consumption policy while cooperating with caller context.
+	// Provider state/lifetime/concurrency are borrowed. The validator contains
+	// nonce callback panics as rejection, not blocking or arbitrary provider IO.
 	ValidateNonce(context.Context, string) error
 }
 
 // NonceValidatorFunc adapts a function to NonceValidator.
 type NonceValidatorFunc func(context.Context, string) error
 
-// ValidateNonce calls f.
+// ValidateNonce invokes the function directly. Nil functions/panics propagate
+// here; containment applies only when called through Validator nonce policy.
 func (f NonceValidatorFunc) ValidateNonce(ctx context.Context, nonce string) error {
 	return f(ctx, nonce)
 }
@@ -78,33 +89,55 @@ func (f NonceValidatorFunc) ValidateNonce(ctx context.Context, nonce string) err
 // TokenBinding supplies front-channel values that an ID token cryptographically
 // binds through at_hash or c_hash. Values are used only during the call.
 type TokenBinding struct {
-	AccessToken       string
+	// AccessToken is raw sensitive binding input, not formatted-redacted or size-bounded by this package.
+	AccessToken string
+	// AuthorizationCode is raw sensitive binding input; caller owns its length, privacy and flow lifetime.
 	AuthorizationCode string
 }
 
 // Config defines a strict OIDC ID-token trust boundary.
 type Config struct {
-	Issuer           string
-	ClientID         string
+	// Issuer is exact required issuer URL without user-info/query/fragment; HTTPS is normal, with loopback-only HTTP opt-in.
+	Issuer string
+	// ClientID is required and included in the exact trusted audience set; it is also the accepted azp.
+	ClientID string
+	// TrustedAudiences is a copied unique extra audience allowlist; every token audience must be trusted, with no ClientID duplicate.
 	TrustedAudiences []string
-	Algorithms       []string
-	Clock            Clock
-	ClockSkew        time.Duration
-	NonceValidator   NonceValidator
-	MaxTokenBytes    int
-	MaxClaims        int
-	MaxClaimDepth    int
-	ScopeClaim       string
-	TenantClaim      string
-	InsecureHTTP     bool
+	// Algorithms is an explicit unique allowlist of supported RSA/PSS/ECDSA/EdDSA names; no unsigned or symmetric tokens are supported.
+	Algorithms []string
+	// Clock is required borrowed validation/cache time state; nonblocking, nonpanicking and concurrent-safe calls are caller obligations.
+	Clock Clock
+	// ClockSkew defaults to five minutes when zero; accepted values are nonnegative and at most 24 hours.
+	ClockSkew time.Duration
+	// NonceValidator is optional borrowed per-flow policy; omission adds no replay protection and a typed-nil provider rejects configuration.
+	NonceValidator NonceValidator
+	// MaxTokenBytes defaults to 16 KiB and has a 1 MiB ceiling; it does not bound TokenBinding strings.
+	MaxTokenBytes int
+	// MaxClaims caps members of each inspected JSON object, default published-v1 MaxClaims (128), not all recursive values.
+	MaxClaims int
+	// MaxClaimDepth caps JSON container depth, default published-v1 MaxClaimDepth (8).
+	MaxClaimDepth int
+	// ScopeClaim defaults to scope; present strings require canonical single-space separation and unique nonempty values.
+	ScopeClaim string
+	// TenantClaim defaults to tenant, differs from ScopeClaim and yields non-authoritative unique hints.
+	TenantClaim string
+	// InsecureHTTP permits HTTP only for literal loopback/localhost issuer and endpoint names; DNS/egress policy remains application-owned.
+	InsecureHTTP bool
 
-	HTTPClient         *http.Client
-	MaxHTTPBodyBytes   int64
-	DiscoveryTimeout   time.Duration
-	MaxKeys            int
+	// HTTPClient is optional borrowed client configuration; New shallow-copies it, clones standard transport and hardens timeout/redirects.
+	HTTPClient *http.Client
+	// MaxHTTPBodyBytes defaults to 1 MiB with a 16 MiB ceiling; standard transport decompression precedes this read budget.
+	MaxHTTPBodyBytes int64
+	// DiscoveryTimeout bounds initial discovery plus initial key fetch, default ten seconds, ceiling five minutes.
+	DiscoveryTimeout time.Duration
+	// MaxKeys defaults to 64 with a 4096 ceiling; it bounds parsed remote sets, not arbitrary custom KeySet implementations.
+	MaxKeys int
+	// MinRefreshInterval defaults to one minute; it bounds freshness/cooldown, must be positive and at most 24 hours.
 	MinRefreshInterval time.Duration
+	// MaxRefreshInterval defaults to one hour; it is at least MinRefreshInterval and at most 24 hours.
 	MaxRefreshInterval time.Duration
-	MaxRefreshWaiters  int
+	// MaxRefreshWaiters defaults to 64 with a 4096 ceiling, bounding concurrent remote refresh participants per validator.
+	MaxRefreshWaiters int
 }
 
 // Validator authenticates signed OIDC ID-token bearer credentials.
@@ -124,7 +157,11 @@ type Validator struct {
 	tenantClaim      string
 }
 
-// NewWithKeySet creates a validator from an upstream standards-compliant key set.
+// NewWithKeySet borrows a nonnil/typed-nonnil upstream key provider after applying
+// configuration defaults. The provider must use trusted verification keys,
+// bound IO and support concurrency; arbitrary implementations are not qualified
+// by this constructor and may panic or block. No copy or provider shutdown is
+// performed. Nil Clock rejects but typed-nil Clock is not detected.
 func NewWithKeySet(configuration Config, keySet upstreamoidc.KeySet) (*Validator, error) {
 	applyDefaults(&configuration)
 	algorithms, err := validateConfig(configuration)
@@ -179,13 +216,20 @@ func (v *Validator) Authenticate(ctx context.Context, credential authentication.
 	return authentication.NewAuthenticatedResult(principal)
 }
 
-// ValidateBearer verifies a bounded OIDC ID token.
+// ValidateBearer verifies a bounded ID token without front-channel hash inputs.
+// Merely present at_hash/c_hash values are not verified by this entrypoint.
+// Nonce enforcement is optional policy; it is not automatic replay protection.
 func (v *Validator) ValidateBearer(ctx context.Context, rawToken string) (authentication.Principal, error) {
 	return v.validateIDToken(ctx, rawToken, TokenBinding{})
 }
 
 // ValidateIDToken verifies an ID token and any supplied access-token or
-// authorization-code hash bindings.
+// authorization-code hash bindings. Empty inputs skip the respective binding;
+// supplied inputs require matching hashes for algorithms ending 256/384/512.
+// Other algorithms (including EdDSA) refuse supplied binding checks. Caller
+// bounds binding strings separately. Syntax errors are invalid, trust/policy
+// failures rejected and remote/context failures unavailable; borrowed provider/
+// clock panics propagate. AuthenticatedAt uses auth_time when present, else iat.
 func (v *Validator) ValidateIDToken(
 	ctx context.Context,
 	rawToken string,
@@ -458,6 +502,9 @@ func (v *Validator) excludedPrincipalClaim(name string) bool {
 	return slices.Contains([]string{v.scopeClaim, v.tenantClaim}, name)
 }
 
+// OIDC NumericDate keeps JSON-number precision through rational arithmetic,
+// truncates sub-nanosecond fractions and restricts UTC year1..9999. This differs
+// intentionally from the separate JWT module's integral-number wire profile.
 func numericDate(encoded json.RawMessage) (time.Time, error) {
 	decoder := json.NewDecoder(bytes.NewReader(encoded))
 	decoder.UseNumber()

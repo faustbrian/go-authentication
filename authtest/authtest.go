@@ -1,4 +1,7 @@
-// Package authtest provides deterministic authentication fixtures and assertions.
+// Package authtest provides synthetic deterministic fixtures via Principal,
+// NewClock/NewAuthenticator and HTTP helpers. Callers own fixture/error privacy,
+// request mutation and any body lifecycle. These helpers are not hostile-
+// collaborator or provider-conformance guarantees; scripted state is serialized.
 package authtest
 
 import (
@@ -15,12 +18,16 @@ import (
 	"github.com/faustbrian/go-clock/manual"
 )
 
-// Epoch is the default deterministic authentication time used by fixtures.
+// Epoch is the mutable default fixture timestamp. Set it only before concurrent
+// fixture use; the package does not synchronize writes to this exported variable.
 var Epoch = time.Unix(0, 0).UTC()
 
 // TestingT is the subset of testing.TB required by fixture assertions.
 type TestingT interface {
+	// Helper marks assertion call sites without changing the scripted result.
 	Helper()
+	// Fatalf reports a trusted-fixture assertion failure; conventional tests stop
+	// execution, but construction helpers return zero values if Fatalf returns.
 	Fatalf(string, ...any)
 }
 
@@ -80,17 +87,26 @@ func (c *Clock) Advance(duration time.Duration) time.Time {
 
 // Outcome is one scripted authentication result.
 type Outcome struct {
+	// Result is the immutable scripted result returned unchanged.
 	Result authentication.Result
-	Err    error
+	// Err is a borrowed scripted error, not automatically sanitized by fixtures.
+	Err error
 }
 
-// Call records only non-secret authentication call metadata.
-type Call struct{ Kind authentication.CredentialKind }
+// Call records only credential kind, never credential contents. Custom Kind
+// strings remain caller-asserted non-secret fixture data.
+type Call struct {
+	// Kind is raw caller routing metadata, not confidentiality-screened.
+	Kind authentication.CredentialKind
+}
 
-// String returns a secret-free call description.
+// String formats the raw Kind; do not use confidential custom fixture labels.
 func (c Call) String() string { return fmt.Sprintf("authentication call kind=%s", c.Kind) }
 
-// Authenticator returns scripted outcomes in order and records redacted calls.
+// Authenticator serializes scripted outcomes and call recording under an
+// instance mutex. It borrows errors and trusts credential.Kind: that callback
+// runs under the mutex and must not block, panic or reenter this fixture.
+// Custom kinds are not redacted; fixtures must remain synthetic/non-secret.
 type Authenticator struct {
 	mutex    sync.Mutex
 	outcomes []Outcome
@@ -102,7 +118,10 @@ func NewAuthenticator(outcomes ...Outcome) *Authenticator {
 	return &Authenticator{outcomes: append([]Outcome(nil), outcomes...)}
 }
 
-// Authenticate records a non-secret call and consumes the next outcome.
+// Authenticate records Kind before checking cancellation, then consumes one
+// outcome only for an active context. Empty scripts fail unavailable; nil
+// credential is recorded with empty kind. Nil context/provider panics propagate.
+// Calls/outcomes are serialized, but no general collaborator recovery is provided.
 func (a *Authenticator) Authenticate(ctx context.Context, credential authentication.Credential) (authentication.Result, error) {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
@@ -133,7 +152,9 @@ func (a *Authenticator) Calls() []Call {
 
 // HTTPFixture contains a real request and response recorder.
 type HTTPFixture struct {
-	Request  *http.Request
+	// Request is the caller-owned mutable httptest request; it may retain the supplied body.
+	Request *http.Request
+	// Recorder is the caller-owned mutable response recorder, not concurrent-safe.
 	Recorder *httptest.ResponseRecorder
 }
 

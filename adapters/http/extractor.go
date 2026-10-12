@@ -1,5 +1,9 @@
 // Package authenticationhttp provides strict HTTP credential extraction, challenges,
-// and authentication-only middleware for net/http.
+// and authentication-only middleware for net/http. Start with NewExtractor and
+// NewMiddleware; sources read borrowed request headers/URL/cookies, never the
+// body. Source byte bounds apply to selected values, not total header/query/
+// cookie parsing allocations; server request limits remain deployment-owned.
+// See docs/specification-decisions.md for RFC9110/7617/6750 parsing profiles.
 package authenticationhttp
 
 import (
@@ -19,7 +23,9 @@ const (
 	defaultMaxAPIKeyBytes = 8 * 1024
 )
 
-// Source is an explicitly enabled HTTP credential location.
+// Source is an explicitly enabled HTTP credential location. Its private methods
+// restrict implementations to this package; factory options are validated when
+// passed to NewExtractor, not necessarily at factory invocation.
 type Source interface {
 	extract(*http.Request) (authentication.Credential, bool, error)
 	validate() error
@@ -28,7 +34,9 @@ type Source interface {
 // Extractor rejects ambiguous credentials across all enabled sources.
 type Extractor struct{ sources []Source }
 
-// NewExtractor creates an extractor from one or more explicit sources.
+// NewExtractor validates/copies one or more sources; there is no source-count
+// cap. Built-in source configurations are immutable. Requests must not mutate
+// concurrently with Extract; the extractor owns no request/body lifecycle.
 func NewExtractor(sources ...Source) (*Extractor, error) {
 	if len(sources) == 0 {
 		return nil, fmt.Errorf("%w: no HTTP credential sources", authentication.ErrInvalidConfiguration)
@@ -44,7 +52,10 @@ func NewExtractor(sources ...Source) (*Extractor, error) {
 	return &Extractor{sources: append([]Source(nil), sources...)}, nil
 }
 
-// Extract returns exactly one credential or a classified failure.
+// Extract returns exactly one credential or a classified failure, evaluating
+// enabled sources in order. Nil request fails invalid. The first source error
+// takes precedence; otherwise multiple enabled credentials fail ambiguous. It
+// does not mutate the request, honor its cancellation or normalize credentials.
 func (e *Extractor) Extract(request *http.Request) (authentication.Credential, error) {
 	if request == nil {
 		return nil, authentication.NewFailure(authentication.FailureInvalid)
@@ -76,7 +87,10 @@ type authorizationSource struct {
 	pipe     bool
 }
 
-// BasicAuthorization enables Basic extraction from the Authorization header.
+// BasicAuthorization enables strict padded Base64 extraction with an inclusive
+// 8 KiB decoded username/password total bound. Split at the first colon; empty
+// password is representable, though Static rejects it. Bytes are not transcoded
+// or normalized. AUTH-DEC-001/002 preserve scheme/encoding policy.
 func BasicAuthorization() Source {
 	return authorizationSource{kind: authentication.CredentialBasic, maxBytes: defaultMaxBasicBytes}
 }
@@ -337,6 +351,8 @@ const (
 	locationCookie
 )
 
+// ParseQuery and Cookies inspect the complete borrowed request fields before
+// selected-value admission. Per-credential limits are not total parser budgets.
 func namedValues(request *http.Request, location sourceLocation, name string) ([]string, error) {
 	switch location {
 	case locationHeader:

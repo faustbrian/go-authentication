@@ -19,6 +19,9 @@ var (
 	benchmarkAuthenticationError  error
 )
 
+// BenchmarkAuthenticationInstrumentation compares direct/noop/sampled-out/
+// enabled provider paths on the same anonymous callback. Provider setup and one
+// warmup precede timing; no exporter network or real authentication is measured.
 func BenchmarkAuthenticationInstrumentation(b *testing.B) {
 	base := authenticatorFunc(func(context.Context, authentication.Credential) (authentication.Result, error) {
 		return authentication.AnonymousResult(), nil

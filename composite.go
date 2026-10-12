@@ -9,7 +9,9 @@ import (
 // Binding associates a credential kind with one authenticator. Bindings of the
 // same kind are evaluated in declaration order.
 type Binding struct {
-	Kind          CredentialKind
+	// Kind selects one routing family; unknown nonempty kinds are permitted.
+	Kind CredentialKind
+	// Authenticator is borrowed, not cloned; callers own provider lifetime and concurrent safety.
 	Authenticator Authenticator
 }
 
@@ -19,7 +21,9 @@ type Composite struct {
 	authenticators map[CredentialKind][]Authenticator
 }
 
-// NewComposite validates and copies ordered authenticator bindings.
+// NewComposite requires nonempty bindings and refuses nil/typed-nil providers.
+// It copies binding storage, not provider state; there is no binding-count cap.
+// Reuse concurrently only when every borrowed provider supports it.
 func NewComposite(bindings []Binding) (*Composite, error) {
 	if len(bindings) == 0 {
 		return nil, fmt.Errorf("%w: empty authenticator bindings", ErrInvalidConfiguration)
@@ -37,7 +41,10 @@ func NewComposite(bindings []Binding) (*Composite, error) {
 }
 
 // Authenticate evaluates authenticators bound to the credential kind in
-// deterministic declaration order.
+// deterministic declaration order. A nonnil context is checked before dispatch,
+// not between every provider call. Only rejected failures fall through; an
+// anonymous/zero success or unknown error becomes unavailable. Provider/Kind
+// panics and noncooperative blocking propagate; no retry or shutdown is owned.
 func (c *Composite) Authenticate(ctx context.Context, credential Credential) (Result, error) {
 	if err := ctx.Err(); err != nil {
 		return Result{}, NewFailure(FailureUnavailable, WithFailureCause(err))

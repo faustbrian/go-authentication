@@ -27,7 +27,9 @@ errors, or contexts. Applications still own logger configuration, handler
 behavior, and any additional attributes they attach outside this adapter.
 
 Set HTTP client timeouts and request deadlines appropriate to the service.
-OIDC adds a 30-second client timeout only when the supplied client has none.
+OIDC defaults to 30 seconds and caps a longer supplied client timeout at 30
+seconds; shorter positive caller timeouts remain unchanged. Custom transports
+must cooperate with context/client deadlines.
 OIDC remote keys use conditional requests and bounded HTTP freshness. Configure
 minimum and maximum refresh intervals and waiter capacity; overflow and
 cancelled waiters fail unavailable instead of growing without bound. A failed
@@ -39,8 +41,10 @@ work.
 ## Rotation and outage
 
 Overlap old and new static credentials. JWT refresh failures retain the
-previous cached set. OIDC validates a cached known key during outage but
-requires a successful synchronous fetch for an unknown key. A newly rotated
+previous cached set. OIDC can validate a known key while its trust state is
+fresh; stale state requires successful refresh, and a failed stale refresh
+fails unavailable rather than silently extending trust. An unknown key needs
+a successful refresh after its cooldown permits a fetch. A newly rotated
 key may remain unknown until bounded freshness expires; coordinate issuer cache
 headers and rollout timing. Alert on sustained
 unavailable failures and on a rotation that never transitions to the new ID.

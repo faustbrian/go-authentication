@@ -17,6 +17,7 @@ import (
 	upstreamjwt "github.com/lestrrat-go/jwx/v3/jwt"
 )
 
+// BenchmarkValidateBearer measures signed static-key validation with setup/signing excluded.
 func BenchmarkValidateBearer(b *testing.B) {
 	validator, signed := benchmarkStaticValidator(b, "key")
 	b.ReportAllocs()
@@ -28,6 +29,8 @@ func BenchmarkValidateBearer(b *testing.B) {
 	}
 }
 
+// BenchmarkValidateBearerCachedRemote measures validation against an initialized local cache;
+// startup/signing are excluded, not actual issuer latency qualification.
 func BenchmarkValidateBearerCachedRemote(b *testing.B) {
 	validator, _, cleanup := benchmarkRemoteValidator(b)
 	b.Cleanup(cleanup)
@@ -41,6 +44,8 @@ func BenchmarkValidateBearerCachedRemote(b *testing.B) {
 	}
 }
 
+// BenchmarkValidateBearerRotationMiss measures unknown-kid rejection, not successful rotation;
+// local provider/key setup is excluded.
 func BenchmarkValidateBearerRotationMiss(b *testing.B) {
 	validator, _, cleanup := benchmarkRemoteValidator(b)
 	b.Cleanup(cleanup)
@@ -54,6 +59,7 @@ func BenchmarkValidateBearerRotationMiss(b *testing.B) {
 	}
 }
 
+// BenchmarkValidateBearerHostileInput measures bounded malformed-token refusal after setup.
 func BenchmarkValidateBearerHostileInput(b *testing.B) {
 	validator, _ := benchmarkStaticValidator(b, "key")
 	hostile := strings.Repeat("x", 16*1024)
@@ -66,6 +72,8 @@ func BenchmarkValidateBearerHostileInput(b *testing.B) {
 	}
 }
 
+// BenchmarkValidateBearerContention measures parallel validation of the same cached token;
+// it is not a controlled network refresh-herd comparison.
 func BenchmarkValidateBearerContention(b *testing.B) {
 	validator, _, cleanup := benchmarkRemoteValidator(b)
 	b.Cleanup(cleanup)
@@ -81,6 +89,8 @@ func BenchmarkValidateBearerContention(b *testing.B) {
 	})
 }
 
+// BenchmarkValidateBearerMemoryRetention reports heap delta after forced GCs per iteration;
+// it is an environment-sensitive observation, not a retained-memory bound.
 func BenchmarkValidateBearerMemoryRetention(b *testing.B) {
 	validator, signed := benchmarkStaticValidator(b, "key")
 	runtime.GC()
@@ -103,6 +113,7 @@ func BenchmarkValidateBearerMemoryRetention(b *testing.B) {
 	b.ReportMetric(float64(retained)/float64(max(b.N, 1)), "retained-B/op")
 }
 
+// BenchmarkRemoteKeySetCopy measures detached set copying from an initialized one-key cache.
 func BenchmarkRemoteKeySetCopy(b *testing.B) {
 	_, remote, cleanup := benchmarkRemoteValidator(b)
 	b.Cleanup(cleanup)

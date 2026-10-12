@@ -14,21 +14,34 @@ import (
 type Outcome string
 
 const (
+	// OutcomeAuthenticated marks completion with an authenticated Result.
 	OutcomeAuthenticated Outcome = "authenticated"
-	OutcomeAnonymous     Outcome = "anonymous"
-	OutcomeFailed        Outcome = "failed"
+	// OutcomeAnonymous marks completion with explicit anonymous state.
+	OutcomeAnonymous Outcome = "anonymous"
+	// OutcomeFailed marks completion with an error.
+	OutcomeFailed Outcome = "failed"
 )
 
-// Event contains bounded, secret-free authentication telemetry.
+// Event carries category/duration telemetry, never credential fields. Its
+// string types can still contain application data; concrete owned adapters
+// project unknown categories to fixed labels, not arbitrary custom providers.
 type Event struct {
-	Outcome  Outcome
-	Failure  FailureKind
+	// Outcome is the attempt state; custom strings must be screened by instrumenters.
+	Outcome Outcome
+	// Failure is a Failure kind when available; empty means no typed failure classification.
+	Failure FailureKind
+	// Duration is measured elapsed time; the decorator clamps negative clock movement to zero.
 	Duration time.Duration
 }
 
 // BeginInstrumenter begins instrumentation for one authentication attempt.
 // Implementations must not derive attributes from credential contents.
 type BeginInstrumenter interface {
+	// Begin runs synchronously and may return a replacement context plus completion
+	// callback. Providers must preserve cancellation policy, bound latency and
+	// screen custom categories. Reuse requires concurrent safety. The decorator
+	// contains telemetry panics, not blocking; it invokes a returned callback once
+	// only when the wrapped authentication call returns normally.
 	Begin(context.Context, CredentialKind) (context.Context, func(Event))
 }
 
@@ -41,6 +54,11 @@ type BeginInstrumenter interface {
 // switching constructor calls. Instrumenter remains supported throughout v1;
 // its earliest removal is v2.0.0.
 type Instrumenter interface {
+	// Start runs synchronously and may return a replacement context plus completion
+	// callback. Providers must preserve cancellation policy, bound latency and
+	// screen custom categories. Reuse requires concurrent safety. The decorator
+	// contains telemetry panics, not blocking; it invokes a returned callback once
+	// only when the wrapped authentication call returns normally.
 	Start(context.Context, CredentialKind) (context.Context, func(Event))
 }
 
@@ -76,7 +94,10 @@ func NewInstrumented(authenticator Authenticator, instrumenter Instrumenter, clo
 }
 
 // NewInstrumentedWithBegin creates an authentication instrumentation decorator
-// using the preferred one-attempt observation vocabulary.
+// using the preferred one-attempt observation vocabulary. Nil and typed-nil
+// dependencies are refused; provider/clock state remains borrowed. No goroutine,
+// flush or provider shutdown is owned; concurrent reuse requires collaborators
+// to support it.
 func NewInstrumentedWithBegin(authenticator Authenticator, instrumenter BeginInstrumenter, clock Clock) (*Instrumented, error) {
 	if isNil(authenticator) || isNil(instrumenter) || isNil(clock) {
 		return nil, fmt.Errorf("%w: incomplete instrumentation", ErrInvalidConfiguration)
@@ -86,7 +107,10 @@ func NewInstrumentedWithBegin(authenticator Authenticator, instrumenter BeginIns
 }
 
 // Authenticate reports bounded outcome metadata without changing the wrapped
-// authenticator's result or error.
+// authenticator's result or error. Clock/begin/finish panics are isolated, but
+// the authenticator's panic propagates and does not run finish. A provider can
+// replace the forwarded context; nil replacement keeps the original. No
+// callback deadline/preemption or universal custom-category redaction is added.
 func (i *Instrumented) Authenticate(ctx context.Context, credential Credential) (Result, error) {
 	started := safeNow(i.clock, time.Time{})
 	next, finish := safeBegin(i.instrumenter, ctx, safeCredentialKind(credential))

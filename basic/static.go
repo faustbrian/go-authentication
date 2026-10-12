@@ -1,4 +1,8 @@
-// Package basic provides Basic credential authenticators.
+// Package basic provides NewStatic/NewStaticWithOptions for bounded Basic
+// credentials. It owns immutable principal copies and per-owner keyed digests,
+// not password hashing for persisted stores, decoding, TLS or erasure. Digest
+// comparisons scan all entries, but input admission and hashing are not a
+// whole-call constant-time guarantee. Constructed values can be reused concurrently.
 package basic
 
 import (
@@ -17,8 +21,11 @@ const MaxEntries = 256
 
 // Entry configures one accepted username and password pair.
 type Entry struct {
-	Username  string
-	Password  string
+	// Username is nonempty raw input, admitted before hashing; constructors reject controls.
+	Username string
+	// Password is plaintext construction input, never retained as plaintext by Static.
+	Password string
+	// Principal is copied identity data; an empty Method becomes basic and a conflicting Method rejects.
 	Principal authentication.PrincipalSpec
 }
 
@@ -45,7 +52,10 @@ func NewStatic(entries []Entry) (*Static, error) {
 // NewStaticWithOptions validates and copies entries with immutable credential
 // byte limits. Options may reduce, but not exceed, the default 8 KiB per field.
 // Oversized credentials fail with ErrInvalidConfiguration before scanning or
-// hashing credential contents or copying principals.
+// hashing credential contents or copying principals. Caller inputs must remain
+// stable during construction; no plaintext-secret erasure is performed. A
+// zero Static has no entries and rejects admitted credentials; nil receivers
+// are not guarded. No background work or Close lifecycle exists.
 func NewStaticWithOptions(entries []Entry, options ...Option) (*Static, error) {
 	configuration, err := staticConfiguration(options)
 	if err != nil {
@@ -106,6 +116,8 @@ func containsControl(value string) bool {
 
 // Authenticate admits raw credential bytes before hashing, then compares every
 // configured entry. Oversized fields fail invalid; cancellation takes precedence.
+// Require a nonnil context; only its initial state is checked. Inputs must be
+// concrete BasicCredential values (not pointers); blocking/provider work is absent.
 func (s *Static) Authenticate(ctx context.Context, credential authentication.Credential) (authentication.Result, error) {
 	if err := ctx.Err(); err != nil {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureUnavailable,

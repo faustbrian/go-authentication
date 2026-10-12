@@ -1,6 +1,9 @@
 // Package authotel adapts authentication instrumentation to bounded,
 // payload-free OpenTelemetry traces and metrics. Providers and their lifecycle
-// remain caller-owned; the package does not use global providers.
+// remain caller-owned; the package does not use global providers. New consumes
+// published root v1.2.2 Event/interfaces, not local root-v2 nominal types. Call
+// the returned finish callback to end the span; providers must bound calls and
+// support concurrency. Panic containment does not interrupt blocking providers.
 package authotel
 
 import (
@@ -21,8 +24,12 @@ const instrumentationName = "github.com/faustbrian/go-authentication/adapters/ot
 // Config supplies caller-owned providers. Both providers are required and
 // their synchronous construction and recording operations must be bounded.
 type Config struct {
+	// TracerProvider is borrowed for synchronous construction/span calls; it must
+	// support bounded concurrent use. The adapter does not own provider shutdown.
 	TracerProvider trace.TracerProvider
-	MeterProvider  metric.MeterProvider
+	// MeterProvider is borrowed for synchronous instruments/recording; it must
+	// support bounded concurrent use. Construction errors become fixed categories.
+	MeterProvider metric.MeterProvider
 }
 
 // Instrumenter emits bounded authentication traces and metrics. It is safe for
@@ -77,7 +84,10 @@ func New(config Config) (instrumenter *Instrumenter, err error) {
 }
 
 // Begin starts one authentication observation. The returned completion
-// callback records only its first invocation and is safe for concurrent use.
+// callback records only its first invocation and is safe for concurrent use,
+// assuming borrowed providers meet their concurrency contracts. First completion
+// releases retained context/span references; if finish is never called they
+// remain retained and the span is not ended. No timeout or flush is added.
 func (i *Instrumenter) Begin(
 	ctx context.Context,
 	kind authentication.CredentialKind,

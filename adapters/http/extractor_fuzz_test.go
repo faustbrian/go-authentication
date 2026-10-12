@@ -12,6 +12,8 @@ import (
 	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
 )
 
+// FuzzAuthorizationExtraction bounds raw header input and checks failure classification, not
+// complete HTTP/RFC conformance.
 func FuzzAuthorizationExtraction(f *testing.F) {
 	f.Add("Bearer token")
 	f.Add("Bearer 42|opaque-secret")
@@ -31,6 +33,8 @@ func FuzzAuthorizationExtraction(f *testing.F) {
 	})
 }
 
+// FuzzCredentialHeaderSet varies duplicate/combined credential sources and checks
+// classified failures plus redacted concrete credential formatting.
 func FuzzCredentialHeaderSet(f *testing.F) {
 	f.Add("Bearer token", "", "primary", "key", "Basic cHJveHk6c2VjcmV0", uint8(0b00101))
 	f.Add("", "", "", "", "", uint8(0))
@@ -88,6 +92,8 @@ func FuzzCredentialHeaderSet(f *testing.F) {
 	})
 }
 
+// FuzzChallengeFormatting checks admitted realm values cannot introduce field-breaking
+// controls after quoting, not whether application text is confidential.
 func FuzzChallengeFormatting(f *testing.F) {
 	f.Add("api")
 	f.Add("a\"b\\c")
@@ -111,6 +117,8 @@ func FuzzChallengeFormatting(f *testing.F) {
 	})
 }
 
+// FuzzBearerQueryExtraction exercises malformed/duplicate bounded query strings through
+// classified refusals; it is not a total-request parsing resource oracle.
 func FuzzBearerQueryExtraction(f *testing.F) {
 	f.Add("access_token=token")
 	f.Add("access_token=one&access_token=two")

@@ -15,13 +15,18 @@ const (
 
 // Validator validates an API key and returns an immutable principal.
 type Validator interface {
+	// ValidateAPIKey borrows a nonnil context and plaintext credentials. Return a concrete
+	// principal with Method api_key on success; classify policy failures explicitly
+	// and bound/cooperate with IO. Provider state/lifetime and concurrent safety
+	// remain caller-owned; direct function adapters do not recover panics.
 	ValidateAPIKey(context.Context, string, string) (authentication.Principal, error)
 }
 
 // ValidatorFunc adapts a function to Validator.
 type ValidatorFunc func(context.Context, string, string) (authentication.Principal, error)
 
-// ValidateAPIKey calls f.
+// ValidateAPIKey directly invokes the borrowed function. Nil functions/provider
+// panics propagate; no deadline, preemption, redaction or retry is added.
 func (f ValidatorFunc) ValidateAPIKey(ctx context.Context, keyID, key string) (authentication.Principal, error) {
 	return f(ctx, keyID, key)
 }
@@ -53,7 +58,10 @@ type Authenticator struct {
 	maxKeyBytes   int
 }
 
-// New creates a callback API-key authenticator.
+// New requires a nonnil provider and positive configured byte bounds, defaulting
+// to 8 KiB keys and 256-byte IDs. Unlike Static, positive callback bounds have no
+// default-sized ceiling. Typed-nil providers are not detected; provider state
+// remains borrowed and callbacks/options are not panic-contained.
 func New(validator Validator, options ...Option) (*Authenticator, error) {
 	configuration := config{
 		maxKeyIDBytes: defaultMaxKeyIDBytes,
@@ -75,7 +83,11 @@ func New(validator Validator, options ...Option) (*Authenticator, error) {
 	}, nil
 }
 
-// Authenticate validates one bounded API-key credential.
+// Authenticate checks initial cancellation and concrete credential type/size
+// before a synchronous provider call. Typed Failure errors pass through; other
+// errors become unavailable with an inspectable raw cause. Anonymous or wrong-
+// method principals fail unavailable. There is no post-callback cancellation
+// check, retry, panic recovery or deep copy of provider state.
 func (a *Authenticator) Authenticate(ctx context.Context, credential authentication.Credential) (authentication.Result, error) {
 	if err := ctx.Err(); err != nil {
 		return authentication.Result{}, authentication.NewFailure(authentication.FailureUnavailable,

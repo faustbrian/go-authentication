@@ -18,6 +18,8 @@ import (
 	jose "github.com/go-jose/go-jose/v4"
 )
 
+// FuzzInspectCompactToken exercises bounded compact-token preflight with fixed algorithms;
+// returned errors are ignored rather than used as a conformance oracle.
 func FuzzInspectCompactToken(f *testing.F) {
 	f.Add("eyJhbGciOiJSUzI1NiIsImtpZCI6ImtleSJ9.e30.signature")
 	f.Add("not-a-token")
@@ -32,6 +34,7 @@ func FuzzInspectCompactToken(f *testing.F) {
 	})
 }
 
+// FuzzRemoteURL exercises bounded URL policy inputs without network/DNS access.
 func FuzzRemoteURL(f *testing.F) {
 	f.Add("https://issuer.example.test/keys", false)
 	f.Add("http://127.0.0.1/keys", true)
@@ -44,6 +47,8 @@ func FuzzRemoteURL(f *testing.F) {
 	})
 }
 
+// FuzzProviderMetadata preflights bounded synthetic JSON and exercises metadata policy;
+// it does not qualify an actual provider or assert every acceptance result.
 func FuzzProviderMetadata(f *testing.F) {
 	f.Add([]byte(`{"authorization_endpoint":"https://issuer.example/authorize","token_endpoint":"https://issuer.example/token","jwks_uri":"https://issuer.example/keys","response_types_supported":["code"],"subject_types_supported":["public"],"id_token_signing_alg_values_supported":["RS256"]}`))
 	f.Add([]byte(`{}`))
@@ -62,6 +67,8 @@ func FuzzProviderMetadata(f *testing.F) {
 	})
 }
 
+// FuzzValidateBearer checks classified refusal and default-error marker omission with
+// synthetic static keys; accepted results are not a conformance assertion.
 func FuzzValidateBearer(f *testing.F) {
 	private := internalRSAFixture.keys[0]
 	now := time.Unix(1_800_000_000, 0).UTC()
@@ -115,6 +122,7 @@ func FuzzValidateBearer(f *testing.F) {
 	})
 }
 
+// FuzzJWKSetResponse uses bounded in-memory responses, not discovery/live-provider IO.
 func FuzzJWKSetResponse(f *testing.F) {
 	f.Add([]byte(`{"keys":[]}`))
 	f.Add([]byte(`{}`))
@@ -137,6 +145,8 @@ func FuzzJWKSetResponse(f *testing.F) {
 	})
 }
 
+// FuzzNumericDate exercises bounded JSON-number text; it does not assert exact
+// rounding/range classification for every input.
 func FuzzNumericDate(f *testing.F) {
 	f.Add("0")
 	f.Add("1.5")

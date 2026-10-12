@@ -15,6 +15,8 @@ import (
 	"github.com/lestrrat-go/jwx/v3/jws"
 )
 
+// FuzzInspectCompactJWT exercises bounded compact-token preflight; returned results are
+// ignored, so this is panic/resource evidence, not acceptance conformance.
 func FuzzInspectCompactJWT(f *testing.F) {
 	f.Add("eyJhbGciOiJSUzI1NiIsImtpZCI6ImtleSJ9.e30.signature")
 	f.Add("not-a-token")
@@ -28,6 +30,8 @@ func FuzzInspectCompactJWT(f *testing.F) {
 	})
 }
 
+// FuzzValidateSignedPayload signs bounded synthetic payloads before validation; outcomes
+// are ignored, so it does not establish rejection of every malformed input.
 func FuzzValidateSignedPayload(f *testing.F) {
 	key, err := jwk.Import([]byte("01234567890123456789012345678901"))
 	if err != nil {
@@ -63,6 +67,8 @@ func FuzzValidateSignedPayload(f *testing.F) {
 	})
 }
 
+// FuzzCacheLifetimeHeaders exercises bounded cache-control/date strings through interval
+// selection without asserting a complete HTTP cache profile.
 func FuzzCacheLifetimeHeaders(f *testing.F) {
 	f.Add("max-age=60", "0", "")
 	f.Add("max-age=0, max-age=3600", "invalid", "")
@@ -79,6 +85,8 @@ func FuzzCacheLifetimeHeaders(f *testing.F) {
 	})
 }
 
+// FuzzRemoteJWKResponseBoundary uses in-memory transport responses to exercise body/
+// header/key admission and closure, not live issuer interoperability.
 func FuzzRemoteJWKResponseBoundary(f *testing.F) {
 	f.Add([]byte(`{"keys":[{"kty":"oct","kid":"key","alg":"HS256","k":"MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE"}]}`), "seed", uint16(http.StatusOK))
 	f.Add([]byte(`{"keys":[]}`), "", uint16(http.StatusOK))

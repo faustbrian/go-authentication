@@ -1,4 +1,7 @@
-// Package authenticationslog adapts authentication instrumentation to log/slog.
+// Package authenticationslog adapts authentication Begin instrumentation to
+// log/slog using New. It projects categories to constants and omits credentials/
+// identity data, but logger/handler/context enrichment and lifetime are caller-
+// owned. Recording is synchronous, without provider preemption or goroutines.
 package authenticationslog
 
 import (
@@ -23,7 +26,10 @@ func New(logger *slog.Logger) (*Instrumenter, error) {
 }
 
 // Begin starts one bounded authentication observation. Categories are projected
-// to built-in constants or "unknown"; an empty failure remains empty.
+// to built-in constants or "unknown"; an empty failure remains empty. Every
+// returned callback invocation logs again; unlike the OTel adapter it is not
+// one-shot. Provider panics/blocking propagate on direct Begin/finish calls;
+// use the core instrumentation decorator for panic isolation, not preemption.
 func (i *Instrumenter) Begin(
 	ctx context.Context,
 	kind authentication.CredentialKind,

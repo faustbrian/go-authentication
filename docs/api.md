@@ -51,3 +51,6 @@ go test -run '^Example' ./...
 (cd adapters/otel && go test -run '^Example' ./...)
 (cd authotel && go test -run '^Example' ./...)
 ```
+
+See the [source documentation audit](source-documentation-audit.md) for full
+module/variant coverage, actual ownership and existing limitations.

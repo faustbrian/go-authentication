@@ -8,7 +8,10 @@ import (
 	authentication "github.com/faustbrian/go-authentication/v2"
 )
 
-// FormatChallenge serializes a challenge for a WWW-Authenticate field value.
+// FormatChallenge revalidates bounded challenge data and serializes sorted
+// parameter names with quoted backslash/quote escaping. Invalid/zero challenges
+// fail; values are protocol-screened, not confidentiality-classified. It owns
+// one field value, not a whole response header-count budget (AUTH-DEC-007).
 func FormatChallenge(challenge authentication.Challenge) (string, error) {
 	parameters := challenge.Parameters()
 	validated, err := authentication.NewChallenge(challenge.Scheme(), parameters)

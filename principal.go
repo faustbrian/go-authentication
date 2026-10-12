@@ -1,4 +1,10 @@
-// Package authentication defines framework-independent authentication contracts.
+// Package authentication provides immutable principals, typed credentials and
+// classified failures for authentication-only composition. Start with NewPrincipal
+// and concrete authenticators or NewComposite; authorization, request decoding,
+// provider IO/lifecycle and deployment TLS policy remain outside core. Credential
+// accessors and explicit causes are sensitive despite redacted formatting. Root
+// v2 admission bounds are not automatically inherited by optional modules pinned
+// to published root v1.2.2. See docs/specification-decisions.md for protocol scope.
 package authentication
 
 import (
@@ -29,13 +35,21 @@ var ErrInvalidPrincipal = errors.New("authentication: invalid principal")
 // but must not mutate them concurrently with construction. AuthenticatedAt and
 // its time.Location are trusted clock/application metadata, retained unchanged.
 type PrincipalSpec struct {
-	Subject         string
-	Method          string
-	Issuer          string
-	Audiences       []string
-	TenantHints     []string
-	Scopes          []string
-	Claims          map[string]any
+	// Subject is required nonempty identity text; it is not normalized or confidentiality-classified.
+	Subject string
+	// Method is required nonempty authentication-method text, not an authorization policy.
+	Method string
+	// Issuer is optional authority text; core construction does not validate its URI.
+	Issuer string
+	// Audiences is copied nonempty audience text, with an independent list limit.
+	Audiences []string
+	// TenantHints is copied non-authoritative tenant metadata, not verified tenancy.
+	TenantHints []string
+	// Scopes is copied authentication data, not an authorization decision.
+	Scopes []string
+	// Claims is copied bounded scalar/map/collection data; unsupported kinds fail admission.
+	Claims map[string]any
+	// AuthenticatedAt retains trusted application timestamp/location metadata unchanged.
 	AuthenticatedAt time.Time
 }
 
