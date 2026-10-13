@@ -4,9 +4,12 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-10-13
+
 ### Fixed
 
 - Reject malformed trailing JSON before admitting trusted key-provider work.
+  ([b6caee5568](https://github.com/faustbrian/go-authentication/commit/b6caee5568eb79f5028d2eac5a3fb60a199d59c6))
 - Cancel and join failed-constructor cache work with a fresh bounded cleanup
   context, reporting both safe initialization and cleanup failures when needed.
   Failed construction can take one additional initialization-timeout interval;
@@ -18,6 +21,10 @@ All notable changes to this module are documented here.
 
 - Clarify source ownership, callback/provider obligations and actual admission/
   lifecycle limits without changing executable behavior or published bindings.
+  ([bd510ac049](https://github.com/faustbrian/go-authentication/commit/bd510ac04922bde11786d32fe9c6d3c787f85c4a))
+
+- Improve JWT package adoption and documentation navigation.
+  ([7051111846](https://github.com/faustbrian/go-authentication/commit/70511118460e012a1554cfebdde3c1108d96ecdc))
 
 ## [1.1.3] - 2026-10-09
 
@@ -180,5 +187,7 @@ All notable changes to this module are documented here.
 - Refreshed the canonical authentication checksum after its API compatibility
   baseline was normalized to the module boundary.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.2...HEAD
+[Unreleased]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.4...HEAD
+[1.1.4]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.3...jwt/v1.1.4
+[1.1.3]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.2...jwt/v1.1.3
 [1.1.2]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.1...jwt/v1.1.2

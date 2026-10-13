@@ -11,6 +11,15 @@ providers, issue tokens, manage sessions, or make authorization decisions.
 go get github.com/faustbrian/go-authentication/jwt@v1
 ```
 
+The `v1.1.4` patch candidate keeps the existing JWT import path and published
+root-v1 principal types. Once published, update this independent nested module
+with `go get github.com/faustbrian/go-authentication/jwt@v1.1.4`; adopting this
+patch does not require a root-v2 or OIDC upgrade. Preparation is not publication.
+
+Failed remote initialization can take one additional initialization-timeout
+interval for cleanup; transports must cooperate with cancellation. The
+[changelog](CHANGELOG.md) records the admission and refresh-result repairs.
+
 ## Quick start
 
 ```go
