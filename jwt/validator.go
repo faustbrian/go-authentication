@@ -15,6 +15,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"math/bits"
 	"reflect"
 	"slices"
@@ -173,9 +174,7 @@ func (v *Validator) Authenticate(ctx context.Context, credential authentication.
 // critical headers before obtaining trusted keys. NumericDates use integral
 // JSON-number syntax. It verifies mandatory claims/signature through pinned JWX
 // and constructs a published-v1 principal: AuthenticatedAt is iat, not call time.
-// Existing preflight does not require EOF on malformed trailing-data errors,
-// so a malformed suffix can reach Provider. This is a validation-order
-// limitation, not a supported wire profile; final trust still depends on JWX.
+// Both JSON objects must end at EOF before Provider is invoked.
 // Syntax/policy/signature failures are rejected; source failures are unavailable
 // with redacted/context causes. No retry or callback preemption is imposed.
 func (v *Validator) ValidateBearer(ctx context.Context, token string) (authentication.Principal, error) {
@@ -692,12 +691,9 @@ func inspectCompactJWT(token string, algorithms map[string]struct{}, maxClaims, 
 		return err
 	}
 	var fields map[string]json.RawMessage
-	// Preflight admits the structural object; a malformed trailing suffix can
-	// still make this full unmarshal fail, which leaves required fields absent.
+	// Strict structural preflight has already proven these JSON objects valid.
 	_ = json.Unmarshal(header, &fields)
 	var claims map[string]json.RawMessage
-	// Full-unmarshal failure is ignored here after structural prefix admission;
-	// preflight does not establish EOF for every malformed trailing suffix.
 	_ = json.Unmarshal(payload, &claims)
 	if err := validateNumericDateClaims(claims); err != nil {
 		return err
@@ -776,11 +772,10 @@ func inspectJSONObject(encoded []byte, maxMembers, maxDepth int) error {
 	if err := inspectJSONValue(decoder, 0, maxMembers, maxDepth, true); err != nil {
 		return err
 	}
-	// Existing behavior treats every decoder error here as end-of-data, not
-	// just EOF. Malformed trailing data can therefore reach trusted providers
-	// before upstream token parsing. This is a limitation, not JSON conformance.
 	if _, err := decoder.Token(); err == nil {
 		return errors.New("trailing JSON data")
+	} else if !errors.Is(err, io.EOF) {
+		return err
 	}
 	return nil
 }

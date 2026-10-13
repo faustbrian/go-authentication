@@ -31,16 +31,23 @@ only; fractional and exponent forms are rejected.
 adapts a function to that contract. Provider sets are copied and revalidated
 for each validation attempt. Their JSON serialization occurs before key-count
 admission; provider objects must remain stable and bound that trusted work.
-The existing preflight also treats non-EOF trailing decoder errors as end-of-
-data, so malformed suffixes can reach the provider before final parsing. This
-is a validation-order limitation, not supported JWT syntax or conformance; no
-final-authentication acceptance follows from the provider-order observation.
+Strict JSON preflight requires the complete protected header and claims to end
+at EOF before invoking the provider. Malformed trailing bytes fail rejected
+without admitting provider work.
 
 ## Remote provider
 
 `NewRemote` completes successful initialization with exactly one bounded fetch,
 starts a provider-owned cache, and returns a `KeyProvider`. The caller must
 call `Shutdown`.
+
+Failed initialization cancels cache work and waits for cleanup with a fresh
+timeout equal to `WithInitializationTimeout`. This can add one initialization
+interval to a failed constructor call. If cleanup also fails, the returned
+error joins the safe initial failure and cleanup failure; cancellation and
+cleanup deadline causes remain inspectable with `errors.Is`. Custom transports
+must cooperate with cancellation; a cleanup deadline reports incomplete
+joining, not successful cleanup or forced callback termination.
 
 - `WithHTTPClient` supplies the transport policy. The client is shallow-copied
   and then hardened with no redirects, no compression, exact-URL access, and
@@ -57,7 +64,8 @@ call `Shutdown`.
 At most 128 concurrent provider operations are admitted.
 
 `KeySet` returns a deep copy of the current cached set. `Refresh` requests a
-synchronous refresh; overlapping explicit refreshes share a result and all
+synchronous refresh; overlapping explicit refreshes retain the result of the
+generation they joined, even if a later refresh finishes before they resume. All
 automatic and explicit HTTP work is serialized. Caller cancellation stops
 waiting. Once `Shutdown` begins, it permanently rejects new operations, cancels
 admitted operations, joins them, and shuts down cache work. A canceled shutdown

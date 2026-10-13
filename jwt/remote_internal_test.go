@@ -703,13 +703,13 @@ func TestCloneKeySetReportsEncodingFailure(t *testing.T) {
 
 func TestRemoteRefreshWaitersShareResultAndHonorCancellation(t *testing.T) {
 	sharedErr := errors.New("shared refresh failure")
-	completed := &Remote{refreshing: true, refreshDone: make(chan struct{}), refreshErr: sharedErr}
-	close(completed.refreshDone)
+	completed := &Remote{refreshFlight: &remoteRefreshFlight{done: make(chan struct{}), err: sharedErr}}
+	close(completed.refreshFlight.done)
 	if err := completed.refresh(context.Background(), nil); !errors.Is(err, sharedErr) {
 		t.Fatalf("refresh(completed waiter) error = %v", err)
 	}
 
-	remote := &Remote{refreshing: true, refreshDone: make(chan struct{})}
+	remote := &Remote{refreshFlight: &remoteRefreshFlight{done: make(chan struct{})}}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	if err := remote.refresh(ctx, nil); !errors.Is(err, context.Canceled) {

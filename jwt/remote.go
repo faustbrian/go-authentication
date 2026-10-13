@@ -117,9 +117,14 @@ type Remote struct {
 	nextOperation uint64
 	operations    map[uint64]context.CancelFunc
 	idle          chan struct{}
-	refreshing    bool
-	refreshDone   chan struct{}
-	refreshErr    error
+	refreshFlight *remoteRefreshFlight
+}
+
+// Each completed result belongs to its admitted generation, even if another
+// fetch finishes before a follower resumes. Closing done publishes err.
+type remoteRefreshFlight struct {
+	done chan struct{}
+	err  error
 }
 
 // NewRemote registers and initially fetches one exact JWK URL. The caller owns
@@ -127,10 +132,10 @@ type Remote struct {
 // initialization timeout defaults to ten seconds and does not own later cache
 // lifetime. HTTPS with no user-info/fragment and exact URL matching is enforced,
 // not private-IP/DNS egress policy. Options execute synchronously without panic
-// containment. Construction failure attempts cache shutdown using init context;
-// if that context expired, the pinned producer cancels but can return before
-// joining. This existing failure-path join gap does not return an owner to retry
-// and is not a complete-cleanup guarantee.
+// containment. Construction failure cancels and joins cache work using a fresh
+// cleanup timeout equal to the initialization timeout. Cleanup can add that
+// interval to failed construction; its failure is joined with the safe initial
+// failure. Custom transports must cooperate with cancellation for joining.
 func NewRemote(ctx context.Context, rawURL string, options ...RemoteOption) (*Remote, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, keyProviderFailure(err)
@@ -172,11 +177,17 @@ func NewRemote(ctx context.Context, rawURL string, options ...RemoteOption) (*Re
 		jwk.WithMaxInterval(configuration.maxRefresh),
 		jwk.WithMaxFetchBodySize(configuration.maxBodyBytes),
 	); err != nil {
-		_ = cache.Shutdown(initCtx)
+		cause := error(ErrKeyProviderUnavailable)
 		if parentErr := ctx.Err(); parentErr != nil {
-			return nil, keyProviderFailure(parentErr)
+			cause = parentErr
 		}
-		return nil, keyProviderFailure(ErrKeyProviderUnavailable)
+		initialFailure := keyProviderFailure(cause)
+		cleanupCtx, cancelCleanup := context.WithTimeout(context.Background(), configuration.initTimeout)
+		defer cancelCleanup()
+		if cleanupErr := cache.Shutdown(cleanupCtx); cleanupErr != nil {
+			return nil, errors.Join(initialFailure, keyProviderFailure(cleanupErr))
+		}
+		return nil, initialFailure
 	}
 	return &Remote{cache: cache, url: rawURL}, nil
 }
@@ -468,8 +479,9 @@ func (r *Remote) KeySet(ctx context.Context) (jwk.Set, error) {
 
 // Refresh synchronously refreshes the cached JWK set. A failed refresh keeps
 // the previously cached set available. Concurrent calls coalesce while a fetch
-// is active; followers may cancel their waits, and the leader context owns the
-// fetch. Old keys remaining cached are not proof of current revocation status.
+// is active and keep that generation's result even after later refreshes;
+// followers may cancel their waits, and the leader context owns the fetch.
+// Old keys remaining cached are not proof of current revocation status.
 func (r *Remote) Refresh(ctx context.Context) error {
 	operationCtx, cache, operation, err := r.beginOperation(ctx)
 	if err != nil {
@@ -484,29 +496,24 @@ func (r *Remote) Refresh(ctx context.Context) error {
 
 func (r *Remote) refresh(ctx context.Context, cache *jwk.Cache) error {
 	r.mutex.Lock()
-	if r.refreshing {
-		done := r.refreshDone
+	if flight := r.refreshFlight; flight != nil {
 		r.mutex.Unlock()
 		select {
-		case <-done:
-			r.mutex.Lock()
-			err := r.refreshErr
-			r.mutex.Unlock()
-			return err
+		case <-flight.done:
+			return flight.err
 		case <-ctx.Done():
 			return ctx.Err()
 		}
 	}
-	r.refreshing = true
-	r.refreshDone = make(chan struct{})
-	done := r.refreshDone
+	flight := &remoteRefreshFlight{done: make(chan struct{})}
+	r.refreshFlight = flight
 	r.mutex.Unlock()
 
 	_, err := cache.Refresh(ctx, r.url)
 	r.mutex.Lock()
-	r.refreshing = false
-	r.refreshErr = err
-	close(done)
+	r.refreshFlight = nil
+	flight.err = err
+	close(flight.done)
 	r.mutex.Unlock()
 	return err
 }

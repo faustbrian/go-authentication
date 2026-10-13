@@ -4,6 +4,16 @@ All notable changes to this module are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Reject malformed trailing JSON before admitting trusted key-provider work.
+- Cancel and join failed-constructor cache work with a fresh bounded cleanup
+  context, reporting both safe initialization and cleanup failures when needed.
+  Failed construction can take one additional initialization-timeout interval;
+  custom transports remain responsible for cooperative cancellation.
+- Keep each explicit-refresh follower's result tied to the generation it joined,
+  rather than a later refresh result.
+
 ### Documentation
 
 - Clarify source ownership, callback/provider obligations and actual admission/

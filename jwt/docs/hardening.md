@@ -56,7 +56,7 @@ issuers, audiences, algorithms, keys, and required claims own type separation.
 | HTTPS fetch | One configured URL and one request for successful initialization; redirects and compressed responses are rejected. Plain HTTP requires the test/development option. |
 | Response limits | 1 MiB body, 32 KiB aggregate headers, 64 keys, strict JWK JSON, and a bounded initialization timeout by default. |
 | DNS, TLS, timeout, cancellation, partial body, invalid JSON, key collision, or oversized response | `ErrAuthenticationUnavailable`; response bodies are closed and public error text is redacted. |
-| Concurrent refresh | Automatic and explicit work uses one hardened serialized transport; overlapping explicit callers share one result. At most 128 provider operations are admitted. |
+| Concurrent refresh | Automatic and explicit work uses one hardened serialized transport; overlapping explicit callers retain their joined generation's result. At most 128 provider operations are admitted. |
 | Fleet refresh | Each provider instance applies independent 10 percent bounded jitter to cache refresh timing; zero jitter can be configured explicitly. |
 | Successful rotation | The complete validated set atomically replaces the cached set. Returned sets are deep copies. |
 | Refresh outage | `Refresh` reports unavailable while the last successful cached set remains usable for known keys. |
