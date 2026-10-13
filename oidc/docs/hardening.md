@@ -1,5 +1,7 @@
 # OIDC validation hardening matrix
 
+[Documentation index](README.md)
+
 This matrix defines the observable validation contract and the evidence used to
 protect it. References are to OpenID Connect Core 1.0 and OpenID Connect
 Discovery 1.0, both incorporating errata set 2, unless another specification is

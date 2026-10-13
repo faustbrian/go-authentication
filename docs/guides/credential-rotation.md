@@ -1,5 +1,7 @@
 # Credential and key rotation
 
+[Documentation index](../README.md)
+
 For static API keys, construct the complete overlap set and call
 `Static.Replace`. Keep old and new IDs deterministic and distinct. Confirm the
 new credential is in use before removing the old entry.
@@ -19,3 +21,5 @@ fail unavailable for unknown keys.
 Use the injected clock in deterministic rollout tests. Exercise current,
 previous, newly introduced, revoked, and unknown keys, including issuer outage
 and cache-expiry transitions.
+
+Continue with [Exported API map](../api.md).

@@ -1,5 +1,7 @@
 # Basic authentication
 
+[Documentation index](../README.md)
+
 Use `basic.NewStatic` for a small configured set of service credentials. The
 authenticator hashes usernames and passwords to fixed-size, per-authenticator
 keyed digests and compares every configured entry in constant work relative to
@@ -12,3 +14,5 @@ service integrations, not end-user password verification; this package does
 not hash stored user passwords or manage accounts.
 
 See the compiled `basic.ExampleNewStatic` example.
+
+Continue with [Exported API map](../api.md).

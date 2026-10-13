@@ -1,5 +1,7 @@
 # Compatibility
 
+[Documentation index](README.md)
+
 ## Go and modules
 
 The supported floor is Go 1.27.0. The repository contains independent modules:

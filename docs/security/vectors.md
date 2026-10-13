@@ -1,5 +1,7 @@
 # Authoritative authentication vectors
 
+[Documentation index](../README.md)
+
 These vectors are immutable interoperability fixtures, not live credentials.
 
 | Vector | Input | Expected result |
@@ -18,3 +20,5 @@ limits and must fail closed.
 Static API-key lifecycle vectors are covered in `apikey/static_test.go`: a
 current and previous key overlap, atomic replacement admits the new set, the
 removed key is rejected, and unknown or duplicate material never authenticates.
+
+Continue with [Exported API map](../api.md).

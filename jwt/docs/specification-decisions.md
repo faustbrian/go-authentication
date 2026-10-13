@@ -1,5 +1,7 @@
 # JWT specification decisions
 
+[Documentation index](README.md)
+
 This register records observable choices where JOSE, JWT, JSON, HTTP, or the
 package's defensive policy permits more than one implementation. RFC text and
 the IANA registry remain authoritative; peer behavior is interoperability
@@ -352,3 +354,5 @@ mechanisms, claim profiles, remote-fetch behavior, or peer divergences MUST be
 registered before observable support is selected. An unresolved security,
 wire, validation, resource, or lifecycle decision blocks release of the
 affected surface.
+
+Continue with [API reference](api.md).

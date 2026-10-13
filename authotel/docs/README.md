@@ -1,5 +1,7 @@
 # Documentation
 
+[Package README](../README.md) · [Parent documentation](../../docs/README.md)
+
 This module is the deprecated compatibility path. New code should use
 [`adapters/otel`](../../adapters/otel/docs/README.md).
 
@@ -21,3 +23,8 @@ This module is the deprecated compatibility path. New code should use
 
 - [Changelog](../CHANGELOG.md)
 - [Parent package documentation](../../docs/README.md)
+
+## Ecosystem navigation
+
+See the [versioned Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/README.md) for package
+selection, explicit ownership, and compatibility guidance.

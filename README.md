@@ -2,9 +2,8 @@
 
 [![CI](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
 [![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-100%25_required-blue)](CONTRIBUTING.md#verification)
 [![Mutation](https://img.shields.io/badge/mutation-local_and_scheduled-blue)](CONTRIBUTING.md#verification)
-[![Documentation](https://img.shields.io/badge/docs-checked_in_CI-blue)](docs/)
+[![Documentation](https://img.shields.io/badge/docs-structural_checks_in_CI-blue)](docs/)
 [![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-authentication/v2.svg)](https://pkg.go.dev/github.com/faustbrian/go-authentication/v2)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-authentication?sort=semver)](https://github.com/faustbrian/go-authentication/releases)
 [![Go](https://img.shields.io/badge/go-1.27.0-00ADD8?logo=go)](https://go.dev/)
@@ -149,8 +148,8 @@ Security reports follow [SECURITY.md](SECURITY.md), and contributions follow
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 For ecosystem-wide package selection, construction, ownership, and lifecycle
-guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem)
-and its [Service edge family](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md#package-families-and-selection).
+guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/README.md)
+and its [Service edge family](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/design-language.md#package-families-and-selection).
 
 ## Development
 
@@ -171,3 +170,5 @@ mutation and local release qualification.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+Continue with the [documentation index](docs/README.md).

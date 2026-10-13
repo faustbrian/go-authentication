@@ -1,5 +1,7 @@
 # Security test matrices
 
+[Documentation index](../README.md)
+
 ## Protocol and interoperability
 
 | Surface | Positive vectors | Negative vectors |

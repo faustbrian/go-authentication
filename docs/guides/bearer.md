@@ -1,5 +1,7 @@
 # Opaque bearer tokens
 
+[Documentation index](../README.md)
+
 Use `bearer.New` with `bearer.ValidatorFunc` or a `bearer.Validator`
 implementation. The callback receives a bounded token and must return a
 principal whose method is `bearer`.
@@ -16,3 +18,5 @@ Never include the token in callback errors. Outbound OAuth token acquisition
 and token issuance are outside this project.
 
 See `bearer.ExampleNew`, `bearer.ExampleNewStatic`, and the HTTP quickstart.
+
+Continue with [Exported API map](../api.md).

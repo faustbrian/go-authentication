@@ -1,5 +1,7 @@
 # authentication OpenTelemetry adapter technical guide
 
+[Documentation index](README.md)
+
 This guide contains the complete behavioral and operational reference. Start
 with the [package overview](../README.md).
 

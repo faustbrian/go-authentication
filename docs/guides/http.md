@@ -1,5 +1,7 @@
 # HTTP authentication
 
+[Documentation index](../README.md)
+
 `authenticationhttp.NewExtractor` evaluates all explicitly configured sources in order
 and requires exactly one credential. Duplicate Authorization fields, repeated
 query parameters or cookies, partial API keys, and credentials present in more
@@ -30,3 +32,5 @@ Configure fallback challenges with `WithChallenges`. Challenges are sorted and
 quoted safely.
 
 The middleware does not authorize. See `authenticationhttp.ExampleNewMiddleware`.
+
+Continue with [Exported API map](../api.md).

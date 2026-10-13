@@ -1,5 +1,7 @@
 # Operations
 
+[Documentation index](README.md)
+
 ## Startup
 
 Validate every configuration before accepting traffic. Construct static
@@ -57,3 +59,5 @@ operations after shutdown begins, and is repeatable. OIDC starts no background
 goroutines.
 The logging and telemetry adapters own no lifecycle; shut down their parent
 `log` or `telemetry` runtime separately.
+
+Continue with [Exported API map](api.md).

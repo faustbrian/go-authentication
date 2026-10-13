@@ -1,5 +1,7 @@
 # Migration
 
+[Documentation index](README.md)
+
 ## Root v2 import identity
 
 The root release `v2.0.0` is published. To migrate from root v1, change the

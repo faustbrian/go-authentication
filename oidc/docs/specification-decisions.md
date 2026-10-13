@@ -1,5 +1,7 @@
 # OpenID Connect specification decisions
 
+[Documentation index](README.md)
+
 This register records observable choices where OpenID Connect, JOSE, JSON,
 HTTP, or package-owned defensive policy permits more than one implementation.
 The final OpenID Connect Core 1.0 and Discovery 1.0 publications incorporating
@@ -470,3 +472,5 @@ claims, encrypted tokens, refresh behaviors, or peer divergences MUST be
 registered before observable support is selected. An unresolved validation,
 security, wire, resource, or lifecycle decision blocks release of the affected
 surface.
+
+Continue with [OIDC ID-token validation technical guide](reference.md).

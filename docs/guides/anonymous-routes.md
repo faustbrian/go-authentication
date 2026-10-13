@@ -1,5 +1,7 @@
 # Anonymous routes
 
+[Documentation index](../README.md)
+
 Authentication is fail-closed by default. `authenticationhttp.WithOptionalAnonymous`
 allows the next handler to run anonymously only when every enabled source is
 absent. A malformed, duplicated, rejected, or unavailable credential still
@@ -11,3 +13,5 @@ partially populated principal to represent absence. Authorization must define
 what anonymous callers may do.
 
 See `authenticationhttp.ExampleWithOptionalAnonymous`.
+
+Continue with [Exported API map](../api.md).

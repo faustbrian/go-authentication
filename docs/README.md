@@ -1,5 +1,7 @@
 # Documentation
 
+[Package README](../README.md)
+
 ## Getting started
 
 - [Quickstart](quickstart.md)
@@ -27,6 +29,7 @@
 - [JWT module](../jwt/docs/README.md)
 - [OIDC module](../oidc/docs/README.md)
 - [OpenTelemetry adapter](../adapters/otel/docs/README.md)
+- [Deprecated OpenTelemetry v1 facade](../authotel/docs/README.md)
 
 ## Operations and security
 
@@ -45,3 +48,15 @@
 - [FAQ](faq.md)
 - [Contribution guide](../CONTRIBUTING.md)
 - [Release history](../CHANGELOG.md)
+
+## Ecosystem navigation
+
+See the [versioned Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/README.md) for package
+selection, explicit ownership, and compatibility guidance.
+
+## Additional guides and reference
+
+- [Secure adoption checklist](adoption.md)
+- [Principal admission and ownership](guides/principal-limits.md)
+- [Security audit findings](security/findings.md)
+- [Source documentation audit](source-documentation-audit.md)

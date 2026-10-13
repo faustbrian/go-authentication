@@ -1,5 +1,7 @@
 # JWT hardening matrix
 
+[Documentation index](README.md)
+
 This matrix records the validation policy owned by this module. It is based on
 [RFC 7515](https://www.rfc-editor.org/rfc/rfc7515),
 [RFC 7517](https://www.rfc-editor.org/rfc/rfc7517),

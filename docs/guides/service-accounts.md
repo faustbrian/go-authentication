@@ -1,5 +1,7 @@
 # Service accounts
 
+[Documentation index](../README.md)
+
 Give each workload a stable subject distinct from its credential ID. A key ID
 or JWT `kid` identifies verification material; it is not the service identity.
 Use method, issuer, audience, and authentication time to describe how the
@@ -12,3 +14,5 @@ authentication data only; authorization must validate them against policy.
 
 Issue separate credentials per workload, bound their lifetime, monitor failure
 outcomes, and rehearse revocation and rotation.
+
+Continue with [Exported API map](../api.md).

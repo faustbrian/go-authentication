@@ -1,5 +1,7 @@
 # Documentation
 
+[Package README](../README.md) · [Parent documentation](../../../docs/README.md)
+
 ## Getting started
 
 - [Package overview](../README.md)
@@ -18,3 +20,8 @@
 
 - [Changelog](../CHANGELOG.md)
 - [Parent package documentation](../../../docs/README.md)
+
+## Ecosystem navigation
+
+See the [versioned Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/README.md) for package
+selection, explicit ownership, and compatibility guidance.

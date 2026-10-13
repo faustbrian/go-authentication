@@ -1,5 +1,7 @@
 # Threat model
 
+[Documentation index](../README.md)
+
 Model version: 1. Reviewed: 2026-10-07. Owner: repository maintainer.
 Scope: the root authentication contract and its HTTP, JWT, OIDC and telemetry
 adapters. Published major lines retain their own admission guarantees; this
@@ -78,3 +80,5 @@ The package cannot protect compromised process memory or configuration,
 plaintext transport selected by a caller, malicious validation callbacks,
 credential replay permitted by application policy, secrets logged before this
 package receives a request, or incorrect authorization after authentication.
+
+Continue with [Operations](../operations.md).

@@ -1,5 +1,7 @@
 # Principal admission and ownership
 
+[Documentation index](../README.md)
+
 `NewPrincipal` retains its signature and uses finite defaults.
 `NewPrincipalWithOptions` uses the same admission and copying owner, with
 Principal-local options that can only reduce those defaults. Omitted options
@@ -95,3 +97,5 @@ to root v2. Root-v2 callback producers can select smaller limits with
 `authhttp` facade keep the same
 Principal/result/context representation; they do not bypass admission or
 introduce a second Principal policy.
+
+Continue with [Exported API map](../api.md).

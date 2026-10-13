@@ -1,5 +1,7 @@
 # FAQ
 
+[Documentation index](README.md)
+
 ## Does this package authorize requests?
 
 No. It establishes an identity. Pass the principal to `authorization` or
@@ -51,3 +53,5 @@ issuer cache headers with the rotation overlap.
 The provided adapters intentionally do not. Applications may add bounded
 identity attributes after a privacy and cardinality review, but never tokens,
 claims, headers, query strings, or cookies.
+
+Continue with [Exported API map](api.md).

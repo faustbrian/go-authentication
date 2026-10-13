@@ -79,11 +79,11 @@ Migrating to this module preserves signal names, units, attributes, provider
 ownership, and completion behavior, while the instrumentation scope changes to
 this module's target-oriented import path. See the
 [changelog](CHANGELOG.md), [support policy](../../SUPPORT.md), and
-[migration guidance](docs/reference.md#migration-and-compatibility).
+[migration guidance](docs/reference.md#compatibility-and-migration).
 
 For ecosystem-wide package selection, construction, ownership, and lifecycle
-guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem)
-and its [Service edge family](https://github.com/faustbrian/go-library-tools/blob/v1.4.0/docs/ecosystem/design-language.md#package-families-and-selection).
+guidance, see the versioned [Golib ecosystem index](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/README.md)
+and its [Service edge family](https://github.com/faustbrian/go-library-tools/blob/v1.8.4/docs/ecosystem/design-language.md#package-families-and-selection).
 
 ## License
 

@@ -1,5 +1,7 @@
 # API reference
 
+[Documentation index](README.md)
+
 ## Validator
 
 `New(Config)` creates an immutable validator. Configuration requires one
@@ -72,3 +74,5 @@ sentinels remain available for standards-backed decisions.
 `ErrKeyProviderUnavailable` replaces raw provider and remote causes so the
 error chain does not retain token, key, endpoint-query, or remote response
 data.
+
+Continue with [JWT validation technical guide](reference.md).

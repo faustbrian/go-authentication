@@ -1,5 +1,7 @@
 # JSON-RPC and non-HTTP transports
 
+[Documentation index](../README.md)
+
 The core `Authenticator` accepts a context and typed credential, so JSON-RPC,
 message consumers, jobs, and commands do not need HTTP adapters. Extract
 transport data at the boundary, construct `BasicCredential`,
@@ -11,3 +13,5 @@ absent failure or explicitly create `AnonymousResult` under a documented
 optional policy. Map failures to transport codes without exposing wrapped
 causes. `ExampleAuthenticator_backgroundConsumer` is a compiled non-HTTP
 example.
+
+Continue with [Exported API map](../api.md).

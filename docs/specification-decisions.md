@@ -1,5 +1,7 @@
 # Authentication specification decisions
 
+[Documentation index](README.md)
+
 This register records observable choices in the root `authentication` module.
 JWT and OpenID Connect are independent modules and maintain separate registers
 for their own standards. Normative protocol text controls over examples, peer
@@ -285,3 +287,5 @@ None for the root module's currently supported surfaces. New ambiguity,
 contradiction, erratum, extension, or peer divergence MUST be registered before
 selecting observable behavior. JWT and OIDC decisions remain release-blocking
 in their respective nested-module registers rather than being hidden here.
+
+Continue with [Exported API map](api.md).

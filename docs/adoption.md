@@ -1,5 +1,7 @@
 # Secure adoption checklist
 
+[Documentation index](README.md)
+
 1. Choose exactly one explicit credential source per route. Prefer dedicated
    headers; do not introduce query credentials in new designs.
 2. Terminate TLS before credentials cross an untrusted network and configure

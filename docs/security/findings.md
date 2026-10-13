@@ -1,5 +1,7 @@
 # Security audit findings
 
+[Documentation index](../README.md)
+
 The audit reviewed protocol parsing, secret handling, concurrency, remote key
 lifecycles, dependency direction, interoperability, and resource bounds. Each
 finding below includes its reproducer and final disposition.

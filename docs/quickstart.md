@@ -1,6 +1,8 @@
 # Five-minute quickstart
 
-1. Install the root module with `go get github.com/faustbrian/go-authentication`.
+[Documentation index](README.md)
+
+1. Install the root module with `go get github.com/faustbrian/go-authentication/v2@v2`.
 2. Choose exactly the credential sources the endpoint accepts.
 3. Construct the matching authenticator.
 4. Wrap the handler with `authenticationhttp.NewMiddleware`.
@@ -19,3 +21,5 @@ accepted, `FailureInvalid` for malformed protocol data, and
 
 Before production, configure HTTPS, token or key rotation, bounded callback
 latency, fixed diagnostic messages, and either `adapters/slog` or `adapters/otel`.
+
+Continue with [Exported API map](api.md).

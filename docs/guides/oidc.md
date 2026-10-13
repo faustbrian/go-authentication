@@ -1,5 +1,7 @@
 # OpenID Connect
 
+[Documentation index](../README.md)
+
 Install the optional module:
 
 ```sh
@@ -27,3 +29,5 @@ failed refresh return unavailable without unbounded work.
 
 Interactive flows should provide a per-flow `NonceValidator`; reject missing or
 mismatched nonce values. See `oidc.ExampleNewWithKeySet`.
+
+Continue with [Exported API map](../api.md).

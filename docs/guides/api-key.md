@@ -1,5 +1,7 @@
 # API keys
 
+[Documentation index](../README.md)
+
 `apikey.NewStatic` stores fixed-size, per-authenticator keyed ID and secret
 digests, compares the complete active set, and returns principals with method
 `api_key`.
@@ -13,3 +15,5 @@ metadata, not authentication by itself.
 For rotation, call `Static.Replace` with a complete new set. Validation builds
 the candidate set first and publishes it atomically, so a failed replacement
 leaves the previous keys active. See `apikey.ExampleStatic_Replace`.
+
+Continue with [Exported API map](../api.md).

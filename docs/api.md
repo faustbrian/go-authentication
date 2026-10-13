@@ -1,5 +1,7 @@
 # Exported API map
 
+[Documentation index](README.md)
+
 Every exported identifier has Go documentation and compiled examples are
 checked in CI. Use `go doc` for signatures and contracts.
 

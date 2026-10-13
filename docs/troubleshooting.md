@@ -1,5 +1,7 @@
 # Troubleshooting
 
+[Documentation index](README.md)
+
 ## Every request returns credentials absent
 
 Confirm the intended source was explicitly added. Query and cookie sources are
@@ -43,3 +45,5 @@ full coverage campaign. Ordinary local checks do not require exact coverage.
 Add a behavioral
 test or remove a branch that is proven unreachable by an upstream contract; do
 not exclude production files or round the percentage.
+
+Continue with [Exported API map](api.md).

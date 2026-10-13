@@ -1,5 +1,7 @@
 # JWT and remote JWK validation
 
+[Documentation index](../README.md)
+
 Install the optional module:
 
 ```sh
@@ -22,3 +24,5 @@ Plain HTTP requires the explicit development option.
 
 See `jwt.ExampleNew`. Production services should normally use asymmetric keys;
 the example uses HMAC only to remain compact and self-contained.
+
+Continue with [Exported API map](../api.md).

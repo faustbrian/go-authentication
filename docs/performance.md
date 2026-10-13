@@ -1,5 +1,7 @@
 # Performance
 
+[Documentation index](README.md)
+
 Benchmarks live beside the hot paths and run with allocation reporting:
 
 ```sh
@@ -24,3 +26,5 @@ Treat benchmark values as machine-specific. Review relative changes, allocation
 growth, and tail latency under realistic key counts and claim sizes. Never
 weaken constant-time comparison, bounds, or signature validation for a
 microbenchmark improvement.
+
+Continue with [Exported API map](api.md).

@@ -1,5 +1,7 @@
 # Authentication versus authorization
 
+[Documentation index](README.md)
+
 Authentication answers “who presented this credential, and how was that
 identity established?” Authorization answers “may this principal perform this
 action on this resource?” They change for different reasons and belong in
@@ -31,3 +33,5 @@ recognizes it, and whether resource-specific rules also pass.
 
 Anonymous routes receive an explicit anonymous principal. Authorization then
 decides which public operations, if any, are permitted.
+
+Continue with [Exported API map](api.md).
