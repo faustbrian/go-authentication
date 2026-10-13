@@ -12,6 +12,39 @@ import (
 	"time"
 )
 
+// An idle provider still has cache-owned workers to join. Its empty operation
+// set must signal idle immediately rather than wait for the caller deadline.
+func TestIdleRemoteShutdownCompletesBeforeCallerDeadline(t *testing.T) {
+	synctest.Test(t, func(t *testing.T) {
+		client := &http.Client{Transport: internalRoundTripFunc(func(request *http.Request) (*http.Response, error) {
+			return &http.Response{StatusCode: http.StatusOK,
+				Header: http.Header{"Cache-Control": {"max-age=3600"}},
+				Body:   io.NopCloser(bytes.NewBufferString(`{"keys":[{"kty":"oct","kid":"key","alg":"HS256","k":"MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE"}]}`)), Request: request}, nil
+		})}
+		remote, err := NewRemote(context.Background(), "https://issuer.example.test/keys", WithHTTPClient(client), WithRefreshJitter(0), WithRefreshBounds(time.Hour, time.Hour))
+		if err != nil {
+			t.Fatal(err)
+		}
+		// This separate teardown path joins cache workers even when the tested
+		// Remote shutdown fails; it cannot repeat the mutated guard.
+		defer func() {
+			cleanup, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			if err := remote.cache.Shutdown(cleanup); err != nil {
+				t.Errorf("cache cleanup = %v", err)
+			}
+		}()
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		if err := remote.Shutdown(ctx); err != nil {
+			t.Fatalf("idle Shutdown = %v; want complete cleanup before caller deadline", err)
+		}
+		if err := remote.Shutdown(ctx); err != nil {
+			t.Fatalf("repeated completed Shutdown = %v", err)
+		}
+	})
+}
+
 func TestRefreshFollowerKeepsAdmittedGenerationResult(t *testing.T) {
 	for _, firstFails := range []bool{false, true} {
 		t.Run(map[bool]string{false: "success then failure", true: "failure then success"}[firstFails], func(t *testing.T) {
@@ -36,8 +69,15 @@ func TestRefreshFollowerKeepsAdmittedGenerationResult(t *testing.T) {
 					t.Fatal(err)
 				}
 				defer func() {
-					if err := remote.Shutdown(context.Background()); err != nil {
+					ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+					defer cancel()
+					if err := remote.Shutdown(ctx); err != nil {
 						t.Error(err)
+						cleanup, cleanupCancel := context.WithTimeout(context.Background(), time.Second)
+						defer cleanupCancel()
+						if cleanupErr := remote.cache.Shutdown(cleanup); cleanupErr != nil {
+							t.Errorf("cache cleanup after failed Remote shutdown = %v", cleanupErr)
+						}
 					}
 				}()
 				leaderDone := make(chan error, 1)
