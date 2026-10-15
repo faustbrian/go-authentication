@@ -5,6 +5,16 @@ this project follows Semantic Versioning.
 
 ## Unreleased
 
+### Added
+
+- Add bounded, opaque one-time and recovery codes, purpose-bound structural
+  proofs and domain-separated code digests without exposing secret bytes.
+- Add the opt-in shared-issuer authority verifier, signed-original signin and
+  credential-specific reauthentication contracts. Exact owner, actor, tenant,
+  workload and lineage bindings retain the original bounded validity deadline;
+  copied or cached evidence cannot renew it. Existing authentication engines,
+  credential/result contracts and principal admission remain unchanged.
+
 ### Documentation
 
 - Clarify source ownership, callback/provider obligations and actual admission/

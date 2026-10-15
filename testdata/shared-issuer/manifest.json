@@ -1,0 +1,11 @@
+{
+  "generator": "scripts/generate-shared-issuer-fixtures.rb",
+  "generator_sha256": "7b1b1f3c161a0d2ab32a4df321a4270057de83a8a73cb5e964c1e332128299d5",
+  "implementation": "OpenSSL 3.6.4 25 Aug 2026 (Library: OpenSSL 3.6.4 25 Aug 2026)",
+  "license": "OpenSSL Apache-2.0; generated fixtures MIT",
+  "source": "https://github.com/openssl/openssl/tree/openssl-3.6.4",
+  "fixture": "testdata/shared-issuer/openssl-eddsa.json",
+  "fixture_sha256": "0d99421c2b3359327ef778fa5ca329a45ce9f971298c3fd99c7049b2f5982cde",
+  "command": "OPENSSL_BIN=<OpenSSL 3.6.4 binary> ruby scripts/generate-shared-issuer-fixtures.rb",
+  "update": "Regenerate with the pinned independent implementation, review all bindings, then rerun the fixture test and affected gates."
+}

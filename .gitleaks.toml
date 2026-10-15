@@ -1,5 +1,13 @@
 title = "golib secret scanning"
 
+[[allowlists]]
+description = "Pinned synthetic shared-issuer JWT vectors use a discarded test key."
+targetRules = ["jwt"]
+condition = "AND"
+paths = ['''^testdata/shared-issuer/openssl-eddsa\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"(?:valid|wrong_environment|id_token|missing_root|cycle|excessive_depth)":\s*"''']
+
 [extend]
 useDefault = true
 

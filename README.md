@@ -19,6 +19,30 @@ Go standard library plus the narrow `clock` capability contracts. JWT,
 OIDC, and OpenTelemetry live in separate modules so their larger dependency
 graphs are opt-in.
 
+## Identity proof and shared-issuer contracts (unreleased)
+
+The root v2 module also supplies bounded proof/code vocabulary for identity
+workflows. `NewOneTimeCode` and `NewRecoveryCode` retain private secret storage;
+use their domain-separated keyed digests rather than raw-code accessors. A
+`Proof` is a structural binding, not evidence that authentication occurred.
+
+`NewAuthorityAuthenticator` explicitly selects the `shared-issuer-v1` EdDSA
+profile with trusted keys, clock and signed-original authority sources. It
+keeps credential owner, optional human actor, tenant and workload separate and
+checks every applicable root/parent validity dimension. Positive evidence
+expires within twenty seconds of the original authoritative read starting;
+read-timeout plus clock uncertainty cannot exceed ten seconds. Copies, cache
+promotion and retries never renew that deadline. Expired or unavailable
+authority fails closed. `ResourcePrincipal.Validate` must run at each reuse.
+
+Only the expected configured authority instance can validate its opaque final
+authentication proofs. Original successful signin or reauthentication records
+must come from the trusted source after actual credential verification, never
+from requester-created metadata or account existence. Protected workflows
+still own current-state checks and atomic proof consumption/session effects.
+These additions are not included in the published v2.0.1 release. Existing
+principal, credential, result and authenticator APIs retain their semantics.
+
 ## Requirements
 
 - Go 1.27.0 or newer.
