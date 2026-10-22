@@ -10,6 +10,17 @@ this project follows Semantic Versioning.
 - Clarify source ownership, callback/provider obligations and actual admission/
   lifecycle limits without changing executable behavior or published bindings.
 
+## 2.1.0 - 2026-10-22
+
+### Changed
+
+- Publish the current source and documentation with a fresh immutable tag.
+- Publish independently versioned modules from the same source snapshot:
+  - `adapters/otel/v1.1.0`.
+  - `authotel/v1.2.0`.
+  - `jwt/v1.1.5`.
+  - `oidc/v1.1.0`.
+
 ## [2.0.1]
 
 2026-10-09
