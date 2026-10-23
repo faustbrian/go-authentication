@@ -1,8 +1,9 @@
 // Package authenticationhttp provides strict HTTP credential extraction, challenges,
 // and authentication-only middleware for net/http. Start with NewExtractor and
 // NewMiddleware; sources read borrowed request headers/cookies, never the
-// body. Source byte bounds apply to selected values, not total header/query/
-// cookie parsing allocations; server request limits remain deployment-owned.
+// URL query or body. Source byte bounds apply to selected values, not total
+// header/cookie parsing allocations; server request limits remain
+// deployment-owned.
 // See docs/specification-decisions.md for RFC9110/7617/6750 parsing profiles.
 package authenticationhttp
 

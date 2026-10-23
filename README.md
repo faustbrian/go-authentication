@@ -113,9 +113,9 @@ it deliberately performs no role, permission, ownership, or policy checks.
 - Multiple credential sources are rejected as ambiguous.
 - A `401 Unauthorized` response is emitted only with at least one valid
   `WWW-Authenticate` challenge; missing challenge metadata fails as unavailable.
-- Query and cookie credentials are disabled unless explicitly configured.
-- Query credential constructors are deprecated for new designs because URLs
-  can be retained before the extractor sees them.
+- Cookie credentials are disabled unless explicitly configured; URL query
+  credentials are not supported because URLs can be retained before the
+  extractor sees them.
 - Claims, tokens, keys, HTTP bodies, and cache work have explicit bounds.
 - JWT algorithms, issuer, audience, key ID, key metadata, and time claims are
   validated explicitly.

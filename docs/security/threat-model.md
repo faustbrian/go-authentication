@@ -29,10 +29,9 @@ boundaries. TLS termination, reverse proxies, access logs, and application
 authorization are deployment responsibilities outside this package.
 
 Query credentials cross URL, proxy, browser-history, and access-log boundaries
-before extraction. The library never constructs a credential-bearing URL, and
-query sources require explicit configuration, but it cannot erase disclosure
-that occurred upstream. New designs should use authorization or dedicated
-credential headers.
+before extraction, so root v3 provides no query source and never constructs a
+credential-bearing URL. Use authorization or dedicated credential headers, or
+an explicitly configured cookie.
 
 ## Remote key flow
 
@@ -67,7 +66,7 @@ fail closed.
 | --- | --- |
 | Secret disclosure | Redacted credential formatting, secret-free failures and instrumentation, no URL construction |
 | Timing comparison or reusable static-secret digests | Per-authenticator HMAC-SHA-256 digests and `subtle.ConstantTimeCompare` over bounded entry sets |
-| Credential smuggling | Duplicate and multi-source rejection; strict header, query, and cookie parsing |
+| Credential smuggling | Duplicate and multi-source rejection; strict header and cookie parsing |
 | Algorithm or key confusion | Explicit algorithm allow-lists plus JWK type, curve, use, operation, and validation checks |
 | Replay or stale identity | Required issuer/audience and bounded `exp`, `nbf`, `iat`, `auth_time`, and optional nonce validation |
 | Remote resource exhaustion | Body, key, waiter, interval, deadline, and redirect bounds; single-flight refresh |

@@ -31,9 +31,6 @@ input, not a prose-quality score. No previous source-audit file exists.
 - `adapters/otel`: `authotel.go`, `authotel_test.go`, `benchmark_test.go`, `example_test.go`, `hardening_test.go`.
 - `adapters/slog`: `authlog.go`, `authlog_test.go`, `example_test.go`, `privacy_test.go`.
 - `apikey`: `authenticator.go`, `authenticator_test.go`, `example_test.go`, `static.go`, `static_admission_test.go`, `static_benchmark_test.go`, `static_test.go`.
-- `authhttp`: `authhttp.go`, `compatibility_test.go`.
-- `authlog`: `authlog.go`, `compatibility_test.go`.
-- `authotel`: `authotel.go`, `authotel_test.go`, `benchmark_test.go`, `example_test.go`, `hardening_test.go`.
 - `authtest`: `authtest.go`, `authtest_test.go`.
 - `basic`: `example_test.go`, `options.go`, `options_internal_test.go`, `static.go`, `static_admission_test.go`, `static_benchmark_test.go`, `static_test.go`.
 - `bearer`: `authenticator.go`, `authenticator_test.go`, `example_test.go`, `static.go`, `static_benchmark_test.go`.
@@ -52,10 +49,9 @@ from missing comments; do not invent security/concurrency guarantees.
 
 ## Variants, immutable inputs and selected proof
 
-Root is v2; JWT/OIDC and both OTel modules deliberately import published root
-v1.2.2, not this local v2 source. Preserve these exact module/dependency and API
-baselines. authhttp/authlog retain deprecated forwarding surfaces; authotel retains
-a separate deprecated nested module. OIDC has an integration-tagged provider test.
+Root is v3; the JWT, OIDC and OTel adapter modules deliberately import published
+root v1.2.2, not this local v3 source. Preserve these exact module/dependency and
+API baselines. Root v3 has no deprecated forwarding packages or nested modules. OIDC has an integration-tagged provider test.
 No generated Go or generator directives were found. Inventory all deprecation,
 analyzer/debt markers and source pins; preserve normative expected requirements.
 

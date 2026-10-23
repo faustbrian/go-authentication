@@ -77,13 +77,11 @@ func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
 			if err != nil {
 				t.Fatal("constructing static authenticator failed")
 			}
-			newExtractor := authenticationhttp.NewExtractor
-			newMiddleware := authenticationhttp.NewMiddleware
-			extractor, err := newExtractor(source)
+			extractor, err := authenticationhttp.NewExtractor(source)
 			if err != nil {
 				t.Fatal("constructing extractor failed")
 			}
-			middleware, err := newMiddleware(extractor, authenticator)
+			middleware, err := authenticationhttp.NewMiddleware(extractor, authenticator)
 			if err != nil {
 				t.Fatal("constructing middleware failed")
 			}

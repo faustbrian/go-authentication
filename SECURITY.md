@@ -2,16 +2,15 @@
 
 ## Supported versions
 
-Security fixes are applied to the latest stable root release in each supported
-major line below. Root v2 support began with publication of `v2.0.0`; its
-admission safeguards must not be attributed to published v1 roots or the
-retained v1 optional modules. Publication of v2 does not withdraw the
-latest-stable-v1 support promise.
+Only the latest patch of the latest root major receives security fixes. Root
+v1 and v2 remain published but receive no further releases; their admission
+safeguards must not be attributed to one another or to optional modules that
+pin an older root.
 
 | Version | Supported |
 | --- | --- |
-| Latest stable root v1 (`v1.2.2`) | Yes |
-| Latest stable root v2 (starting with `v2.0.0`) | Yes |
+| Latest stable root v3 (starting with `v3.0.0`) | Yes |
+| Root v1 and v2 | No |
 
 ## Reporting a vulnerability
 
@@ -37,7 +36,7 @@ unavailable. It protects against:
 - credential disclosure through default formatting, HTTP errors, logs, spans,
   and metrics;
 - timing leaks from direct static-secret equality checks;
-- credential smuggling through duplicate headers, query parameters, cookies,
+- credential smuggling through duplicate headers, cookies,
   or multiple enabled sources;
 - JWT algorithm confusion, missing or ambiguous key IDs, invalid JWK metadata,
   unsupported critical headers, issuer/audience mismatch, and invalid time
@@ -70,10 +69,9 @@ or cookies. Keep callback error messages secret-free even though public
 messages and bounded identifiers. Rotate API keys by overlapping old and new
 entries briefly, then remove the old entry atomically.
 
-Query credential extraction is retained only as an explicit compatibility
-option and is deprecated for new designs. A query secret may already have
-crossed browser-history, proxy, and access-log boundaries before extraction;
-this package cannot undo that disclosure.
+Root v3 does not extract credentials from URL queries. A query secret crosses
+browser-history, proxy, and access-log boundaries before any handler sees it,
+so send credentials in a header or an explicitly configured cookie.
 
 ## Dependency and release policy
 

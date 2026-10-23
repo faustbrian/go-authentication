@@ -2,9 +2,9 @@
 // classified failures for authentication-only composition. Start with NewPrincipal
 // and concrete authenticators or NewComposite; authorization, request decoding,
 // provider IO/lifecycle and deployment TLS policy remain outside core. Credential
-// accessors and explicit causes are sensitive despite redacted formatting. Root
-// v2 admission bounds are not automatically inherited by optional modules pinned
-// to published root v1.2.2. See docs/specification-decisions.md for protocol scope.
+// accessors and explicit causes are sensitive despite redacted formatting.
+// Admission bounds are not inherited by optional modules that pin an older
+// root major. See docs/specification-decisions.md for protocol scope.
 package authentication
 
 import (

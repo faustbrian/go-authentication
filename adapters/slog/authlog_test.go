@@ -51,21 +51,6 @@ func TestInstrumenterLogsOnlyBoundedMetadata(t *testing.T) {
 	}
 }
 
-func TestLegacyStartDelegatesToBegin(t *testing.T) {
-	t.Parallel()
-
-	var output bytes.Buffer
-	instrumenter, err := authlog.New(slog.New(slog.NewJSONHandler(&output, nil)))
-	if err != nil {
-		t.Fatalf("New() error = %v", err)
-	}
-	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBasic)
-	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
-	if !strings.Contains(output.String(), `"credential_kind":"basic"`) {
-		t.Fatalf("Begin() output = %q", output.String())
-	}
-}
-
 func TestNewRejectsNilLogger(t *testing.T) {
 	t.Parallel()
 

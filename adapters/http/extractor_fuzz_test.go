@@ -33,6 +33,51 @@ func FuzzAuthorizationExtraction(f *testing.F) {
 	})
 }
 
+// FuzzBearerCookieExtraction varies a raw Cookie header, optionally beside an
+// Authorization header, and checks classified failures, redaction and that a
+// bearer credential present in both sources is rejected as ambiguous.
+func FuzzBearerCookieExtraction(f *testing.F) {
+	f.Add("access_token=token", "", false)
+	f.Add("access_token=token; access_token=other", "", false)
+	f.Add("access_token=token", "Bearer token", true)
+	f.Add("other=1; access_token=", "Bearer", true)
+	f.Add("access_token=\"quoted\"", "Basic dXNlcjpwYXNzd29yZA==", true)
+	combined := mustFuzzExtractor(f, authhttp.BearerAuthorization(), authhttp.BearerCookie("access_token"))
+	headerOnly := mustFuzzExtractor(f, authhttp.BearerAuthorization())
+	cookieOnly := mustFuzzExtractor(f, authhttp.BearerCookie("access_token"))
+	f.Fuzz(func(t *testing.T, cookie, authorization string, withAuthorization bool) {
+		if len(cookie)+len(authorization) > 64*1024 {
+			t.Skip()
+		}
+		request := &http.Request{Header: make(http.Header), URL: &url.URL{}}
+		request.Header.Set("Cookie", cookie)
+		if withAuthorization {
+			request.Header.Set("Authorization", authorization)
+		}
+		credential, err := combined.Extract(request)
+		_, headerErr := headerOnly.Extract(request)
+		_, cookieErr := cookieOnly.Extract(request)
+		if headerErr == nil && cookieErr == nil {
+			if !errors.Is(err, authentication.ErrAmbiguousCredentials) {
+				t.Fatalf("header and cookie credentials error = %v, want ambiguous", err)
+			}
+			return
+		}
+		if err != nil {
+			if !classifiedFuzzError(err) {
+				t.Fatalf("unclassified error: %v", err)
+			}
+			return
+		}
+		if _, ok := credential.(authentication.BearerCredential); !ok {
+			t.Fatalf("credential type = %T, want BearerCredential", credential)
+		}
+		if formatted := fmt.Sprintf("%v %#v", credential, credential); formatted != "bearer credential [REDACTED] authentication.BearerCredential{[REDACTED]}" {
+			t.Fatalf("bearer credential formatting = %q", formatted)
+		}
+	})
+}
+
 // FuzzCredentialHeaderSet varies duplicate/combined credential sources and checks
 // classified failures plus redacted concrete credential formatting.
 func FuzzCredentialHeaderSet(f *testing.F) {

@@ -12,7 +12,12 @@ Implement `BeginInstrumenter.Begin` instead of the removed Start-named
 and pass a `clock.Clock` where the removed `Clock` alias was used. Move
 credentials out of URLs: `BearerQuery` and `APIKeyQuery` are removed, so use
 the Authorization header, named headers or explicit cookies. The `authotel`
-module receives no further releases; use `adapters/otel`.
+module receives no further releases.
+
+The `jwt`, `oidc` and `adapters/otel` modules still require root v1, so they do
+not accept root v3 types. Root v3 has no OpenTelemetry adapter, JWT validator or
+OIDC validator until their `/v2` majors on root v3 are published; a service that
+needs them stays on its current root until then.
 
 ## Root v2 import identity
 

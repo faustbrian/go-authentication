@@ -4,15 +4,15 @@
 
 ## Every request returns credentials absent
 
-Confirm the intended source was explicitly added. Query and cookie sources are
-off by default. Header names are canonicalized by `net/http`, while query and
-cookie names are exact.
+Confirm the intended source was explicitly added. Cookie sources are off by
+default, and URL query credentials are never read. Header names are
+canonicalized by `net/http`, while cookie names are exact.
 
 ## Requests are ambiguous
 
-Inspect proxies and clients for repeated Authorization fields, duplicate query
-parameters or cookies, partial API-key pairs, or the same credential in two
-enabled sources. Ambiguity is rejected intentionally; do not choose one value.
+Inspect proxies and clients for repeated Authorization fields, duplicate
+cookies, partial API-key pairs, or the same credential in two enabled sources.
+Ambiguity is rejected intentionally; do not choose one value.
 
 ## A callback returns unavailable instead of rejected
 

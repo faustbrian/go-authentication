@@ -173,7 +173,8 @@
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
-        "FuzzAuthorizationExtraction"
+        "FuzzAuthorizationExtraction",
+        "FuzzBearerCookieExtraction"
       ],
       "interoperability_evidence": [],
       "public_apis": [
@@ -474,7 +475,8 @@
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
-        "FuzzAuthorizationExtraction"
+        "FuzzAuthorizationExtraction",
+        "FuzzBearerCookieExtraction"
       ],
       "interoperability_evidence": [],
       "public_apis": [

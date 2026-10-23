@@ -4,12 +4,13 @@
 
 `authenticationhttp.NewExtractor` evaluates all explicitly configured sources in order
 and requires exactly one credential. Duplicate Authorization fields, repeated
-query parameters or cookies, partial API keys, and credentials present in more
-than one source are rejected.
+cookies, partial API keys, and credentials present in more than one source are
+rejected.
 
 Header sources are `BasicAuthorization`, `BearerAuthorization`, and
-`APIKeyHeader`. Query and cookie sources exist only through explicit bearer or
-API-key constructors. The extractor never reads the request body.
+`APIKeyHeader`. Cookie sources exist only through the explicit `BearerCookie`
+and `APIKeyCookie` constructors. The extractor never reads the URL query or
+the request body.
 
 Bearer sources enforce RFC 6750 `b64token` syntax by default. Pass
 `WithBearerPipe` only when an existing opaque-token contract requires a pipe

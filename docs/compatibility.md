@@ -32,20 +32,19 @@ Generated interfaces from dependencies are not part of this project’s API.
 Root v3 uses the `/v3` module/import suffix and removes the deprecated
 facades and legacy instrumentation contract. The published root v2 release
 used the `/v2` suffix for its narrower Principal and static-credential
-admission contract. Root v1 remains
-published separately; optional modules retain their existing v1 nominal APIs
-until their own major migration. The historical root API baseline is retained
-alongside the separately generated v2 baseline.
+admission contract. Root v1 and v2 remain
+published but receive no further releases; optional modules retain their
+existing nominal APIs until their own major migration. The active root
+baseline is `api/root-v3.txt`; `api/root.txt` and `api/root-v2.txt` record
+the published v1 and v2 roots.
 
 Root v3 removed the Start-named `Instrumenter`, `NewInstrumented` and
 `Clock`; implement `BeginInstrumenter.Begin`, use `NewInstrumentedWithBegin`
 and pass a `clock.Clock`. JWT `Remote.Close(ctx)` remains available and
 delegates to the preferred `Remote.Shutdown(ctx)` lifecycle name.
 
-Deprecated paths remain supported for the longer of 180 days and two
-published stable minor releases of the old path after the replacement is
-publicly consumable. Removal additionally requires migrated owned consumers,
-clean external-consumer evidence, and an authorized next-major release.
+Root v3 removed its deprecated paths in a major release without waiting out
+the former deprecation window; see [DEPRECATION.md](../DEPRECATION.md).
 
 ## Protocol compatibility
 

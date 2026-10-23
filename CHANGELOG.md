@@ -23,13 +23,6 @@ this project follows Semantic Versioning.
 
 - Move the root module to `github.com/faustbrian/go-authentication/v3`.
 
-## Unreleased notes shipped by 2.1.0
-
-### Documentation
-
-- Clarify source ownership, callback/provider obligations and actual admission/
-  lifecycle limits without changing executable behavior or published bindings.
-
 ## 2.1.0 - 2026-10-22
 
 ### Changed
@@ -44,6 +37,11 @@ this project follows Semantic Versioning.
   - `authotel/v1.2.0`.
   - `jwt/v1.1.5`.
   - `oidc/v1.1.0`.
+
+### Documentation
+
+- Clarify source ownership, callback/provider obligations and actual admission/
+  lifecycle limits without changing executable behavior or published bindings.
 
 ## [2.0.1]
 

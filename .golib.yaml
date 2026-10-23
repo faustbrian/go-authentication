@@ -69,6 +69,11 @@ operations:
     timeout: 2m
   - type: go-test
     packages: ["./adapters/http"]
+    fuzz: '^FuzzBearerCookieExtraction$'
+    budget: 10000x
+    timeout: 2m
+  - type: go-test
+    packages: ["./adapters/http"]
     fuzz: '^FuzzChallengeFormatting$'
     budget: 10000x
     timeout: 2m

@@ -12,13 +12,12 @@ application policy.
 No. Static Basic is for configured credentials; user password hashing,
 registration, reset, and directory lifecycle are out of scope.
 
-## Why are query and cookie credentials disabled by default?
+## Why are cookie credentials opt-in and query credentials unsupported?
 
-They have different leakage and CSRF properties and should never appear by
-accident. Query constructors remain for compatibility but are deprecated for
-new designs: a URL may already have reached browser history, proxies, and
-access logs before extraction. Prefer a header. Enable a named cookie source
-only when its CSRF and transport policy is explicit.
+Cookies have different leakage and CSRF properties and should never be read by
+accident; enable a named cookie source only when its CSRF and transport policy
+is explicit. Root v3 has no query source: a URL may already have reached browser
+history, proxies, and access logs before extraction. Prefer a header.
 
 ## Why reject duplicate credentials instead of choosing the first?
 

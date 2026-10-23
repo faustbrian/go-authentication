@@ -15,7 +15,7 @@ finding below includes its reproducer and final disposition.
 | AUTH-005 | Medium | Basic user/password inputs containing control bytes were accepted; reproduced by extractor and static-authenticator tests. | Fixed according to RFC 7617 before storage or authentication. |
 | AUTH-006 | Medium | Challenge parameters lacked explicit count/size bounds and accepted control bytes; reproduced in `adapters/http/challenge_test.go`. | Fixed with exported limits and strict quoted-text validation. |
 | AUTH-007 | Medium | An OIDC issuer URL could include a query component; reproduced in OIDC configuration tests. | Fixed by rejecting issuer queries and fragments per OIDC Discovery. |
-| AUTH-008 | Medium | Explicit query credential sources can expose secrets to infrastructure before extraction. The library has no URL-writing API, so no source-level output leak was reproduced. | Residual deployment risk documented; query constructors retained for compatibility and deprecated for new designs. |
+| AUTH-008 | Medium | Explicit query credential sources can expose secrets to infrastructure before extraction. The library has no URL-writing API, so no source-level output leak was reproduced. | Resolved in root v3.0.0 by removing the query sources; v1 and v2 retain them and receive no further releases. |
 | AUTH-009 | Low | Hostile header and challenge fields were not directly fuzzed. | Fixed with bounded fuzz targets for complete header sets and challenge formatting. |
 
 ## Published-version and disclosure disposition
@@ -51,30 +51,13 @@ changelog entries; they are not evidence that AUTH-002 or AUTH-003 persisted
 until those releases. Root v2 admission limits likewise do not retroactively
 apply to the root v1 or optional-module APIs.
 
-## Accepted deployment residual: AUTH-008
+## Resolved by removal: AUTH-008
 
-The maintainer, `faustbrian`, owns the explicit query-source API and its
-deprecation guidance. The deploying application operator owns credential
-transport, browser-facing URLs, reverse proxies, access logs, and retention.
-The retained option supports existing integrations; it is not a safe default
-or a recommendation for new designs. No library URL-writing API or reproduced
-source-level output leak is implicated by this finding.
-
-Mitigation is to migrate new and existing integrations to authorization or
-dedicated credential headers and prevent credential capture at upstream
-logging boundaries, as described in the [adoption checklist](../adoption.md).
-Header migration does not erase previously retained URL credentials; operators
-must address existing exposure and credential rotation within their deployment.
-
-Review this acceptance whenever query-source defaults, URL construction,
-credential transport, logging or retention policy changes, or new evidence
-shows source-level disclosure. The maintainer reviews API changes; the
-deploying operator reviews deployment changes and any recorded exposure.
-
-The maintainer's next scheduled acceptance review is 2026-11-07; the conditions
-above require earlier review when triggered. That review must reassess the
-deprecation, mitigation and any newly established exposure rather than silently
-extend this acceptance. Deployment operators retain their own review cadence.
+Root v3.0.0 removed `BearerQuery` and `APIKeyQuery`, so the library no longer
+reads credentials from URL queries. Applications still on v1 or v2 query
+sources must move credentials to the Authorization header, a dedicated header
+or an explicit cookie. Moving does not erase URL credentials already retained
+upstream; operators must address that exposure and rotate affected credentials.
 
 ## Rejected boundary findings
 

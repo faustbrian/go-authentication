@@ -38,9 +38,8 @@ func TestCategoricalPrivacy(t *testing.T) {
 			if err != nil {
 				t.Fatal("constructing instrumenter failed")
 			}
-			begin := instrumenter.Begin
 			ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-			next, finish := begin(ctx, test.kind)
+			next, finish := instrumenter.Begin(ctx, test.kind)
 			if next != ctx {
 				t.Fatal("observation changed the caller context")
 			}

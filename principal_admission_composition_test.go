@@ -72,37 +72,28 @@ func TestPrincipalAdmissionSmallPolicyHTTPConsumers(t *testing.T) {
 	if err != nil {
 		t.Fatal("canonical extractor configuration failed")
 	}
-	canonicalMiddleware, err := authenticationhttp.NewMiddleware(canonical, authenticator)
+	middleware, err := authenticationhttp.NewMiddleware(canonical, authenticator)
 	if err != nil {
 		t.Fatal("canonical middleware configuration failed")
 	}
-	for _, test := range []struct {
-		name       string
-		middleware func(http.Handler) http.Handler
-	}{
-		{"canonical", canonicalMiddleware},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.test/", nil)
-			if err != nil {
-				t.Fatal("ordinary in-memory request failed")
-			}
-			request.Header.Set("Authorization", "Bearer word")
-			called := false
-			handler := test.middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				called = true
-				stored, ok := authentication.PrincipalFromContext(r.Context())
-				if !ok || stored.Subject() != "sam" || stored.Method() != "bearer" ||
-					!reflect.DeepEqual(stored.Claims(), map[string]any{"role": "ops"}) {
-					t.Error("HTTP context lost admitted identity or claims")
-				}
-				w.WriteHeader(http.StatusNoContent)
-			}))
-			response := httptest.NewRecorder()
-			handler.ServeHTTP(response, request)
-			if !called || response.Code != http.StatusNoContent {
-				t.Fatal("ordinary HTTP composition changed")
-			}
-		})
+	request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.test/", nil)
+	if err != nil {
+		t.Fatal("ordinary in-memory request failed")
+	}
+	request.Header.Set("Authorization", "Bearer word")
+	called := false
+	handler := middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		stored, ok := authentication.PrincipalFromContext(r.Context())
+		if !ok || stored.Subject() != "sam" || stored.Method() != "bearer" ||
+			!reflect.DeepEqual(stored.Claims(), map[string]any{"role": "ops"}) {
+			t.Error("HTTP context lost admitted identity or claims")
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, request)
+	if !called || response.Code != http.StatusNoContent {
+		t.Fatal("ordinary HTTP composition changed")
 	}
 }

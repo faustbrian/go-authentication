@@ -100,12 +100,12 @@ Normative rationale: The base specification excludes this extension, so keeping 
 | Selected behavior | Authorization is the recommended default. URI query extraction is not supported, because query credentials can be retained by logs, proxies and browser history before this package sees them. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized. |
 | Security and resource consequences | Keeping bearer tokens out of URLs avoids retention before this package sees them. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering. |
 | Compatibility and wire consequences | Header use is RFC-aligned. The RFC 6750 `access_token` query method is not accepted. Cookie use is a package profile, not an RFC 6750 compliance claim. |
-| Executable evidence | `authenticationhttp.TestBearerCookieIsExplicitSource`, `authenticationhttp.TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues`, `authenticationhttp.FuzzAuthorizationExtraction`, and `authenticationhttp.TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter` |
+| Executable evidence | `authenticationhttp.TestBearerCookieIsExplicitSource`, `authenticationhttp.TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues`, `authenticationhttp.FuzzAuthorizationExtraction`, `authenticationhttp.FuzzBearerCookieExtraction`, and `authenticationhttp.TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter` |
 | Public surface | `authenticationhttp.BearerAuthorization`, `authenticationhttp.BearerCookie`, `authenticationhttp.Extractor`, and `authenticationhttp.NewMiddleware`. |
 | Upstream record | RFC 6750 has no cookie transmission method. Cookie support is retained only as an explicit application-owned extension. |
 | Reconsider when | The package adopts a separate form parser or standardizes a versioned cookie profile with CSRF semantics. |
 
-Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzAuthorizationExtraction`; documentation `docs/specification-decisions.md`.
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzAuthorizationExtraction` and `FuzzBearerCookieExtraction`; documentation `docs/specification-decisions.md`.
 Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
 
 ## AUTH-DEC-005: API-key profile and source shape
@@ -251,12 +251,12 @@ Additional authoritative sources: `{"id":"rfc6750-source","version":"RFC 6750","
 | Selected behavior | A request must not transmit a bearer token through more than one configured method. When the Authorization header and a configured bearer cookie are both populated, extraction rejects the request as ambiguous even when their values match. The RFC 6750 query method is not accepted. |
 | Security and resource consequences | Security: Rejecting competing sources prevents parser and intermediary precedence differences from selecting different credentials. Resource: All configured sources are inspected within the existing bounded source and request limits. |
 | Compatibility and wire consequences | Compatibility: Clients must use one bearer-token method per request; query transmission is unsupported under AUTH-DEC-004. Cookie sources remain explicit package extensions governed by AUTH-DEC-004. Wire: Requests carrying bearer credentials in both the Authorization header and a configured cookie are rejected instead of receiving source-order precedence. |
-| Executable evidence | `authenticationhttp.TestBearerSourcesRejectMultipleTransmissionMethods` |
+| Executable evidence | `authenticationhttp.TestBearerSourcesRejectMultipleTransmissionMethods` and `authenticationhttp.FuzzBearerCookieExtraction` |
 | Public surface | `authenticationhttp.Extractor`, `authenticationhttp.BearerAuthorization`, and `authenticationhttp.BearerCookie`. |
 | Upstream record | RFC 6750 Section 2 explicitly prohibits using more than one bearer-token transmission method in one request. |
 | Reconsider when | A successor bearer-token specification changes the single-method requirement. |
 
-Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `MUST NOT`; fuzz evidence `FuzzAuthorizationExtraction`; documentation `docs/specification-decisions.md`.
+Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `MUST NOT`; fuzz evidence `FuzzAuthorizationExtraction` and `FuzzBearerCookieExtraction`; documentation `docs/specification-decisions.md`.
 Normative rationale: This preserves RFC 6750 Section 2's explicit prohibition without conflating it with the package's separate source-selection policy.
 
 ## AUTH-DEC-012: Every 401 response carries an applicable challenge
