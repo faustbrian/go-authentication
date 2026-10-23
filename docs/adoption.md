@@ -3,7 +3,7 @@
 [Documentation index](README.md)
 
 1. Choose exactly one explicit credential source per route. Prefer dedicated
-   headers; do not introduce query credentials in new designs.
+   headers; URL query credentials are not supported.
 2. Terminate TLS before credentials cross an untrusted network and configure
    proxies and access logs to omit authorization, cookies, and query strings.
 3. Set callback, HTTP-client, request, refresh, token, claim, key, and shutdown
@@ -12,8 +12,9 @@
    nonce validation for interactive OIDC flows.
 5. Keep the authentication result separate from authorization policy. Check
    permissions, ownership, and tenant boundaries after authentication.
-6. Emit only bounded outcome metadata through `adapters/slog` or `adapters/otel`; never
-   add credentials, claims, principals, key data, or URLs.
+6. Emit only bounded outcome metadata through `adapters/slog` (`adapters/otel`
+   accepts only root v1 until its `/v2` major); never add credentials, claims,
+   principals, key data, or URLs.
 7. Rotate with a brief overlap, unique key IDs, issuer cache awareness, and a
    tested rollback. Shut down every owned `jwt.Remote` with a deadline.
 8. Run the protocol, race, fuzz, vulnerability, compatibility, coverage, and

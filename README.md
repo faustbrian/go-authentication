@@ -154,7 +154,7 @@ and its [Service edge family](https://github.com/faustbrian/go-library-tools/blo
 Use Go 1.27.2 and start with `GOWORK=off go test ./...` in the affected module.
 Install the published `golib` release declared by `.golib.yaml`, without building
 it from source. `make check` and `make ci` are bounded ordinary routes across
-five modules, including the pinned RFC vector guard and selected JWT shutdown
+four modules, including the pinned RFC vector guard and selected JWT shutdown
 race tests. The catalog has no required external services; OIDC retains its
 `integration` tag and configured-provider skip behavior.
 

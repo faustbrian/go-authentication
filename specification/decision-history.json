@@ -29,6 +29,7 @@
       "digests": [
         "86762f7d564203e9714e51b867aa8ec4ebc913d0ca704e716a409e56b2537722",
         "06998d20abf14867af6c7195a88b8adadc4a66dda00e1990172180c5c71a61a6",
+        "6d7612992e9f85896be04f77017316d2ca95df4a2db572806f59e584a110d9cc",
         "45743ed353b107b0c9dca7a26439a3564be978f4e21c1697713295b4ff3e360b"
       ]
     },
@@ -77,6 +78,7 @@
       "id": "AUTH-DEC-011",
       "digests": [
         "be33f5111184dec4c31bdeac3760ee2ef0fcdd730a677f55479e7ee8f66ad659",
+        "540932d79a30aefbf1ff4f87548f1b373b07302f7ec8b5e51ca6ba4f5a04cd8b",
         "762cbc5c1f71027d842809ac58dced2eec767fba32f98e5b3515087ef431e7a8"
       ]
     },

@@ -60,7 +60,7 @@ make check
 make ci
 ```
 
-These bounded routes cover all five catalog modules, the unchanged pinned RFC
+These bounded routes cover all four catalog modules, the unchanged pinned RFC
 vector identity/digest guard, and two selected JWT shutdown race tests. The
 catalog requires no external services; OIDC retains its `integration` test tag
 and configured-provider tests retain their skip behavior. Base-free local checks

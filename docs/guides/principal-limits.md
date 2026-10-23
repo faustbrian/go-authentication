@@ -91,8 +91,8 @@ release's migration notes.
 
 Root-v2 static Basic, API-key, and bearer producers use `NewPrincipal` and
 therefore its defaults. Retained JWT and OIDC modules still use root-v1
-construction; they do not receive these new limits until separately migrated
-to root v2. Root-v2 callback producers can select smaller limits with
+construction; they do not receive these limits until their `/v2` majors on
+root v3 are published. Root-v2 callback producers can select smaller limits with
 `NewPrincipalWithOptions`. The `adapters/http` middleware keeps the same
 Principal/result/context representation; they do not bypass admission or
 introduce a second Principal policy.

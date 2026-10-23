@@ -11,6 +11,10 @@ pin an older root.
 | --- | --- |
 | Latest stable root v3 (starting with `v3.0.0`) | Yes |
 | Root v1 and v2 | No |
+| `jwt`, `oidc` and `adapters/otel` v1 (require root v1) | Yes, until their `/v2` majors on root v3 are published |
+
+Services that stay on root v1 or v2 to use the JWT, OIDC or OpenTelemetry
+modules receive no root security fixes until those `/v2` majors ship.
 
 ## Reporting a vulnerability
 

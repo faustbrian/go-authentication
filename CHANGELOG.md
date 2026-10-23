@@ -10,8 +10,10 @@ this project follows Semantic Versioning.
 - Remove the deprecated `authhttp` and `authlog` facades; import
   `adapters/http` and `adapters/slog`. Remove the Start-named `Instrumenter`,
   `NewInstrumented`, the `Clock` alias and the adapters' `Start` methods; use
-  `BeginInstrumenter`, `NewInstrumentedWithBegin` and `clock.Clock`. Stop
-  maintaining the deprecated `authotel` module in favour of `adapters/otel`.
+  `BeginInstrumenter`, `NewInstrumentedWithBegin` and `clock.Clock`. The
+  deprecated `authotel` module receives no further releases. The `jwt`,
+  `oidc` and `adapters/otel` modules still require root v1, so v3 has no
+  JWT, OIDC or OpenTelemetry adapter until their `/v2` majors are published.
 - Remove the `BearerQuery` and `APIKeyQuery` sources. Credentials are read
   only from headers or explicitly named cookies, and AUTH-DEC-001 to
   AUTH-DEC-008, AUTH-DEC-011 and AUTH-DEC-012 now name `authenticationhttp`
@@ -283,7 +285,6 @@ this project follows Semantic Versioning.
   enforce explicit parameter and field bounds.
 - Query credential constructors are deprecated for new designs.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/v2.0.0...HEAD
 [1.1.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.1.0
 [1.0.0]: https://github.com/faustbrian/go-authentication/releases/tag/v1.0.0
 [1.2.2]: https://github.com/faustbrian/go-authentication/compare/v1.2.1...v1.2.2

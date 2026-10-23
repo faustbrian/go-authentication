@@ -17,7 +17,8 @@ module receives no further releases.
 The `jwt`, `oidc` and `adapters/otel` modules still require root v1, so they do
 not accept root v3 types. Root v3 has no OpenTelemetry adapter, JWT validator or
 OIDC validator until their `/v2` majors on root v3 are published; a service that
-needs them stays on its current root until then.
+needs them stays on its current root until then and receives no root
+security fixes in the meantime.
 
 ## Root v2 import identity
 
@@ -93,9 +94,9 @@ github.com/faustbrian/go-authentication/v2/authlog  -> github.com/faustbrian/go-
 ```
 
 The preferred package identifiers are `authenticationhttp` and
-`authenticationslog`. The legacy paths remain deprecated, importable facades;
-their exported types are aliases of the successors, so assignments, interface
-satisfaction, error traversal, and reflection identity remain unchanged.
+`authenticationslog`. In v2 the legacy paths were deprecated facades whose
+exported types aliased the successors, so the import change kept assignments,
+interface satisfaction, error traversal, and reflection identity unchanged.
 
 Both logging paths now represent unfamiliar credential kinds, outcomes, and
 nonempty failure kinds as `unknown` instead of logging caller-supplied strings.

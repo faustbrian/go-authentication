@@ -55,22 +55,48 @@ func FuzzBearerCookieExtraction(f *testing.F) {
 			request.Header.Set("Authorization", authorization)
 		}
 		credential, err := combined.Extract(request)
-		_, headerErr := headerOnly.Extract(request)
-		_, cookieErr := cookieOnly.Extract(request)
-		if headerErr == nil && cookieErr == nil {
+		headerCredential, headerErr := headerOnly.Extract(request)
+		cookieCredential, cookieErr := cookieOnly.Extract(request)
+		headerAbsent := errors.Is(headerErr, authentication.ErrCredentialsAbsent)
+		cookieAbsent := errors.Is(cookieErr, authentication.ErrCredentialsAbsent)
+		var want authentication.Credential
+		switch {
+		case headerErr == nil && cookieErr == nil:
 			if !errors.Is(err, authentication.ErrAmbiguousCredentials) {
 				t.Fatalf("header and cookie credentials error = %v, want ambiguous", err)
 			}
 			return
-		}
-		if err != nil {
-			if !classifiedFuzzError(err) {
-				t.Fatalf("unclassified error: %v", err)
+		case headerErr != nil && !headerAbsent:
+			// The Authorization source is evaluated first and its failure surfaces.
+			if !sameFuzzClass(err, headerErr) {
+				t.Fatalf("combined error = %v, want class of header error %v", err, headerErr)
+			}
+			return
+		case headerErr == nil:
+			want = headerCredential
+			if !cookieAbsent && !sameFuzzClass(err, cookieErr) {
+				t.Fatalf("combined error = %v, want class of cookie error %v", err, cookieErr)
+			}
+			if !cookieAbsent {
+				return
+			}
+		case cookieErr == nil:
+			want = cookieCredential
+		default:
+			if !sameFuzzClass(err, cookieErr) {
+				t.Fatalf("combined error = %v, want class of cookie error %v", err, cookieErr)
 			}
 			return
 		}
-		if _, ok := credential.(authentication.BearerCredential); !ok {
+		if err != nil {
+			t.Fatalf("lone credential error = %v", err)
+		}
+		bearer, ok := credential.(authentication.BearerCredential)
+		if !ok {
 			t.Fatalf("credential type = %T, want BearerCredential", credential)
+		}
+		if bearer.Token() != want.(authentication.BearerCredential).Token() {
+			t.Fatal("combined extraction changed the lone bearer token")
 		}
 		if formatted := fmt.Sprintf("%v %#v", credential, credential); formatted != "bearer credential [REDACTED] authentication.BearerCredential{[REDACTED]}" {
 			t.Fatalf("bearer credential formatting = %q", formatted)
@@ -169,6 +195,21 @@ func mustFuzzExtractor(f *testing.F, sources ...authhttp.Source) *authhttp.Extra
 		f.Fatalf("NewExtractor() error = %v", err)
 	}
 	return extractor
+}
+
+// sameFuzzClass reports whether both errors carry the same extraction
+// failure sentinel.
+func sameFuzzClass(got, want error) bool {
+	for _, sentinel := range []error{
+		authentication.ErrCredentialsAbsent,
+		authentication.ErrCredentialsInvalid,
+		authentication.ErrAmbiguousCredentials,
+	} {
+		if errors.Is(want, sentinel) {
+			return errors.Is(got, sentinel)
+		}
+	}
+	return false
 }
 
 func classifiedFuzzError(err error) bool {
