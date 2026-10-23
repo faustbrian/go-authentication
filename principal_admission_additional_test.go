@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 func TestPrincipalAdmissionAdditionalTotalStringOwners(t *testing.T) {

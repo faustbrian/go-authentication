@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	"github.com/faustbrian/go-authentication/v2/apikey"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/apikey"
 )
 
 func TestAuthenticatorUsesCallbackValidator(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	"github.com/faustbrian/go-authentication/v2/basic"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/basic"
 )
 
 func ExampleNewStatic() {

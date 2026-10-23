@@ -7,13 +7,11 @@ import (
 	"reflect"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
-	"github.com/faustbrian/go-authentication/v2/apikey"
-	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-	"github.com/faustbrian/go-authentication/v2/authhttp" //nolint:staticcheck // Retained facade compatibility coverage.
-	"github.com/faustbrian/go-authentication/v2/basic"
-	"github.com/faustbrian/go-authentication/v2/bearer"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authenticationhttp "github.com/faustbrian/go-authentication/v3/adapters/http"
+	"github.com/faustbrian/go-authentication/v3/apikey"
+	"github.com/faustbrian/go-authentication/v3/basic"
+	"github.com/faustbrian/go-authentication/v3/bearer"
 )
 
 func TestPrincipalAdmissionDefaultStaticProducers(t *testing.T) {
@@ -78,21 +76,11 @@ func TestPrincipalAdmissionSmallPolicyHTTPConsumers(t *testing.T) {
 	if err != nil {
 		t.Fatal("canonical middleware configuration failed")
 	}
-	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-	retained, err := authhttp.NewExtractor(authhttp.BearerAuthorization()) //nolint:staticcheck // Retained facade compatibility coverage.
-	if err != nil {
-		t.Fatal("retained extractor configuration failed")
-	}
-	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-	retainedMiddleware, err := authhttp.NewMiddleware(retained, authenticator) //nolint:staticcheck // Retained facade compatibility coverage.
-	if err != nil {
-		t.Fatal("retained middleware configuration failed")
-	}
 	for _, test := range []struct {
 		name       string
 		middleware func(http.Handler) http.Handler
 	}{
-		{"canonical", canonicalMiddleware}, {"retained", retainedMiddleware},
+		{"canonical", canonicalMiddleware},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			request, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://example.test/", nil)

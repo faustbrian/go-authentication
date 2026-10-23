@@ -17,7 +17,7 @@ means expiration or rotation drift; unavailable failures mean a verifier,
 network, issuer, or cache problem. Do not add subject, token, claim, key,
 header, URL query, or cookie values to metrics or traces.
 
-The `adapters/slog` adapter and retained `authlog` facade project categorical
+The `adapters/slog` adapter projects categorical
 inputs to fixed values. Credential kinds are `basic`, `bearer`, or `api_key`;
 outcomes are `authenticated`, `anonymous`, or `failed`; failure kinds are
 `absent`, `invalid`, `rejected`, `unavailable`, or `ambiguous`. Unrecognized

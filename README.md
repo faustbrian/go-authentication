@@ -4,7 +4,7 @@
 [![CodeQL](https://img.shields.io/badge/CodeQL-required-blue)](https://github.com/faustbrian/go-authentication/actions/workflows/ci.yml)
 [![Mutation](https://img.shields.io/badge/mutation-local_and_scheduled-blue)](CONTRIBUTING.md#verification)
 [![Documentation](https://img.shields.io/badge/docs-structural_checks_in_CI-blue)](docs/)
-[![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-authentication/v2.svg)](https://pkg.go.dev/github.com/faustbrian/go-authentication/v2)
+[![Go Reference](https://pkg.go.dev/badge/github.com/faustbrian/go-authentication/v3.svg)](https://pkg.go.dev/github.com/faustbrian/go-authentication/v3)
 [![Release](https://img.shields.io/github/v/release/faustbrian/go-authentication?sort=semver)](https://github.com/faustbrian/go-authentication/releases)
 [![Go](https://img.shields.io/badge/go-1.27.0-00ADD8?logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -29,16 +29,17 @@ graphs are opt-in.
 
 ## Install
 
-The root security-contract release `v2.0.0` is published. Select its
-major-qualified import path:
+Main prepares root `v3.0.0`, which removes the deprecated facades and legacy
+instrumentation contract. Select its major-qualified import path once it is
+published:
 
 ```sh
-go get github.com/faustbrian/go-authentication/v2@v2.0.0
+go get github.com/faustbrian/go-authentication/v3@v3.0.0
 ```
 
 The independently published optional modules below still consume root v1.
-They do not implement the root v2 nominal contracts; do not combine their v1
-authenticators or instrumentation with root v2. Their own major adoptions
+They do not implement the root v3 nominal contracts; do not combine their v1
+authenticators or instrumentation with root v3. Their own major adoptions
 follow publication of the root. Install these only for retained root v1 routes:
 
 ```sh
@@ -97,15 +98,12 @@ it deliberately performs no role, permission, ownership, or policy checks.
 | `basic` | Constant-work static Basic authentication |
 | `bearer` | Callback and interface adapters for opaque tokens |
 | `apikey` | Callback and atomically rotatable static API keys |
-| `adapters/http` (`authenticationhttp`) | Preferred strict extraction, challenges, and authentication-only middleware |
-| `adapters/slog` (`authenticationslog`) | Preferred secret-safe standard `log/slog` instrumentation |
-| `authhttp` | Deprecated compatibility facade for `adapters/http` |
-| `authlog` | Deprecated compatibility facade for `adapters/slog` |
+| `adapters/http` (`authenticationhttp`) | Strict extraction, challenges, and authentication-only middleware |
+| `adapters/slog` (`authenticationslog`) | Secret-safe standard `log/slog` instrumentation |
 | `authtest` | Deterministic principals, clocks, authenticators, HTTP fixtures, assertions |
 | `jwt` | Optional strict JWT/JWK validation and owned remote cache |
 | `oidc` | Optional OIDC discovery and ID-token validation without background refresh |
-| `adapters/otel` | Preferred optional OpenTelemetry traces and bounded metrics |
-| `authotel` | Deprecated compatible path retaining its original telemetry scope |
+| `adapters/otel` | Optional OpenTelemetry traces and bounded metrics |
 
 ## Security defaults
 

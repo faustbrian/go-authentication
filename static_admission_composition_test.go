@@ -7,13 +7,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authenticationhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
-	"github.com/faustbrian/go-authentication/v2/apikey"
-	//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-	legacyhttp "github.com/faustbrian/go-authentication/v2/authhttp" //nolint:staticcheck // Retained facade compatibility coverage.
-	"github.com/faustbrian/go-authentication/v2/basic"
-	"github.com/faustbrian/go-authentication/v2/bearer"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authenticationhttp "github.com/faustbrian/go-authentication/v3/adapters/http"
+	"github.com/faustbrian/go-authentication/v3/apikey"
+	"github.com/faustbrian/go-authentication/v3/basic"
+	"github.com/faustbrian/go-authentication/v3/bearer"
 )
 
 func TestStaticByteAdmissionIsTerminalInComposite(t *testing.T) {
@@ -49,80 +47,60 @@ func TestStaticByteAdmissionIsTerminalInComposite(t *testing.T) {
 }
 
 func TestStaticByteAdmissionPreservesHTTPComposition(t *testing.T) {
-	for _, path := range []string{"canonical", "retained"} {
-		for _, kind := range []string{"basic", "api_key", "bearer"} {
-			t.Run(path+"/"+kind, func(t *testing.T) {
-				request := httptest.NewRequest(http.MethodGet, "http://example.test/", nil)
-				var authenticator authentication.Authenticator
-				var source authenticationhttp.Source
-				var err error
-				switch kind {
-				case "basic":
-					authenticator, err = basic.NewStaticWithOptions([]basic.Entry{{
-						Username: "user", Password: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
-					}}, basic.WithMaxUsernameBytes(4), basic.WithMaxPasswordBytes(4))
-					request.SetBasicAuth("user", "open")
-					source = authenticationhttp.BasicAuthorization()
-					if path == "retained" {
-						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-						source = legacyhttp.BasicAuthorization() //nolint:staticcheck // Retained facade compatibility coverage.
-					}
-				case "api_key":
-					authenticator, err = apikey.NewStaticWithOptions([]apikey.Entry{{
-						ID: "name", Key: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
-					}}, apikey.WithMaxKeyIDBytes(4), apikey.WithMaxKeyBytes(4))
-					request.Header.Set("X-Key-ID", "name")
-					request.Header.Set("X-Key", "open")
-					source = authenticationhttp.APIKeyHeader("X-Key-ID", "X-Key")
-					if path == "retained" {
-						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-						source = legacyhttp.APIKeyHeader("X-Key-ID", "X-Key") //nolint:staticcheck // Retained facade compatibility coverage.
-					}
-				case "bearer":
-					authenticator, err = bearer.NewStatic([]bearer.Entry{{
-						Token: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
-					}})
-					request.Header.Set("Authorization", "Bearer open")
-					source = authenticationhttp.BearerAuthorization()
-					if path == "retained" {
-						//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-						source = legacyhttp.BearerAuthorization() //nolint:staticcheck // Retained facade compatibility coverage.
-					}
+	for _, kind := range []string{"basic", "api_key", "bearer"} {
+		t.Run(kind, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodGet, "http://example.test/", nil)
+			var authenticator authentication.Authenticator
+			var source authenticationhttp.Source
+			var err error
+			switch kind {
+			case "basic":
+				authenticator, err = basic.NewStaticWithOptions([]basic.Entry{{
+					Username: "user", Password: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
+				}}, basic.WithMaxUsernameBytes(4), basic.WithMaxPasswordBytes(4))
+				request.SetBasicAuth("user", "open")
+				source = authenticationhttp.BasicAuthorization()
+			case "api_key":
+				authenticator, err = apikey.NewStaticWithOptions([]apikey.Entry{{
+					ID: "name", Key: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
+				}}, apikey.WithMaxKeyIDBytes(4), apikey.WithMaxKeyBytes(4))
+				request.Header.Set("X-Key-ID", "name")
+				request.Header.Set("X-Key", "open")
+				source = authenticationhttp.APIKeyHeader("X-Key-ID", "X-Key")
+			case "bearer":
+				authenticator, err = bearer.NewStatic([]bearer.Entry{{
+					Token: "open", Principal: authentication.PrincipalSpec{Subject: "ordinary"},
+				}})
+				request.Header.Set("Authorization", "Bearer open")
+				source = authenticationhttp.BearerAuthorization()
+			}
+			if err != nil {
+				t.Fatal("constructing static authenticator failed")
+			}
+			newExtractor := authenticationhttp.NewExtractor
+			newMiddleware := authenticationhttp.NewMiddleware
+			extractor, err := newExtractor(source)
+			if err != nil {
+				t.Fatal("constructing extractor failed")
+			}
+			middleware, err := newMiddleware(extractor, authenticator)
+			if err != nil {
+				t.Fatal("constructing middleware failed")
+			}
+			var served bool
+			handler := middleware(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				served = true
+				principal, ok := authentication.PrincipalFromContext(request.Context())
+				if !ok || principal.Subject() != "ordinary" || principal.Method() != kind {
+					t.Error("HTTP composition changed the authenticated context")
 				}
-				if err != nil {
-					t.Fatal("constructing static authenticator failed")
-				}
-				newExtractor := authenticationhttp.NewExtractor
-				newMiddleware := authenticationhttp.NewMiddleware
-				if path == "retained" {
-					//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-					newExtractor = legacyhttp.NewExtractor //nolint:staticcheck // Retained facade compatibility coverage.
-					//lint:ignore SA1019 Intentionally exercise the retained facade promised by the migration contract.
-					newMiddleware = legacyhttp.NewMiddleware //nolint:staticcheck // Retained facade compatibility coverage.
-				}
-				extractor, err := newExtractor(source)
-				if err != nil {
-					t.Fatal("constructing extractor failed")
-				}
-				middleware, err := newMiddleware(extractor, authenticator)
-				if err != nil {
-					t.Fatal("constructing middleware failed")
-				}
-				var served bool
-				handler := middleware(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-					served = true
-					principal, ok := authentication.PrincipalFromContext(request.Context())
-					if !ok || principal.Subject() != "ordinary" || principal.Method() != kind {
-						t.Error("HTTP composition changed the authenticated context")
-					}
-					writer.WriteHeader(http.StatusNoContent)
-				}))
-				recorder := httptest.NewRecorder()
-				handler.ServeHTTP(recorder, request)
-				if !served || recorder.Code != http.StatusNoContent {
-					t.Error("ordinary admitted credential no longer reached the handler")
-				}
-			})
-		}
+				writer.WriteHeader(http.StatusNoContent)
+			}))
+			recorder := httptest.NewRecorder()
+			handler.ServeHTTP(recorder, request)
+			if !served || recorder.Code != http.StatusNoContent {
+				t.Error("ordinary admitted credential no longer reached the handler")
+			}
+		})
 	}
 }

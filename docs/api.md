@@ -16,18 +16,15 @@ checked in CI. Use `go doc` for signatures and contracts.
 - `adapters/http` (`authenticationhttp`): explicit sources, bearer compatibility options, extractor,
   challenge formatting, and middleware policies.
 - `adapters/slog` (`authenticationslog`): standard `slog` instrumenter.
-- `authhttp` and `authlog`: deprecated type-identical compatibility facades.
 - `authtest`: deterministic principals, results, clock, scripted authenticator,
   HTTP fixture, and assertions.
 - `jwt`: strict config, validator, provider adapters, and owned remote JWK
   lifecycle.
 - `oidc`: discovery/static-key config, validator, and nonce interface.
-- `adapters/otel`: preferred OpenTelemetry provider config and instrumenter.
-- `authotel`: deprecated compatible path retaining its original telemetry scope.
+- `adapters/otel`: OpenTelemetry provider config and instrumenter.
 
-New instrumentation integrations implement `BeginInstrumenter.Begin` and use
-`NewInstrumentedWithBegin`. The released `Instrumenter.Start` and
-`NewInstrumented` contract remains available for v1 source compatibility.
+Instrumentation integrations implement `BeginInstrumenter.Begin` and use
+`NewInstrumentedWithBegin` with a `clock.Clock`.
 
 Challenge formatting is bounded by `MaxChallengeParameters`,
 `MaxChallengeSchemeBytes`, `MaxChallengeNameBytes`, and
@@ -35,8 +32,8 @@ Challenge formatting is bounded by `MaxChallengeParameters`,
 `MinRefreshInterval`, `MaxRefreshInterval`, and `MaxRefreshWaiters`; zero
 values select safe defaults.
 
-`BearerQuery` and `APIKeyQuery` remain available for compatibility but are
-deprecated for new designs because credential-bearing URLs can be retained
+Credential sources read headers or explicitly named cookies only; root v3
+removed query-string sources because credential-bearing URLs can be retained
 outside this package.
 
 `authenticationhttp.NewMiddleware` emits `401 Unauthorized` only when a failure-specific
@@ -51,7 +48,6 @@ go test -run '^Example' ./...
 (cd jwt && go test -run '^Example' ./...)
 (cd oidc && go test -run '^Example' ./...)
 (cd adapters/otel && go test -run '^Example' ./...)
-(cd authotel && go test -run '^Example' ./...)
 ```
 
 See the [source documentation audit](source-documentation-audit.md) for full

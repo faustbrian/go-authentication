@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authlog "github.com/faustbrian/go-authentication/v2/adapters/slog"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authlog "github.com/faustbrian/go-authentication/v3/adapters/slog"
 )
 
 func ExampleNew() {

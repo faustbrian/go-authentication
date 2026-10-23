@@ -70,7 +70,7 @@
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header, query, and cookie sources."
+        "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header and cookie sources."
       ]
     },
     {
@@ -79,18 +79,18 @@
         "rfc6750-source"
       ],
       "executable_evidence": [
-        "TestBearerQueryAndCookieAreExplicitSources",
+        "TestBearerCookieIsExplicitSource",
         "TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues",
         "TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter"
       ],
       "fixtures": [],
       "fuzz": [
-        "FuzzBearerQueryExtraction"
+        "FuzzAuthorizationExtraction"
       ],
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "Authorization is the recommended default. Query extraction is explicit, caller-named, and deprecated for new designs. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized."
+        "Authorization is the recommended default. URI query extraction is not supported, because query credentials can be retained by logs, proxies and browser history before this package sees them. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized."
       ]
     },
     {
@@ -100,7 +100,7 @@
       ],
       "executable_evidence": [
         "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
-        "TestAPIKeySourcesRejectMalformedQueriesAndBoundedValues",
+        "TestAPIKeySourcesRejectMalformedAndBoundedValues",
         "TestStaticAuthenticatesKeyByDeterministicID",
         "TestStaticRotationAtomicallyReplacesActiveKeys",
         "TestStaticRejectsDuplicateKeyConfiguration"
@@ -112,7 +112,7 @@
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header, query, or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred."
+        "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred."
       ]
     },
     {
@@ -133,7 +133,7 @@
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated query or cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources."
+        "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources."
       ]
     },
     {
@@ -236,12 +236,12 @@
       ],
       "fixtures": [],
       "fuzz": [
-        "FuzzBearerQueryExtraction"
+        "FuzzAuthorizationExtraction"
       ],
       "differential_evidence": [],
       "differential_classification": "not assessed",
       "public_behavior": [
-        "A request must not transmit a bearer token through both the Authorization header and the RFC 6750 `access_token` query method. When both are populated, extraction rejects the request as ambiguous even when their values match."
+        "A request must not transmit a bearer token through more than one configured method. When the Authorization header and a configured bearer cookie are both populated, extraction rejects the request as ambiguous even when their values match. The RFC 6750 query method is not accepted."
       ]
     },
     {

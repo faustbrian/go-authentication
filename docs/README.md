@@ -29,7 +29,6 @@
 - [JWT module](../jwt/docs/README.md)
 - [OIDC module](../oidc/docs/README.md)
 - [OpenTelemetry adapter](../adapters/otel/docs/README.md)
-- [Deprecated OpenTelemetry v1 facade](../authotel/docs/README.md)
 
 ## Operations and security
 

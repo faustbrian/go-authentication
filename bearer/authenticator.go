@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 const defaultMaxTokenBytes = 8 * 1024

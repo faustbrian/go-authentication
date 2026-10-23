@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 type invariantSource struct {
@@ -43,7 +43,7 @@ func TestPrivateSourceInvariantsRejectInvalidLocationsAndKinds(t *testing.T) {
 		authorizationSource{kind: authentication.CredentialAPIKey, maxBytes: 1},
 		authorizationSource{kind: authentication.CredentialBearer, maxBytes: 0},
 		bearerNamedSource{location: sourceLocation(99), name: "token", maxBytes: 1},
-		bearerNamedSource{location: locationQuery, name: "token", maxBytes: 0},
+		bearerNamedSource{location: locationCookie, name: "token", maxBytes: 0},
 		apiKeySource{location: sourceLocation(99), idName: "id", keyName: "key", maxIDBytes: 1, maxKeyBytes: 1},
 		apiKeySource{location: locationHeader, idName: "id", keyName: "key", maxIDBytes: 0, maxKeyBytes: 1},
 		apiKeySource{location: locationHeader, idName: "id", keyName: "key", maxIDBytes: 1, maxKeyBytes: 0},

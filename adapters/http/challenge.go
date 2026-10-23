@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 // FormatChallenge revalidates bounded challenge data and serializes sorted

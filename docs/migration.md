@@ -2,6 +2,18 @@
 
 [Documentation index](README.md)
 
+## Root v3 clean replacement
+
+Change root and subpackage imports from `/v2` to `/v3`. Replace the removed
+`authhttp` and `authlog` imports with `adapters/http` and `adapters/slog`;
+their package identifiers are `authenticationhttp` and `authenticationslog`.
+Implement `BeginInstrumenter.Begin` instead of the removed Start-named
+`Instrumenter`, call `NewInstrumentedWithBegin` instead of `NewInstrumented`,
+and pass a `clock.Clock` where the removed `Clock` alias was used. Move
+credentials out of URLs: `BearerQuery` and `APIKeyQuery` are removed, so use
+the Authorization header, named headers or explicit cookies. The `authotel`
+module receives no further releases; use `adapters/otel`.
+
 ## Root v2 import identity
 
 The root release `v2.0.0` is published. To migrate from root v1, change the
@@ -65,9 +77,10 @@ clock/application metadata outside these budgets. See
 [Principal admission and ownership](guides/principal-limits.md) for exact
 accounting, caller synchronization, and upstream ownership boundaries.
 
-## From the legacy HTTP and logging adapter paths
+## From the legacy HTTP and logging adapter paths (v2)
 
-Replace imports without changing constructor calls or option ordering:
+Root v2 kept these facades; v3 removed them. Replace imports without changing
+constructor calls or option ordering:
 
 ```text
 github.com/faustbrian/go-authentication/v2/authhttp -> github.com/faustbrian/go-authentication/v2/adapters/http

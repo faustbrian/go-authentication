@@ -1,6 +1,6 @@
 // Package authenticationhttp provides strict HTTP credential extraction, challenges,
 // and authentication-only middleware for net/http. Start with NewExtractor and
-// NewMiddleware; sources read borrowed request headers/URL/cookies, never the
+// NewMiddleware; sources read borrowed request headers/cookies, never the
 // body. Source byte bounds apply to selected values, not total header/query/
 // cookie parsing allocations; server request limits remain deployment-owned.
 // See docs/specification-decisions.md for RFC9110/7617/6750 parsing profiles.
@@ -10,10 +10,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 const (
@@ -196,21 +195,6 @@ type bearerNamedSource struct {
 	pipe     bool
 }
 
-// BearerQuery explicitly enables bearer extraction from a query parameter.
-//
-// Deprecated: credentials in URLs can be retained by logs, proxies, and
-// browser history. Prefer BearerAuthorization for new designs.
-func BearerQuery(name string, options ...BearerOption) Source {
-	configuration := authorizationSource{maxBytes: defaultMaxBearerBytes}
-	applyBearerOptions(&configuration, options)
-	return bearerNamedSource{
-		location: locationQuery,
-		name:     name,
-		maxBytes: configuration.maxBytes,
-		pipe:     configuration.pipe,
-	}
-}
-
 // BearerCookie explicitly enables bearer extraction from a cookie.
 func BearerCookie(name string, options ...BearerOption) Source {
 	configuration := authorizationSource{maxBytes: defaultMaxBearerBytes}
@@ -232,7 +216,7 @@ func applyBearerOptions(source *authorizationSource, options []BearerOption) {
 }
 
 func (s bearerNamedSource) validate() error {
-	if !validName(s.name) || s.maxBytes <= 0 || (s.location != locationQuery && s.location != locationCookie) {
+	if !validName(s.name) || s.maxBytes <= 0 || s.location != locationCookie {
 		return fmt.Errorf("%w: bearer named source", authentication.ErrInvalidConfiguration)
 	}
 	return nil
@@ -280,14 +264,6 @@ type apiKeySource struct {
 // APIKeyHeader explicitly enables API-key extraction from two headers.
 func APIKeyHeader(idHeader, keyHeader string, options ...APIKeyOption) Source {
 	return newAPIKeySource(locationHeader, idHeader, keyHeader, options)
-}
-
-// APIKeyQuery explicitly enables API-key extraction from two query parameters.
-//
-// Deprecated: credentials in URLs can be retained by logs, proxies, and
-// browser history. Prefer APIKeyHeader for new designs.
-func APIKeyQuery(idParameter, keyParameter string, options ...APIKeyOption) Source {
-	return newAPIKeySource(locationQuery, idParameter, keyParameter, options)
 }
 
 // APIKeyCookie explicitly enables API-key extraction from two cookies.
@@ -347,25 +323,15 @@ type sourceLocation uint8
 
 const (
 	locationHeader sourceLocation = iota
-	locationQuery
 	locationCookie
 )
 
-// ParseQuery and Cookies inspect the complete borrowed request fields before
+// Cookies inspect the complete borrowed request fields before
 // selected-value admission. Per-credential limits are not total parser budgets.
 func namedValues(request *http.Request, location sourceLocation, name string) ([]string, error) {
 	switch location {
 	case locationHeader:
 		return request.Header.Values(name), nil
-	case locationQuery:
-		if request.URL == nil {
-			return nil, authentication.NewFailure(authentication.FailureInvalid)
-		}
-		values, err := url.ParseQuery(request.URL.RawQuery)
-		if err != nil {
-			return nil, authentication.NewFailure(authentication.FailureInvalid)
-		}
-		return values[name], nil
 	case locationCookie:
 		var values []string
 		for _, cookie := range request.Cookies() {

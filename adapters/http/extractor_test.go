@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authhttp "github.com/faustbrian/go-authentication/v3/adapters/http"
 )
 
 func TestBasicAuthorizationExtractionIsStrict(t *testing.T) {
@@ -151,7 +151,6 @@ func TestAPIKeySourcesMustBeExplicitAndRejectDuplicates(t *testing.T) {
 	t.Parallel()
 
 	headerSource := authhttp.APIKeyHeader("X-API-Key-ID", "X-API-Key", authhttp.WithAPIKeyMaxBytes(32))
-	querySource := authhttp.APIKeyQuery("key_id", "api_key", authhttp.WithAPIKeyMaxBytes(32))
 	cookieSource := authhttp.APIKeyCookie("key_id", "api_key", authhttp.WithAPIKeyMaxBytes(32))
 
 	tests := []struct {
@@ -165,14 +164,12 @@ func TestAPIKeySourcesMustBeExplicitAndRejectDuplicates(t *testing.T) {
 		wantKey  string
 	}{
 		{name: "header", sources: []authhttp.Source{headerSource}, headers: http.Header{"X-Api-Key-Id": {"primary"}, "X-Api-Key": {"secret"}}, wantID: "primary", wantKey: "secret"},
-		{name: "query", sources: []authhttp.Source{querySource}, rawQuery: "key_id=primary&api_key=secret", wantID: "primary", wantKey: "secret"},
 		{name: "cookie", sources: []authhttp.Source{cookieSource}, cookies: []*http.Cookie{{Name: "key_id", Value: "primary"}, {Name: "api_key", Value: "secret"}}, wantID: "primary", wantKey: "secret"},
 		{name: "query disabled", sources: []authhttp.Source{headerSource}, rawQuery: "key_id=primary&api_key=secret", want: authentication.ErrCredentialsAbsent},
 		{name: "missing id", sources: []authhttp.Source{headerSource}, headers: http.Header{"X-Api-Key": {"secret"}}, want: authentication.ErrCredentialsInvalid},
 		{name: "duplicate header", sources: []authhttp.Source{headerSource}, headers: http.Header{"X-Api-Key-Id": {"primary"}, "X-Api-Key": {"one", "two"}}, want: authentication.ErrAmbiguousCredentials},
-		{name: "duplicate query", sources: []authhttp.Source{querySource}, rawQuery: "key_id=primary&api_key=one&api_key=two", want: authentication.ErrAmbiguousCredentials},
 		{name: "duplicate cookie", sources: []authhttp.Source{cookieSource}, cookies: []*http.Cookie{{Name: "key_id", Value: "primary"}, {Name: "api_key", Value: "one"}, {Name: "api_key", Value: "two"}}, want: authentication.ErrAmbiguousCredentials},
-		{name: "multiple sources", sources: []authhttp.Source{headerSource, querySource}, headers: http.Header{"X-Api-Key-Id": {"header"}, "X-Api-Key": {"header-secret"}}, rawQuery: "key_id=query&api_key=query-secret", want: authentication.ErrAmbiguousCredentials},
+		{name: "multiple sources", sources: []authhttp.Source{headerSource, cookieSource}, headers: http.Header{"X-Api-Key-Id": {"header"}, "X-Api-Key": {"header-secret"}}, cookies: []*http.Cookie{{Name: "key_id", Value: "cookie"}, {Name: "api_key", Value: "cookie-secret"}}, want: authentication.ErrAmbiguousCredentials},
 	}
 
 	for _, tt := range tests {
@@ -206,7 +203,7 @@ func TestAPIKeySourcesMustBeExplicitAndRejectDuplicates(t *testing.T) {
 	}
 }
 
-func TestBearerQueryAndCookieAreExplicitSources(t *testing.T) {
+func TestBearerCookieIsExplicitSource(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -215,9 +212,7 @@ func TestBearerQueryAndCookieAreExplicitSources(t *testing.T) {
 		request *http.Request
 		token   string
 	}{
-		{name: "query", source: authhttp.BearerQuery("access_token"), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "access_token=query-token"}}, token: "query-token"},
 		{name: "cookie", source: authhttp.BearerCookie("access_token"), request: requestWithCookie(&http.Cookie{Name: "access_token", Value: "cookie-token"}), token: "cookie-token"},
-		{name: "pipe query", source: authhttp.BearerQuery("access_token", authhttp.WithBearerPipe()), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "access_token=42%7Cquery-secret"}}, token: "42|query-secret"},
 		{name: "pipe cookie", source: authhttp.BearerCookie("access_token", authhttp.WithBearerPipe()), request: requestWithCookie(&http.Cookie{Name: "access_token", Value: "42|cookie-secret"}), token: "42|cookie-secret"},
 	}
 
@@ -243,12 +238,10 @@ func TestBearerSourcesRejectMultipleTransmissionMethods(t *testing.T) {
 	extractor := mustExtractor(
 		t,
 		authhttp.BearerAuthorization(),
-		authhttp.BearerQuery("access_token"),
+		authhttp.BearerCookie("access_token"),
 	)
-	request := &http.Request{
-		Header: http.Header{"Authorization": {"Bearer same-token"}},
-		URL:    &url.URL{RawQuery: "access_token=same-token"},
-	}
+	request := requestWithCookie(&http.Cookie{Name: "access_token", Value: "same-token"})
+	request.Header.Set("Authorization", "Bearer same-token")
 
 	_, err := extractor.Extract(request)
 	if !errors.Is(err, authentication.ErrAmbiguousCredentials) {
@@ -263,7 +256,7 @@ func TestExtractorRejectsInvalidConfiguration(t *testing.T) {
 		nil,
 		{nil},
 		{authhttp.APIKeyHeader("bad header", "X-Key")},
-		{authhttp.APIKeyQuery("", "key")},
+		{authhttp.APIKeyCookie("", "key")},
 		{authhttp.BearerCookie("")},
 		{authhttp.BearerAuthorization(authhttp.WithBearerMaxBytes(0))},
 	}
@@ -371,14 +364,12 @@ func TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues(t *testing.T) {
 		request *http.Request
 		want    error
 	}{
-		{name: "nil URL", source: authhttp.BearerQuery("token"), request: &http.Request{Header: make(http.Header)}, want: authentication.ErrCredentialsInvalid},
-		{name: "malformed query", source: authhttp.BearerQuery("token"), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "%"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "absent", source: authhttp.BearerQuery("token"), request: &http.Request{Header: make(http.Header), URL: &url.URL{}}, want: authentication.ErrCredentialsAbsent},
-		{name: "duplicate", source: authhttp.BearerQuery("token"), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "token=one&token=two"}}, want: authentication.ErrAmbiguousCredentials},
-		{name: "empty", source: authhttp.BearerQuery("token"), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "token="}}, want: authentication.ErrCredentialsInvalid},
-		{name: "exact bound", source: authhttp.BearerQuery("token", authhttp.WithBearerMaxBytes(4)), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "token=az09"}}, want: nil},
+		{name: "absent", source: authhttp.BearerCookie("token"), request: requestWithCookies(), want: authentication.ErrCredentialsAbsent},
+		{name: "duplicate", source: authhttp.BearerCookie("token"), request: requestWithCookies("token", "one", "token", "two"), want: authentication.ErrAmbiguousCredentials},
+		{name: "empty", source: authhttp.BearerCookie("token"), request: requestWithCookies("token", ""), want: authentication.ErrCredentialsInvalid},
+		{name: "exact bound", source: authhttp.BearerCookie("token", authhttp.WithBearerMaxBytes(4)), request: requestWithCookies("token", "az09"), want: nil},
 		{name: "invalid", source: authhttp.BearerCookie("token"), request: requestWithCookie(&http.Cookie{Name: "token", Value: "bad token"}), want: authentication.ErrCredentialsInvalid},
-		{name: "oversized", source: authhttp.BearerQuery("token", authhttp.WithBearerMaxBytes(3)), request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "token=long"}}, want: authentication.ErrCredentialsInvalid},
+		{name: "oversized", source: authhttp.BearerCookie("token", authhttp.WithBearerMaxBytes(3)), request: requestWithCookies("token", "long"), want: authentication.ErrCredentialsInvalid},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -390,24 +381,22 @@ func TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues(t *testing.T) {
 	}
 }
 
-func TestAPIKeySourcesRejectMalformedQueriesAndBoundedValues(t *testing.T) {
+func TestAPIKeySourcesRejectMalformedAndBoundedValues(t *testing.T) {
 	t.Parallel()
 
-	source := authhttp.APIKeyQuery("id", "key", authhttp.WithAPIKeyMaxBytes(3))
+	source := authhttp.APIKeyCookie("id", "key", authhttp.WithAPIKeyMaxBytes(3))
 	tests := []struct {
 		name    string
 		request *http.Request
 		want    error
 	}{
-		{name: "nil URL", request: &http.Request{Header: make(http.Header)}, want: authentication.ErrCredentialsInvalid},
-		{name: "malformed query", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "%"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "empty values", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=&key="}}, want: authentication.ErrCredentialsInvalid},
-		{name: "empty id", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=&key=key"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "empty key", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=id&key="}}, want: authentication.ErrCredentialsInvalid},
-		{name: "missing id", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "key=key"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "missing key", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=id"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "oversized key", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=primary&key=long"}}, want: authentication.ErrCredentialsInvalid},
-		{name: "exact key bound", request: &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: "id=id&key=key"}}, want: nil},
+		{name: "empty values", request: requestWithCookies("id", "", "key", ""), want: authentication.ErrCredentialsInvalid},
+		{name: "empty id", request: requestWithCookies("id", "", "key", "key"), want: authentication.ErrCredentialsInvalid},
+		{name: "empty key", request: requestWithCookies("id", "id", "key", ""), want: authentication.ErrCredentialsInvalid},
+		{name: "missing id", request: requestWithCookies("key", "key"), want: authentication.ErrCredentialsInvalid},
+		{name: "missing key", request: requestWithCookies("id", "id"), want: authentication.ErrCredentialsInvalid},
+		{name: "oversized key", request: requestWithCookies("id", "primary", "key", "long"), want: authentication.ErrCredentialsInvalid},
+		{name: "exact key bound", request: requestWithCookies("id", "id", "key", "key"), want: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -439,5 +428,13 @@ func requestWithHeaders(values []string) *http.Request {
 func requestWithCookie(cookie *http.Cookie) *http.Request {
 	request := &http.Request{Header: make(http.Header), URL: &url.URL{}}
 	request.AddCookie(cookie)
+	return request
+}
+
+func requestWithCookies(nameValues ...string) *http.Request {
+	request := &http.Request{Header: make(http.Header), URL: &url.URL{}}
+	for index := 0; index+1 < len(nameValues); index += 2 {
+		request.AddCookie(&http.Cookie{Name: nameValues[index], Value: nameValues[index+1]})
+	}
 	return request
 }

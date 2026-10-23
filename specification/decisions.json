@@ -42,7 +42,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.BasicAuthorization`, `authhttp.BearerAuthorization`, `authhttp.Extractor`, and `FailureInvalid` versus `FailureAbsent`"
+        "`authenticationhttp.BasicAuthorization`, `authenticationhttp.BearerAuthorization`, `authenticationhttp.Extractor`, and `FailureInvalid` versus `FailureAbsent`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -88,7 +88,7 @@
         "specification/interoperability.tsv"
       ],
       "public_apis": [
-        "`authhttp.BasicAuthorization`, `authentication.BasicCredential`, `basic.NewStatic`, and `authentication.NewChallenge`"
+        "`authenticationhttp.BasicAuthorization`, `authentication.BasicCredential`, `basic.NewStatic`, and `authentication.NewChallenge`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -113,7 +113,7 @@
         "Accept any non-whitespace token; enforce `token68`; enforce `b64token`; or expose a narrow opt-in extension without changing defaults."
       ],
       "peer_behavior": "Bearer middleware frequently accepts arbitrary strings or JWT-shaped values. Neither behavior is the RFC 6750 `b64token` contract.",
-      "selected_behavior": "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header, query, and cookie sources.",
+      "selected_behavior": "Every bearer source enforces RFC 6750 `b64token`: ASCII letters, digits, `-._~+/`, followed only by optional trailing `=`. Unicode, embedded padding, whitespace, and other bytes are invalid. `WithBearerPipe` adds only `|` and is an explicit application compatibility profile applied consistently to header and cookie sources.",
       "rationale": "The base specification excludes this extension, so keeping it explicit and opt-in preserves the normative default.",
       "security_consequences": "Syntax is checked before a validator receives the bounded token. The extension cannot be enabled globally or implicitly.",
       "resource_consequences": "Syntax is checked before a validator receives the bounded token. The extension cannot be enabled globally or implicitly.",
@@ -135,7 +135,7 @@
         "specification/interoperability.tsv"
       ],
       "public_apis": [
-        "`authhttp.BearerAuthorization`, `authhttp.BearerQuery`, `authhttp.BearerCookie`, `authhttp.WithBearerPipe`, and `authhttp.WithBearerMaxBytes`"
+        "`authenticationhttp.BearerAuthorization`, `authenticationhttp.BearerCookie`, `authenticationhttp.WithBearerPipe`, and `authenticationhttp.WithBearerMaxBytes`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -160,30 +160,30 @@
         "Implement all RFC methods; accept any named location automatically; support only Authorization; or expose hazardous and non-standard locations explicitly while keeping body access out of authentication middleware."
       ],
       "peer_behavior": "Frameworks vary between header-only defaults and automatic header, query, form, or cookie fallback. Automatic fallback obscures credential precedence and retention risk.",
-      "selected_behavior": "Authorization is the recommended default. Query extraction is explicit, caller-named, and deprecated for new designs. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized.",
+      "selected_behavior": "Authorization is the recommended default. URI query extraction is not supported, because query credentials can be retained by logs, proxies and browser history before this package sees them. Cookie extraction is an explicit application extension. Form-body extraction is intentionally unsupported, and middleware never reads the request body. Multiple configured locations containing credentials are ambiguous rather than prioritized.",
       "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
-      "security_consequences": "Query credentials can be retained before this package sees them; callers must provide TLS, end-to-end log suppression, short lifetimes, and RFC 6750 cache controls. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
-      "resource_consequences": "Query credentials can be retained before this package sees them; callers must provide TLS, end-to-end log suppression, short lifetimes, and RFC 6750 cache controls. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
-      "compatibility_consequences": "Header use is RFC-aligned. Query use can implement `access_token` when explicitly named. Cookie use and custom query names are package profiles, not RFC 6750 compliance claims.",
-      "wire_consequences": "Header use is RFC-aligned. Query use can implement `access_token` when explicitly named. Cookie use and custom query names are package profiles, not RFC 6750 compliance claims.",
+      "security_consequences": "Keeping bearer tokens out of URLs avoids retention before this package sees them. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
+      "resource_consequences": "Keeping bearer tokens out of URLs avoids retention before this package sees them. Cookie users own Secure, HttpOnly, SameSite, origin, and CSRF policy. Body independence preserves streaming and avoids hidden buffering.",
+      "compatibility_consequences": "Header use is RFC-aligned. The RFC 6750 `access_token` query method is not accepted. Cookie use is a package profile, not an RFC 6750 compliance claim.",
+      "wire_consequences": "Header use is RFC-aligned. The RFC 6750 `access_token` query method is not accepted. Cookie use is a package profile, not an RFC 6750 compliance claim.",
       "executable_evidence": [
-        "TestBearerQueryAndCookieAreExplicitSources",
+        "TestBearerCookieIsExplicitSource",
         "TestNamedBearerSourcesRejectAbsentDuplicateAndHostileValues",
         "TestMiddlewareAuthenticatesWithoutReadingBodyOrWrappingWriter"
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
-        "FuzzBearerQueryExtraction"
+        "FuzzAuthorizationExtraction"
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.BearerAuthorization`, `authhttp.BearerQuery`, `authhttp.BearerCookie`, `authhttp.Extractor`, and `authhttp.NewMiddleware`"
+        "`authenticationhttp.BearerAuthorization`, `authenticationhttp.BearerCookie`, `authenticationhttp.Extractor`, and `authenticationhttp.NewMiddleware`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
       ],
       "upstream_status": "RFC 6750 has no cookie transmission method. Cookie support is retained only as an explicit application-owned extension.",
-      "reconsider_when": "The package adopts a separate form parser, removes query support, or standardizes a versioned cookie profile with CSRF semantics."
+      "reconsider_when": "The package adopts a separate form parser or standardizes a versioned cookie profile with CSRF semantics."
     },
     {
       "id": "AUTH-DEC-005",
@@ -202,15 +202,15 @@
         "Use one Authorization scheme; accept one secret header; infer an identifier from the secret; or require caller-named identifier and secret fields under an explicit location."
       ],
       "peer_behavior": "APIs use proprietary headers, query parameters, cookies, and Authorization schemes with incompatible semantics. OpenAPI descriptions model locations but do not define authentication behavior.",
-      "selected_behavior": "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header, query, or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred.",
+      "selected_behavior": "The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred.",
       "rationale": "The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.",
-      "security_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Query and cookie risks remain caller-owned as documented for bearer transport.",
-      "resource_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Query and cookie risks remain caller-owned as documented for bearer transport.",
+      "security_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Cookie risks remain caller-owned as documented for bearer transport; query transport is unsupported.",
+      "resource_consequences": "IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Cookie risks remain caller-owned as documented for bearer transport; query transport is unsupported.",
       "compatibility_consequences": "Integrations can map their existing two-field contract without global names. One-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile.",
       "wire_consequences": "Integrations can map their existing two-field contract without global names. One-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile.",
       "executable_evidence": [
         "TestAPIKeySourcesMustBeExplicitAndRejectDuplicates",
-        "TestAPIKeySourcesRejectMalformedQueriesAndBoundedValues",
+        "TestAPIKeySourcesRejectMalformedAndBoundedValues",
         "TestStaticAuthenticatesKeyByDeterministicID",
         "TestStaticRotationAtomicallyReplacesActiveKeys",
         "TestStaticRejectsDuplicateKeyConfiguration"
@@ -221,7 +221,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.APIKeyHeader`, `authhttp.APIKeyQuery`, `authhttp.APIKeyCookie`, `authentication.APIKeyCredential`, `apikey.New`, and `apikey.NewStatic`"
+        "`authenticationhttp.APIKeyHeader`, `authenticationhttp.APIKeyCookie`, `authentication.APIKeyCredential`, `apikey.New`, and `apikey.NewStatic`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -246,7 +246,7 @@
         "First source wins; last value wins; prefer Authorization over query or cookie; merge partial API keys; or reject every competing credential while separating proxy authentication."
       ],
       "peer_behavior": "Frameworks often expose only one parsed value or apply undocumented source precedence. Proxies and origin servers have distinct authentication contexts.",
-      "selected_behavior": "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated query or cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources.",
+      "selected_behavior": "Extraction succeeds only when exactly one complete credential exists across all enabled origin sources. Duplicate Authorization fields, repeated cookie values, repeated API-key components, partial pairs, and multiple populated sources fail closed. Source declaration order does not select a winner. `Proxy-Authorization` is ignored by origin credential sources.",
       "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
       "security_consequences": "Rejecting ambiguity prevents request smuggling between components with different precedence. Proxy credentials cannot accidentally authenticate to the origin application. All source counts are bounded by request parsing and configured source count.",
       "resource_consequences": "Rejecting ambiguity prevents request smuggling between components with different precedence. Proxy credentials cannot accidentally authenticate to the origin application. All source counts are bounded by request parsing and configured source count.",
@@ -263,7 +263,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.Extractor`, every built-in `Source`, `ErrAmbiguousCredentials`, and `ErrCredentialsInvalid`"
+        "`authenticationhttp.Extractor`, every built-in `Source`, `ErrAmbiguousCredentials`, and `ErrCredentialsInvalid`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -306,7 +306,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authentication.NewChallenge`, `authhttp.FormatChallenge`, `authhttp.WithChallenges`, `authhttp.NewMiddleware`, and HTTP status/header behavior"
+        "`authentication.NewChallenge`, `authenticationhttp.FormatChallenge`, `authenticationhttp.WithChallenges`, `authenticationhttp.NewMiddleware`, and HTTP status/header behavior"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -350,7 +350,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`FailureKind`, exported sentinel errors, `authhttp.WithOptionalAnonymous`, `authhttp.NewMiddleware`, and HTTP response behavior"
+        "`FailureKind`, exported sentinel errors, `authenticationhttp.WithOptionalAnonymous`, `authenticationhttp.NewMiddleware`, and HTTP response behavior"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -463,22 +463,22 @@
         "Prioritize one populated source; accept several matching values; or reject every request that transmits a bearer token through more than one configured method."
       ],
       "peer_behavior": "Some middleware applies implicit source precedence, but RFC 6750 does not permit multiple transmission methods in one request.",
-      "selected_behavior": "A request must not transmit a bearer token through both the Authorization header and the RFC 6750 `access_token` query method. When both are populated, extraction rejects the request as ambiguous even when their values match.",
+      "selected_behavior": "A request must not transmit a bearer token through more than one configured method. When the Authorization header and a configured bearer cookie are both populated, extraction rejects the request as ambiguous even when their values match. The RFC 6750 query method is not accepted.",
       "rationale": "This preserves RFC 6750 Section 2's explicit prohibition without conflating it with the package's separate source-selection policy.",
       "security_consequences": "Rejecting competing sources prevents parser and intermediary precedence differences from selecting different credentials.",
       "resource_consequences": "All configured sources are inspected within the existing bounded source and request limits.",
-      "compatibility_consequences": "Clients must use one RFC 6750 bearer-token method per request. Cookie and custom-named sources remain explicit package extensions governed by AUTH-DEC-004.",
-      "wire_consequences": "Requests carrying bearer credentials in both the Authorization header and `access_token` query parameter are rejected instead of receiving source-order precedence.",
+      "compatibility_consequences": "Clients must use one bearer-token method per request; query transmission is unsupported under AUTH-DEC-004. Cookie sources remain explicit package extensions governed by AUTH-DEC-004.",
+      "wire_consequences": "Requests carrying bearer credentials in both the Authorization header and a configured cookie are rejected instead of receiving source-order precedence.",
       "executable_evidence": [
         "TestBearerSourcesRejectMultipleTransmissionMethods"
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
-        "FuzzBearerQueryExtraction"
+        "FuzzAuthorizationExtraction"
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.Extractor`, `authhttp.BearerAuthorization`, and `authhttp.BearerQuery(\"access_token\")`"
+        "`authenticationhttp.Extractor`, `authenticationhttp.BearerAuthorization`, and `authenticationhttp.BearerCookie`"
       ],
       "documentation": [
         "docs/specification-decisions.md"
@@ -520,7 +520,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`authhttp.WithChallenges`, `authhttp.NewMiddleware`, and HTTP status/header behavior"
+        "`authenticationhttp.WithChallenges`, `authenticationhttp.NewMiddleware`, and HTTP status/header behavior"
       ],
       "documentation": [
         "docs/specification-decisions.md"

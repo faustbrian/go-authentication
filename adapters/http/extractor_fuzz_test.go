@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authhttp "github.com/faustbrian/go-authentication/v2/adapters/http"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authhttp "github.com/faustbrian/go-authentication/v3/adapters/http"
 )
 
 // FuzzAuthorizationExtraction bounds raw header input and checks failure classification, not
@@ -113,25 +113,6 @@ func FuzzChallengeFormatting(f *testing.F) {
 		}
 		if strings.ContainsAny(formatted, "\r\n\x00") {
 			t.Fatal("formatted challenge contains a field-breaking control")
-		}
-	})
-}
-
-// FuzzBearerQueryExtraction exercises malformed/duplicate bounded query strings through
-// classified refusals; it is not a total-request parsing resource oracle.
-func FuzzBearerQueryExtraction(f *testing.F) {
-	f.Add("access_token=token")
-	f.Add("access_token=one&access_token=two")
-	f.Add("%")
-	extractor := mustFuzzExtractor(f, authhttp.BearerQuery("access_token"))
-	f.Fuzz(func(t *testing.T, rawQuery string) {
-		if len(rawQuery) > 64*1024 {
-			t.Skip()
-		}
-		request := &http.Request{Header: make(http.Header), URL: &url.URL{RawQuery: rawQuery}}
-		_, err := extractor.Extract(request)
-		if err != nil && !classifiedFuzzError(err) {
-			t.Fatalf("unclassified error: %v", err)
 		}
 	})
 }

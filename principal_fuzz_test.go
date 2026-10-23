@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 // FuzzPrincipalClaims exercises bounded JSON-derived claim graphs through admission and copy;

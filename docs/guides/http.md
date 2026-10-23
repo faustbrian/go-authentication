@@ -13,15 +13,13 @@ API-key constructors. The extractor never reads the request body.
 
 Bearer sources enforce RFC 6750 `b64token` syntax by default. Pass
 `WithBearerPipe` only when an existing opaque-token contract requires a pipe
-delimiter. The option applies consistently to header, query, and cookie bearer
+delimiter. The option applies consistently to header and cookie bearer
 sources.
 
-`BearerQuery` and `APIKeyQuery` are deprecated for new designs. Query secrets
-can be copied into browser history, referrers, reverse-proxy logs, and access
-logs before this package receives the request. If a legacy protocol forces
-their use, require TLS, suppress query logging end to end, use short-lived
-credentials, and apply `Cache-Control: no-store` to requests and `private` to
-successful responses as required by RFC 6750. Prefer headers.
+Root v3 has no query-string credential sources. Query secrets can be copied
+into browser history, referrers, reverse-proxy logs, and access logs before
+this package receives the request, so send credentials in headers or
+explicitly named cookies.
 
 `NewMiddleware` authenticates, stores the principal under a private context
 key, and passes the original `http.ResponseWriter`, preserving optional

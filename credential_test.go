@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 func TestCredentialsExposeKindWithoutFormattingSecrets(t *testing.T) {

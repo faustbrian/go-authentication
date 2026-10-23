@@ -27,24 +27,6 @@
     },
     {
       "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "82f46226379c6225e2389eaf332a85a6ee965f574a75b7017e49190b7fd100be",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "gremlins_version": "v0.6.0",
-      "module": ".",
-      "package": "authhttp",
-      "report_sha256": "1c9ec023bb632e8b9c4d0cdaac14f761910f820090f3b00b66c1b8181a618062"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "523f4f79596c8e81fbb50f715a866c339e6a0948467648a966e435cf8fb51d80",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "gremlins_version": "v0.6.0",
-      "module": ".",
-      "package": "authlog",
-      "report_sha256": "9eb6b435eb6b383e53f1cef13a9fcfcdc4998b7351dcea0e44ac93b6b0f60976"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
       "gate_input_digest": "f2c2d95e915951314c755fa80842277ca76301c4147328942a47629ab2800c52",
       "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
       "gremlins_version": "v0.6.0",
@@ -60,15 +42,6 @@
       "module": ".",
       "package": "bearer",
       "report_sha256": "415abf8445769c0b75a739530806f8fcc3e4a58362731275a2b97af07fbded41"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "33ac74963d1030acf484f9a642b3fd4cf2bf699670bfcae87a8f858b8f4dea3b",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "gremlins_version": "v0.6.0",
-      "module": "authotel",
-      "package": ".",
-      "report_sha256": "26414798207c62574397b3acd58a8d2820cfc7a11ec0ceb9c94c9d10dd14d148"
     },
     {
       "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
@@ -118,32 +91,6 @@
     },
     {
       "execution_revision": "58bba5aa0a13c2378d509cfd138d71b7c3769032",
-      "gate_input_digest": "f13b01b96c203328af031fb3d654f7eede10dfa8e0f85010bd105cba92ea90b6",
-      "gremlins_version": "v0.6.0",
-      "module": ".",
-      "package": "authhttp",
-      "report_sha256": "0dcfffd5c96be999953fbff01d914e12d7111d3c0952bcb34e5ce0cb306aaf99"
-    },
-    {
-      "execution_revision": "58bba5aa0a13c2378d509cfd138d71b7c3769032",
-      "gate_input_digest": "1f955f213fd1fcd29f47793b51cb38025c873b7b542392af883d32e5c2e6010e",
-      "gremlins_version": "v0.6.0",
-      "module": ".",
-      "package": "authlog",
-      "report_sha256": "02563557bd031f1e9092ea01afb9455bad13cdedf6abb19b485c15e34c72b9d9"
-    },
-    {
-      "execution_revision": "8c0f56f9b0feab3df43f326f665284ecf3a8bf8f",
-      "gate_input_digest": "0c6a64e78d548544f6de3d8b8648fb72693d86d2f7f7f6e0af6395e9bb67cadd",
-      "gremlins_version": "v0.6.0",
-      "migration_reason": "gate-input-identity-migration",
-      "module": ".",
-      "package": "authlog",
-      "replacement_gate_input_digest": "d097be515f2570601fc5dfc38c9cc2acdaae8db07a54c9d8e573bc5dee3306d9",
-      "report_sha256": "70dbd6dd6164472034c4ed8e3100dbe0a884c992c3caae87a46db13db62c9c3f"
-    },
-    {
-      "execution_revision": "58bba5aa0a13c2378d509cfd138d71b7c3769032",
       "gate_input_digest": "815038baf4bdfb562b59831682d33097a02abdfd2911b97f49e92a6e84b23687",
       "gremlins_version": "v0.6.0",
       "module": ".",
@@ -177,24 +124,6 @@
       "package": "bearer",
       "replacement_gate_input_digest": "93f0832aa18925c849b5d1acb923e6817b503a3666eda08387edf3bfa5532826",
       "report_sha256": "18ace254fa463e015fa5926d28feefd54fd96a3c679546982ef33a969ec76bae"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "5e001e2469d2531c29b93c09ddb6ac6a532778bf7d7ba8a7a80114273ec71a4a",
-      "gremlins_version": "v0.6.0",
-      "migration_reason": "owned-module-version-locator-canonicalization",
-      "module": "authotel",
-      "package": ".",
-      "replacement_gate_input_digest": "33ac74963d1030acf484f9a642b3fd4cf2bf699670bfcae87a8f858b8f4dea3b",
-      "report_sha256": "26414798207c62574397b3acd58a8d2820cfc7a11ec0ceb9c94c9d10dd14d148"
-    },
-    {
-      "execution_revision": "ec8589307cac453899e2b7057e887895d3b3a107",
-      "gate_input_digest": "40e30e7d5ef4b4f5684309f33f6e50838fd1cb9f72e195ad1bb425a2a1ff8d99",
-      "gremlins_version": "v0.6.0",
-      "module": "authotel",
-      "package": ".",
-      "report_sha256": "7cd7394004c415422631746987c1ba50f562d916dc27b5745e5db6fe014a6334"
     },
     {
       "execution_revision": "58bba5aa0a13c2378d509cfd138d71b7c3769032",
@@ -256,28 +185,6 @@
     },
     {
       "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "82f46226379c6225e2389eaf332a85a6ee965f574a75b7017e49190b7fd100be",
-      "replacement_gate_input_digest": "47a9308583582686fffcd300308051513cfbe5aaca06ee0b3b4c9cf9045ac3bc",
-      "migration_reason": "Shared tooling relocation changes only verifier input identity; package production and test content is unchanged.",
-      "gremlins_version": "v0.6.0",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "module": ".",
-      "package": "authhttp",
-      "report_sha256": "1c9ec023bb632e8b9c4d0cdaac14f761910f820090f3b00b66c1b8181a618062"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "523f4f79596c8e81fbb50f715a866c339e6a0948467648a966e435cf8fb51d80",
-      "replacement_gate_input_digest": "0a6c5cfe2ab5a0701a1f5692b816a49c20c3d024f5e0d1d2630bfae6dc40d5e8",
-      "migration_reason": "Shared tooling relocation changes only verifier input identity; package production and test content is unchanged.",
-      "gremlins_version": "v0.6.0",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "module": ".",
-      "package": "authlog",
-      "report_sha256": "9eb6b435eb6b383e53f1cef13a9fcfcdc4998b7351dcea0e44ac93b6b0f60976"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
       "gate_input_digest": "f2c2d95e915951314c755fa80842277ca76301c4147328942a47629ab2800c52",
       "replacement_gate_input_digest": "c9279968ae31384cbeae79496743e57a40bcd5245bd3f5351f32f62a16339df5",
       "migration_reason": "Shared tooling relocation changes only verifier input identity; package production and test content is unchanged.",
@@ -297,17 +204,6 @@
       "module": ".",
       "package": "bearer",
       "report_sha256": "415abf8445769c0b75a739530806f8fcc3e4a58362731275a2b97af07fbded41"
-    },
-    {
-      "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",
-      "gate_input_digest": "33ac74963d1030acf484f9a642b3fd4cf2bf699670bfcae87a8f858b8f4dea3b",
-      "replacement_gate_input_digest": "1883d77f1f729456ee9c9b25ba53606d0785a010b70c3f6e55eb8689dfa0729c",
-      "migration_reason": "Shared tooling relocation changes only verifier input identity; package production and test content is unchanged.",
-      "gremlins_version": "v0.6.0",
-      "gremlins_verifier_sha256": "9a9499ff68a8dfd49a0be7995590297a8ee563a1aa226bfd8b9361dc53058108",
-      "module": "authotel",
-      "package": ".",
-      "report_sha256": "26414798207c62574397b3acd58a8d2820cfc7a11ec0ceb9c94c9d10dd14d148"
     },
     {
       "execution_revision": "c09c5268b1facb88317f933913b2e7cf4377948b",

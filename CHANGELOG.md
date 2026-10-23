@@ -3,7 +3,27 @@
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/) and
 this project follows Semantic Versioning.
 
-## Unreleased
+## 3.0.0 - 2026-10-23
+
+### Removed
+
+- Remove the deprecated `authhttp` and `authlog` facades; import
+  `adapters/http` and `adapters/slog`. Remove the Start-named `Instrumenter`,
+  `NewInstrumented`, the `Clock` alias and the adapters' `Start` methods; use
+  `BeginInstrumenter`, `NewInstrumentedWithBegin` and `clock.Clock`. Stop
+  maintaining the deprecated `authotel` module in favour of `adapters/otel`.
+- Remove the `BearerQuery` and `APIKeyQuery` sources. Credentials are read
+  only from headers or explicitly named cookies, and AUTH-DEC-001 to
+  AUTH-DEC-008, AUTH-DEC-011 and AUTH-DEC-012 now name `authenticationhttp`
+  APIs and no query transport.
+- The removals precede the announced support window; published v2 releases
+  keep them and no further v2 releases are planned.
+
+### Changed
+
+- Move the root module to `github.com/faustbrian/go-authentication/v3`.
+
+## Unreleased notes shipped by 2.1.0
 
 ### Documentation
 

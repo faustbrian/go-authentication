@@ -3,7 +3,6 @@ go 1.27.3
 use (
 	.
 	./adapters/otel
-	./authotel
 	./jwt
 	./oidc
 )

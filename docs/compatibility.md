@@ -11,11 +11,10 @@ The supported floor is Go 1.27.0. The repository contains independent modules:
 | root | Standard library and the explicit go-clock v1 contract |
 | `/jwt` | JWX v3 and its owned HTTP resource cache |
 | `/oidc` | coreos/go-oidc v3 and go-jose v4 |
-| `/adapters/otel` | Preferred OpenTelemetry API adapter; SDK only in tests |
-| `/authotel` | Deprecated compatible path retaining its original telemetry scope |
+| `/adapters/otel` | OpenTelemetry API adapter; SDK only in tests |
 
 The public module floor remains Go 1.27.0; development and CI use patched
-Go 1.27.2. Each optional module resolves its declared dependency graph
+Go 1.27.3. Each optional module resolves its declared dependency graph
 independently of the root module. Applications must be rebuilt with a
 patched compiler to receive standard-library security fixes.
 
@@ -30,15 +29,17 @@ user-visible change even if Go signatures remain compatible.
 API baselines are maintained separately for the root and each optional module.
 Generated interfaces from dependencies are not part of this project’s API.
 
-The published root v2 release uses the `/v2` module/import suffix for its
-narrower Principal and static-credential admission contract. Root v1 remains
+Root v3 uses the `/v3` module/import suffix and removes the deprecated
+facades and legacy instrumentation contract. The published root v2 release
+used the `/v2` suffix for its narrower Principal and static-credential
+admission contract. Root v1 remains
 published separately; optional modules retain their existing v1 nominal APIs
 until their own major migration. The historical root API baseline is retained
 alongside the separately generated v2 baseline.
 
-The root `Instrumenter.Start` interface remains unchanged so existing
-implementers compile. New integrations implement `BeginInstrumenter.Begin` and
-use `NewInstrumentedWithBegin`. JWT `Remote.Close(ctx)` remains available and
+Root v3 removed the Start-named `Instrumenter`, `NewInstrumented` and
+`Clock`; implement `BeginInstrumenter.Begin`, use `NewInstrumentedWithBegin`
+and pass a `clock.Clock`. JWT `Remote.Close(ctx)` remains available and
 delegates to the preferred `Remote.Shutdown(ctx)` lifecycle name.
 
 Deprecated paths remain supported for the longer of 180 days and two

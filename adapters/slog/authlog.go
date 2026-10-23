@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 )
 
 // Instrumenter emits one bounded structured log record per attempt.
@@ -92,17 +92,4 @@ func boundedFailureKind(kind authentication.FailureKind) authentication.FailureK
 	}
 }
 
-// Start implements the legacy authentication.Instrumenter contract.
-//
-// Deprecated: use Begin. It matches the preferred observation vocabulary.
-// Migrate callers by replacing Start with Begin. Start remains supported
-// throughout v1; its earliest removal is v2.0.0.
-func (i *Instrumenter) Start(
-	ctx context.Context,
-	kind authentication.CredentialKind,
-) (context.Context, func(authentication.Event)) {
-	return i.Begin(ctx, kind)
-}
-
-var _ authentication.Instrumenter = (*Instrumenter)(nil)
 var _ authentication.BeginInstrumenter = (*Instrumenter)(nil)

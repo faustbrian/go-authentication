@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authlog "github.com/faustbrian/go-authentication/v2/adapters/slog"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authlog "github.com/faustbrian/go-authentication/v3/adapters/slog"
 )
 
 func TestInstrumenterLogsOnlyBoundedMetadata(t *testing.T) {
@@ -59,10 +59,10 @@ func TestLegacyStartDelegatesToBegin(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
-	_, finish := instrumenter.Start(context.Background(), authentication.CredentialBasic)
+	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBasic)
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 	if !strings.Contains(output.String(), `"credential_kind":"basic"`) {
-		t.Fatalf("Start() output = %q", output.String())
+		t.Fatalf("Begin() output = %q", output.String())
 	}
 }
 

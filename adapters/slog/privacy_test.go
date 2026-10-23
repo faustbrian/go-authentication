@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
-	authlog "github.com/faustbrian/go-authentication/v2/adapters/slog"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	authlog "github.com/faustbrian/go-authentication/v3/adapters/slog"
 )
 
 func TestCategoricalPrivacy(t *testing.T) {
@@ -31,30 +31,25 @@ func TestCategoricalPrivacy(t *testing.T) {
 		{"unavailable", authentication.CredentialAPIKey, authentication.OutcomeFailed, authentication.FailureUnavailable, [3]string{"api_key", "failed", "unavailable"}},
 		{"ambiguous", authentication.CredentialBasic, authentication.OutcomeFailed, authentication.FailureAmbiguous, [3]string{"basic", "failed", "ambiguous"}},
 	}
-	for _, method := range []string{"Begin", "Start"} {
-		for _, test := range tests {
-			t.Run(method+"/"+test.name, func(t *testing.T) {
-				var output bytes.Buffer
-				instrumenter, err := authlog.New(slog.New(slog.NewJSONHandler(&output, nil)))
-				if err != nil {
-					t.Fatal("constructing instrumenter failed")
-				}
-				begin := instrumenter.Begin
-				if method == "Start" {
-					begin = instrumenter.Start
-				}
-				ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-				next, finish := begin(ctx, test.kind)
-				if next != ctx {
-					t.Fatal("observation changed the caller context")
-				}
-				if output.Len() != 0 {
-					t.Fatal("observation logged before completion")
-				}
-				finish(authentication.Event{Outcome: test.outcome, Failure: test.failure, Duration: 25 * time.Millisecond})
-				assertRecord(t, &output, test.want, 25)
-			})
-		}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var output bytes.Buffer
+			instrumenter, err := authlog.New(slog.New(slog.NewJSONHandler(&output, nil)))
+			if err != nil {
+				t.Fatal("constructing instrumenter failed")
+			}
+			begin := instrumenter.Begin
+			ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
+			next, finish := begin(ctx, test.kind)
+			if next != ctx {
+				t.Fatal("observation changed the caller context")
+			}
+			if output.Len() != 0 {
+				t.Fatal("observation logged before completion")
+			}
+			finish(authentication.Event{Outcome: test.outcome, Failure: test.failure, Duration: 25 * time.Millisecond})
+			assertRecord(t, &output, test.want, 25)
+		})
 	}
 }
 
@@ -79,41 +74,33 @@ func TestCategoricalPrivacyPreservesAuthentication(t *testing.T) {
 		{"anonymous", authentication.AnonymousResult(), nil, "anonymous", ""},
 		{"failed", authentication.Result{}, failure, "failed", "unknown"},
 	}
-	for _, constructor := range []string{"Begin", "Start"} {
-		for _, test := range tests {
-			t.Run(constructor+"/"+test.name, func(t *testing.T) {
-				var output bytes.Buffer
-				instrumenter, err := authlog.New(slog.New(slog.NewJSONHandler(&output, nil)))
-				if err != nil {
-					t.Fatal("constructing instrumenter failed")
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var output bytes.Buffer
+			instrumenter, err := authlog.New(slog.New(slog.NewJSONHandler(&output, nil)))
+			if err != nil {
+				t.Fatal("constructing instrumenter failed")
+			}
+			ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
+			credential := &ordinaryCredential{}
+			var calls int
+			base := privacyAuthenticatorFunc(func(gotCtx context.Context, gotCredential authentication.Credential) (authentication.Result, error) {
+				calls++
+				if gotCtx != ctx || gotCredential != credential || gotCredential.Kind() != "ordinary-kind" {
+					t.Fatal("logging changed authentication inputs")
 				}
-				ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-				credential := &ordinaryCredential{}
-				var calls int
-				base := privacyAuthenticatorFunc(func(gotCtx context.Context, gotCredential authentication.Credential) (authentication.Result, error) {
-					calls++
-					if gotCtx != ctx || gotCredential != credential || gotCredential.Kind() != "ordinary-kind" {
-						t.Fatal("logging changed authentication inputs")
-					}
-					return test.result, test.err
-				})
-				var wrapped *authentication.Instrumented
-				if constructor == "Begin" {
-					wrapped, err = authentication.NewInstrumentedWithBegin(base, instrumenter, privacyClock{})
-				} else {
-					//lint:ignore SA1019 The supported legacy constructor remains regression-covered.
-					wrapped, err = authentication.NewInstrumented(base, instrumenter, privacyClock{}) //nolint:staticcheck // SA1019: supported legacy constructor coverage.
-				}
-				if err != nil {
-					t.Fatal("constructing decorated authenticator failed")
-				}
-				got, gotErr := wrapped.Authenticate(ctx, credential)
-				if calls != 1 || !reflect.DeepEqual(got, test.result) || gotErr != test.err {
-					t.Fatal("logging changed authentication result or error")
-				}
-				assertRecord(t, &output, [3]string{"unknown", test.outcome, test.failure}, 0)
+				return test.result, test.err
 			})
-		}
+			wrapped, err := authentication.NewInstrumentedWithBegin(base, instrumenter, privacyClock{})
+			if err != nil {
+				t.Fatal("constructing decorated authenticator failed")
+			}
+			got, gotErr := wrapped.Authenticate(ctx, credential)
+			if calls != 1 || !reflect.DeepEqual(got, test.result) || gotErr != test.err {
+				t.Fatal("logging changed authentication result or error")
+			}
+			assertRecord(t, &output, [3]string{"unknown", test.outcome, test.failure}, 0)
+		})
 	}
 }
 

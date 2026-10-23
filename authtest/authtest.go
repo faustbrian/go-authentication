@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"github.com/faustbrian/go-clock/manual"
 )
 

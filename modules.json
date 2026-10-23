@@ -5,14 +5,14 @@
   "modules": [
     {
       "directory": ".",
-      "module_path": "github.com/faustbrian/go-authentication/v2",
+      "module_path": "github.com/faustbrian/go-authentication/v3",
       "go_version": "1.27.0",
       "packages": [
         {
           "module_directory": ".",
           "directory": ".",
           "name": "authentication",
-          "import_path": "github.com/faustbrian/go-authentication/v2",
+          "import_path": "github.com/faustbrian/go-authentication/v3",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -24,7 +24,7 @@
           "module_directory": ".",
           "directory": "apikey",
           "name": "apikey",
-          "import_path": "github.com/faustbrian/go-authentication/v2/apikey",
+          "import_path": "github.com/faustbrian/go-authentication/v3/apikey",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -36,7 +36,7 @@
           "module_directory": ".",
           "directory": "adapters/http",
           "name": "authenticationhttp",
-          "import_path": "github.com/faustbrian/go-authentication/v2/adapters/http",
+          "import_path": "github.com/faustbrian/go-authentication/v3/adapters/http",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -48,31 +48,7 @@
           "module_directory": ".",
           "directory": "adapters/slog",
           "name": "authenticationslog",
-          "import_path": "github.com/faustbrian/go-authentication/v2/adapters/slog",
-          "kind": "public",
-          "production": true,
-          "executable": true,
-          "coverage_required": true,
-          "build_required": true,
-          "build_tags": []
-        },
-        {
-          "module_directory": ".",
-          "directory": "authhttp",
-          "name": "authhttp",
-          "import_path": "github.com/faustbrian/go-authentication/v2/authhttp",
-          "kind": "public",
-          "production": true,
-          "executable": true,
-          "coverage_required": true,
-          "build_required": true,
-          "build_tags": []
-        },
-        {
-          "module_directory": ".",
-          "directory": "authlog",
-          "name": "authlog",
-          "import_path": "github.com/faustbrian/go-authentication/v2/authlog",
+          "import_path": "github.com/faustbrian/go-authentication/v3/adapters/slog",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -84,7 +60,7 @@
           "module_directory": ".",
           "directory": "authtest",
           "name": "authtest",
-          "import_path": "github.com/faustbrian/go-authentication/v2/authtest",
+          "import_path": "github.com/faustbrian/go-authentication/v3/authtest",
           "kind": "test support",
           "production": false,
           "executable": true,
@@ -96,7 +72,7 @@
           "module_directory": ".",
           "directory": "basic",
           "name": "basic",
-          "import_path": "github.com/faustbrian/go-authentication/v2/basic",
+          "import_path": "github.com/faustbrian/go-authentication/v3/basic",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -108,7 +84,7 @@
           "module_directory": ".",
           "directory": "bearer",
           "name": "bearer",
-          "import_path": "github.com/faustbrian/go-authentication/v2/bearer",
+          "import_path": "github.com/faustbrian/go-authentication/v3/bearer",
           "kind": "public",
           "production": true,
           "executable": true,
@@ -141,18 +117,16 @@
         ],
         "public_package_identifier": "authentication",
         "primary_entry_packages": [
-          "github.com/faustbrian/go-authentication/v2"
+          "github.com/faustbrian/go-authentication/v3"
         ],
         "package_selection": {
-          "github.com/faustbrian/go-authentication/v2": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
-          "github.com/faustbrian/go-authentication/v2/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
-          "github.com/faustbrian/go-authentication/v2/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
-          "github.com/faustbrian/go-authentication/v2/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
-          "github.com/faustbrian/go-authentication/v2/authhttp": "Deprecated compatibility path for adapters/http.",
-          "github.com/faustbrian/go-authentication/v2/authlog": "Deprecated compatibility path for adapters/slog.",
-          "github.com/faustbrian/go-authentication/v2/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
-          "github.com/faustbrian/go-authentication/v2/basic": "Use for constant-work static Basic authentication.",
-          "github.com/faustbrian/go-authentication/v2/bearer": "Use for opaque bearer-token validators and bounded static token sets."
+          "github.com/faustbrian/go-authentication/v3": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
+          "github.com/faustbrian/go-authentication/v3/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
+          "github.com/faustbrian/go-authentication/v3/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
+          "github.com/faustbrian/go-authentication/v3/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
+          "github.com/faustbrian/go-authentication/v3/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
+          "github.com/faustbrian/go-authentication/v3/basic": "Use for constant-work static Basic authentication.",
+          "github.com/faustbrian/go-authentication/v3/bearer": "Use for opaque bearer-token validators and bounded static token sets."
         },
         "lifecycle_status": "active",
         "maturity": "stable",
@@ -175,11 +149,8 @@
         "optional_owned_dependencies": [],
         "adapters": [
           "github.com/faustbrian/go-authentication/adapters/otel",
-          "github.com/faustbrian/go-authentication/authotel",
-          "github.com/faustbrian/go-authentication/v2/adapters/http",
-          "github.com/faustbrian/go-authentication/v2/adapters/slog",
-          "github.com/faustbrian/go-authentication/v2/authhttp",
-          "github.com/faustbrian/go-authentication/v2/authlog"
+          "github.com/faustbrian/go-authentication/v3/adapters/http",
+          "github.com/faustbrian/go-authentication/v3/adapters/slog"
         ],
         "companions": [
           "github.com/faustbrian/go-authentication/jwt",
@@ -209,7 +180,7 @@
           "examples": "example_test.go",
           "faq": "docs/faq.md",
           "changelog": "CHANGELOG.md",
-          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/v2",
+          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/v3",
           "ecosystem_index": "https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem"
         },
         "known_good_compatibility_sets": [],
@@ -219,14 +190,13 @@
           "release": "not-started"
         }
       },
-      "version": "2.1.0",
+      "version": "3.0.0",
       "tag_prefix": "v",
       "owned_dependencies": [
         "github.com/faustbrian/go-clock"
       ],
       "reverse_owned_dependencies": [
         "github.com/faustbrian/go-authentication/adapters/otel",
-        "github.com/faustbrian/go-authentication/authotel",
         "github.com/faustbrian/go-authentication/jwt",
         "github.com/faustbrian/go-authentication/oidc",
         "github.com/faustbrian/go-authorization/integration/contracts",
@@ -375,142 +345,6 @@
       "external_runtime_dependencies": [
         "go.opentelemetry.io/otel",
         "go.opentelemetry.io/otel/metric",
-        "go.opentelemetry.io/otel/trace"
-      ],
-      "required_services": [],
-      "build_tags": [],
-      "test_tags": [],
-      "interoperability_tools": [],
-      "specifications": [],
-      "conformance_corpora": [],
-      "provenance": [],
-      "goal_files": [],
-      "goal_status": "not-applicable",
-      "goal_evidence": [],
-      "gates": {
-        "api_compatibility": true,
-        "benchmarks": true,
-        "conformance": false,
-        "coverage": true,
-        "documentation": true,
-        "fuzz": true,
-        "lint": true,
-        "mutation": true,
-        "race": true,
-        "security": true,
-        "tests": true
-      }
-    },
-    {
-      "directory": "authotel",
-      "module_path": "github.com/faustbrian/go-authentication/authotel",
-      "go_version": "1.27.0",
-      "packages": [
-        {
-          "module_directory": "authotel",
-          "directory": ".",
-          "name": "authotel",
-          "import_path": "github.com/faustbrian/go-authentication/authotel",
-          "kind": "public",
-          "production": true,
-          "executable": true,
-          "coverage_required": true,
-          "build_required": true,
-          "build_tags": []
-        }
-      ],
-      "purpose": "`authotel` preserves the released OpenTelemetry adapter import path and telemetry scope during migration to `adapters/otel`.",
-      "lifecycle": "deprecated",
-      "kind": "public library",
-      "releasable": true,
-      "family": "service-edge",
-      "family_label": "Service Edge",
-      "family_description": "Request-edge policy, identity, access decisions, routing, middleware, and process lifecycle.",
-      "family_order": 2,
-      "cohesion": {
-        "family": "service-edge",
-        "secondary_capabilities": [
-          "identity-and-access",
-          "observability"
-        ],
-        "responsibility": "Adapt bounded authentication observations to OpenTelemetry traces and metrics.",
-        "non_goals": [
-          "Authenticate credentials or make authorization decisions.",
-          "Configure OpenTelemetry SDKs, exporters, providers, or global state."
-        ],
-        "public_package_identifier": "authotel",
-        "primary_entry_packages": [
-          "github.com/faustbrian/go-authentication/authotel"
-        ],
-        "package_selection": {
-          "github.com/faustbrian/go-authentication/authotel": "Use only to preserve the released import path and telemetry scope during migration; new code uses adapters/otel."
-        },
-        "lifecycle_status": "deprecated",
-        "maturity": "stable",
-        "construction_styles": [
-          "new-config"
-        ],
-        "lifecycle_styles": [
-          "stateless"
-        ],
-        "ownership": {
-          "configuration": "caller",
-          "mutable_inputs": [
-            "borrow"
-          ],
-          "runtime_resources": "caller",
-          "background_work": "none"
-        },
-        "optional_owned_dependencies": [],
-        "adapters": [],
-        "companions": [
-          "github.com/faustbrian/go-authentication/adapters/otel"
-        ],
-        "supported_go": {
-          "minimum": "1.27.0",
-          "tested": [
-            "1.27.0"
-          ]
-        },
-        "supported_platforms": [
-          "portable-go"
-        ],
-        "supported_backends": [
-          "opentelemetry"
-        ],
-        "supported_protocols": [],
-        "documentation": {
-          "readme": "authotel/README.md",
-          "api": "authotel/docs/reference.md",
-          "adoption": "authotel/docs/README.md",
-          "security": "docs/security/threat-model.md",
-          "compatibility": "authotel/docs/reference.md",
-          "performance": "authotel/docs/reference.md",
-          "examples": "authotel/example_test.go",
-          "faq": "authotel/docs/reference.md",
-          "changelog": "authotel/CHANGELOG.md",
-          "pkg_go_dev": "https://pkg.go.dev/github.com/faustbrian/go-authentication/authotel",
-          "ecosystem_index": "https://github.com/faustbrian/go-library-tools/tree/531e4db50fd81a7201257a7b488a0cf22d333aca/docs/ecosystem"
-        },
-        "known_good_compatibility_sets": [],
-        "delivery": {
-          "implementation": "in-progress",
-          "hardening": "in-progress",
-          "release": "not-started"
-        }
-      },
-      "version": "1.2.0",
-      "tag_prefix": "authotel/v",
-      "owned_dependencies": [
-        "github.com/faustbrian/go-authentication",
-        "github.com/faustbrian/go-clock"
-      ],
-      "reverse_owned_dependencies": [],
-      "external_runtime_dependencies": [
-        "go.opentelemetry.io/otel",
-        "go.opentelemetry.io/otel/metric",
-        "go.opentelemetry.io/otel/sdk",
-        "go.opentelemetry.io/otel/sdk/metric",
         "go.opentelemetry.io/otel/trace"
       ],
       "required_services": [],

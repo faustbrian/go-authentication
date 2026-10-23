@@ -12,9 +12,6 @@ mutation:
   - module: "."
     archive: ".verification/mutation/bootstrap/root.zip"
     ledger: ".verification/mutation/migration-ledger.json"
-  - module: "authotel"
-    archive: ".verification/mutation/bootstrap/authotel.zip"
-    ledger: ".verification/mutation/migration-ledger.json"
   - module: "jwt"
     archive: ".verification/mutation/bootstrap/jwt.zip"
     ledger: ".verification/mutation/migration-ledger.json"
@@ -25,13 +22,10 @@ api:
   baselines:
   - module: "."
     mode: apidiff
-    path: api/root-v2.txt
+    path: api/root-v3.txt
   - module: "adapters/otel"
     mode: apidiff
     path: adapters/otel/api/baseline.txt
-  - module: "authotel"
-    mode: apidiff
-    path: api/authotel.txt
   - module: "jwt"
     mode: apidiff
     path: api/jwt.txt
@@ -78,11 +72,6 @@ operations:
     fuzz: '^FuzzChallengeFormatting$'
     budget: 10000x
     timeout: 2m
-  - type: go-test
-    packages: ["./adapters/http"]
-    fuzz: '^FuzzBearerQueryExtraction$'
-    budget: 10000x
-    timeout: 2m
 - module: "."
   gate: benchmark
   steps:
@@ -105,26 +94,6 @@ operations:
     budget: 10000x
     timeout: 2m
 - module: "adapters/otel"
-  gate: benchmark
-  steps:
-  - type: make
-    makefile: Makefile
-    target: benchmark
-    timeout: 20m
-- module: "authotel"
-  gate: fuzz
-  steps:
-  - type: go-test
-    packages: ["."]
-    fuzz: '^FuzzInstrumenterLifecycle$'
-    budget: 10000x
-    timeout: 2m
-  - type: go-test
-    packages: ["."]
-    fuzz: '^FuzzInstrumenterWithHostileProviders$'
-    budget: 10000x
-    timeout: 2m
-- module: "authotel"
   gate: benchmark
   steps:
   - type: make

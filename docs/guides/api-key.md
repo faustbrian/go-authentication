@@ -8,8 +8,8 @@ digests, compares the complete active set, and returns principals with method
 `apikey.New` adapts a database or secret-service validator.
 
 The HTTP adapter requires separate ID and secret names. Enable exactly one of
-`APIKeyHeader`, `APIKeyQuery`, or `APIKeyCookie`; headers are preferred because
-URLs are commonly retained by proxies and analytics. Treat the ID as routing
+`APIKeyHeader` or `APIKeyCookie`; headers are preferred. URL query sources are
+not supported because URLs are commonly retained by proxies and analytics. Treat the ID as routing
 metadata, not authentication by itself.
 
 For rotation, call `Static.Replace` with a complete new set. Validation builds

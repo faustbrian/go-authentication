@@ -45,52 +45,11 @@ type BeginInstrumenter interface {
 	Begin(context.Context, CredentialKind) (context.Context, func(Event))
 }
 
-// Instrumenter starts instrumentation for one authentication attempt.
-// Implementations must not derive attributes from credential contents.
-//
-// Deprecated: implement BeginInstrumenter and use NewInstrumentedWithBegin.
-// Begin aligns observation naming without adding a method to this released
-// required interface. Migrate by adding Begin with the same semantics and
-// switching constructor calls. Instrumenter remains supported throughout v1;
-// its earliest removal is v2.0.0.
-type Instrumenter interface {
-	// Start runs synchronously and may return a replacement context plus completion
-	// callback. Providers must preserve cancellation policy, bound latency and
-	// screen custom categories. Reuse requires concurrent safety. The decorator
-	// contains telemetry panics, not blocking; it invokes a returned callback once
-	// only when the wrapped authentication call returns normally.
-	Start(context.Context, CredentialKind) (context.Context, func(Event))
-}
-
-// Clock supplies time to authentication instrumentation.
-//
-// Deprecated: depend on clock.Clock in new code. This named compatibility
-// contract remains available throughout v1.
-type Clock interface {
-	clockpkg.Clock
-}
-
 // Instrumented decorates an authenticator with failure-isolated telemetry.
 type Instrumented struct {
 	authenticator Authenticator
 	instrumenter  BeginInstrumenter
-	clock         Clock
-}
-
-// NewInstrumented creates an authentication instrumentation decorator for the
-// legacy Start-named observation contract.
-//
-// Deprecated: use NewInstrumentedWithBegin. It accepts the preferred
-// Begin-named contract without expanding the released Instrumenter interface.
-// Migrate by supplying a BeginInstrumenter and changing the constructor call.
-// NewInstrumented remains supported throughout v1; its earliest removal is
-// v2.0.0.
-func NewInstrumented(authenticator Authenticator, instrumenter Instrumenter, clock Clock) (*Instrumented, error) {
-	if isNil(instrumenter) {
-		return nil, fmt.Errorf("%w: incomplete instrumentation", ErrInvalidConfiguration)
-	}
-
-	return NewInstrumentedWithBegin(authenticator, beginFromStart{instrumenter: instrumenter}, clock)
+	clock         clockpkg.Clock
 }
 
 // NewInstrumentedWithBegin creates an authentication instrumentation decorator
@@ -98,7 +57,7 @@ func NewInstrumented(authenticator Authenticator, instrumenter Instrumenter, clo
 // dependencies are refused; provider/clock state remains borrowed. No goroutine,
 // flush or provider shutdown is owned; concurrent reuse requires collaborators
 // to support it.
-func NewInstrumentedWithBegin(authenticator Authenticator, instrumenter BeginInstrumenter, clock Clock) (*Instrumented, error) {
+func NewInstrumentedWithBegin(authenticator Authenticator, instrumenter BeginInstrumenter, clock clockpkg.Clock) (*Instrumented, error) {
 	if isNil(authenticator) || isNil(instrumenter) || isNil(clock) {
 		return nil, fmt.Errorf("%w: incomplete instrumentation", ErrInvalidConfiguration)
 	}
@@ -152,12 +111,6 @@ func safeBegin(instrumenter BeginInstrumenter, ctx context.Context, kind Credent
 	return next, callback
 }
 
-type beginFromStart struct{ instrumenter Instrumenter }
-
-func (adapter beginFromStart) Begin(ctx context.Context, kind CredentialKind) (context.Context, func(Event)) {
-	return adapter.instrumenter.Start(ctx, kind)
-}
-
 func safeFinish(finish func(Event), event Event) {
 	if finish == nil {
 		return
@@ -178,7 +131,7 @@ func safeCredentialKind(credential Credential) (kind CredentialKind) {
 	return credential.Kind()
 }
 
-func safeNow(clock Clock, fallback time.Time) (now time.Time) {
+func safeNow(clock clockpkg.Clock, fallback time.Time) (now time.Time) {
 	now = fallback
 	defer func() { _ = recover() }()
 	return clock.Now()
