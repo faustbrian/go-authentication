@@ -464,6 +464,45 @@ func TestValidatorValidatesAllClaimsBeforeConsumingNonce(t *testing.T) {
 	}
 }
 
+func TestValidatorAdmitsPrincipalsUnderRootStringLimitBeforeConsumingNonce(t *testing.T) {
+	t.Parallel()
+
+	private := rsaKey(t)
+	var calls atomic.Int64
+	validator := staticValidator(t, private, authoidc.Config{
+		Issuer: "https://issuer.example.test", ClientID: "client-1",
+		Algorithms: []string{"RS256"}, Clock: authtest.NewClock(oidcNow),
+		MaxTokenBytes: 64 * 1024,
+		NonceValidator: authoidc.NonceValidatorFunc(func(context.Context, string) error {
+			calls.Add(1)
+			return nil
+		}),
+	})
+	token := func(note string) string {
+		return signIDToken(t, private, map[string]any{
+			"sub": "user", "iss": "https://issuer.example.test", "aud": "client-1",
+			"iat": oidcNow.Unix(), "exp": oidcNow.Add(time.Hour).Unix(),
+			"nonce": "single-use", "note": note,
+		})
+	}
+	principal, err := validator.ValidateBearer(context.Background(), token(strings.Repeat("x", authentication.MaxPrincipalStringBytes)))
+	if err != nil {
+		t.Fatalf("ValidateBearer(claim at root string limit) error = %v", err)
+	}
+	if got, _ := principal.Claims()["note"].(string); len(got) != authentication.MaxPrincipalStringBytes {
+		t.Fatalf("retained note claim length = %d, want %d", len(got), authentication.MaxPrincipalStringBytes)
+	}
+	if got := calls.Load(); got != 1 {
+		t.Fatalf("nonce callback calls after admitted token = %d, want 1", got)
+	}
+	if _, err := validator.ValidateBearer(context.Background(), token(strings.Repeat("x", authentication.MaxPrincipalStringBytes+1))); !errors.Is(err, authentication.ErrCredentialsRejected) {
+		t.Fatalf("ValidateBearer(claim over root string limit) error = %v, want rejected", err)
+	}
+	if got := calls.Load(); got != 1 {
+		t.Fatalf("nonce callback calls after rejected token = %d, want 1", got)
+	}
+}
+
 func TestValidatorPreservesNonceCancellationAsUnavailable(t *testing.T) {
 	t.Parallel()
 

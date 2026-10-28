@@ -6,7 +6,7 @@ This guide contains the complete behavioral and operational reference. Start
 with the [package overview](../README.md).
 
 `adapters/otel` is the preferred optional OpenTelemetry adapter for
-[`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication).
+[`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication/v3).
 It turns completed authentication attempts into bounded traces and metrics. It
 does not authenticate credentials, make authorization decisions, configure an
 SDK, or own exporters.
@@ -85,8 +85,8 @@ combination space is the documented upper bound of 112.
 Convention `1.x` preserves signal names, units, meanings, and existing
 attribute values. Additive closed values require a minor convention version and
 a changelog entry. Renames, removals, unit changes, or meaning changes require
-a new major convention version and migration guidance. The module remains
-stable at v1, so consumers should pin an exact module version independently of the
+a new major convention version and migration guidance. The module is
+stable at v2, so consumers should pin an exact module version independently of the
 telemetry convention version.
 
 ## Privacy and security

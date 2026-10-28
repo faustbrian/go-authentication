@@ -60,7 +60,7 @@ issuers, audiences, algorithms, keys, and required claims own type separation.
 | Fleet refresh | Each provider instance applies independent 10 percent bounded jitter to cache refresh timing; zero jitter can be configured explicitly. |
 | Successful rotation | The complete validated set atomically replaces the cached set. Returned sets are deep copies. |
 | Refresh outage | `Refresh` reports unavailable while the last successful cached set remains usable for known keys. |
-| Shutdown | New work remains rejected after shutdown begins, admitted operations are canceled and joined, and cache goroutines are shut down. A canceled shutdown can be retried. Deprecated `Close(ctx)` delegates to this operation. |
+| Shutdown | New work remains rejected after shutdown begins, admitted operations are canceled and joined, and cache goroutines are shut down. A canceled shutdown can be retried. |
 
 The configured URL is trusted application configuration, not token input.
 Private-address or DNS-rebinding policy belongs in a supplied `http.Client`

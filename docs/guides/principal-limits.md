@@ -91,8 +91,10 @@ release's migration notes.
 
 Root static Basic, API-key, and bearer producers use `NewPrincipal` and
 therefore its defaults. The `jwt/v2` and `oidc/v2` validators also construct
-principals through root v3 and receive these limits; their v1 lines use
-root-v1 construction and do not. Root callback producers can select smaller limits with
+principals through root v3 and receive these limits, but report an
+over-limit token as rejected credentials (`ErrCredentialsRejected`), not
+`ErrInvalidPrincipal`; their v1 lines use root-v1 construction and do not
+apply these limits. Root callback producers can select smaller limits with
 `NewPrincipalWithOptions`. The `adapters/http` middleware keeps the same
 Principal/result/context representation; they do not bypass admission or
 introduce a second Principal policy.

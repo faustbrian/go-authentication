@@ -18,6 +18,18 @@ All notable changes to this module are documented here.
 - Remove the deprecated `Clock` alias and `Remote.Close`; pass a
   `clock.Clock` and call `Remote.Shutdown`.
 
+### Documentation
+
+- Update JWT-DEC-011 for the removed `Remote.Close`; its content identity is
+  preserved below.
+- JWT-DEC-011 sha256:3ce1dffa65f91317c078b40699365b697ab81e6af24738885d5337ff06eec70e
+
+## 1.1.5 - 2026-10-22
+
+### Changed
+
+- Republish the module unchanged from the same source snapshot as root v2.1.0.
+
 ## [1.1.4] - 2026-10-13
 
 ### Fixed

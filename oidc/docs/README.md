@@ -9,7 +9,7 @@
 
 ## API reference
 
-- [Go package documentation](https://pkg.go.dev/github.com/faustbrian/go-authentication/oidc)
+- [Go package documentation](https://pkg.go.dev/github.com/faustbrian/go-authentication/oidc/v2)
 - [Assurance](hardening.md)
 - [Specification Decisions](specification-decisions.md)
 

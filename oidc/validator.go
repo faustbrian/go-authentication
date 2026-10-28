@@ -1,5 +1,5 @@
 // Package oidc provides strict OpenID Connect ID-token authentication using
-// coreos/go-oidc and go-jose with published root-v1 principals. New performs
+// coreos/go-oidc and go-jose with root v3 principals. New performs
 // bounded discovery/initial keys; NewWithKeySet borrows an explicit provider.
 // No package-started background goroutines or Close lifecycle exist. Provider
 // IO/cancellation/concurrency and deployment egress policy remain caller-owned.
@@ -105,9 +105,9 @@ type Config struct {
 	NonceValidator NonceValidator
 	// MaxTokenBytes defaults to 16 KiB and has a 1 MiB ceiling; it does not bound TokenBinding strings.
 	MaxTokenBytes int
-	// MaxClaims caps members of each inspected JSON object, default published-v1 MaxClaims (128), not all recursive values.
+	// MaxClaims caps members of each inspected JSON object, default root v3 MaxClaims (128), not all recursive values.
 	MaxClaims int
-	// MaxClaimDepth caps JSON container depth, default published-v1 MaxClaimDepth (8).
+	// MaxClaimDepth caps JSON container depth, default root v3 MaxClaimDepth (8).
 	MaxClaimDepth int
 	// ScopeClaim defaults to scope; present strings require canonical single-space separation and unique nonempty values.
 	ScopeClaim string

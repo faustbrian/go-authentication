@@ -1,5 +1,5 @@
 // Package jwt validates signed compact JWTs with pinned lestrrat-go/jwx v3
-// dependencies and published root-v1 principals. New requires explicit issuer,
+// dependencies and root v3 principals. New requires explicit issuer,
 // audience, algorithms, clock and one trusted key source; NewRemote optionally
 // owns a background JWK cache requiring Shutdown. RFC7515/7517/7519 profiles and
 // unsupported features are recorded in docs/specification-decisions.md. This
@@ -69,9 +69,9 @@ type Config struct {
 	Skew time.Duration
 	// MaxTokenBytes is a positive compact-token byte bound, default 16 KiB; it is not a provider-set serialization budget.
 	MaxTokenBytes int
-	// MaxClaims caps members of each inspected JSON object, default published-v1 MaxClaims (128), not a total recursive-node budget.
+	// MaxClaims caps members of each inspected JSON object, default root v3 MaxClaims (128), not a total recursive-node budget.
 	MaxClaims int
-	// MaxClaimDepth caps inspected JSON container depth, default published-v1 MaxClaimDepth (8).
+	// MaxClaimDepth caps inspected JSON container depth, default root v3 MaxClaimDepth (8).
 	MaxClaimDepth int
 	// MaxKeys caps accepted JWK count after copying/parsing, default 64; trusted source encoding occurs before this check.
 	MaxKeys int
@@ -165,7 +165,7 @@ func (v *Validator) Authenticate(ctx context.Context, credential authentication.
 // JSON names, configured budgets, required alg/kid and prohibited key-reference/
 // critical headers before obtaining trusted keys. NumericDates use integral
 // JSON-number syntax. It verifies mandatory claims/signature through pinned JWX
-// and constructs a published-v1 principal: AuthenticatedAt is iat, not call time.
+// and constructs a root v3 principal: AuthenticatedAt is iat, not call time.
 // Both JSON objects must end at EOF before Provider is invoked.
 // Syntax/policy/signature failures are rejected; source failures are unavailable
 // with redacted/context causes. No retry or callback preemption is imposed.

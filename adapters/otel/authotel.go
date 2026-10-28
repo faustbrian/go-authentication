@@ -1,7 +1,7 @@
 // Package authotel adapts authentication instrumentation to bounded,
 // payload-free OpenTelemetry traces and metrics. Providers and their lifecycle
 // remain caller-owned; the package does not use global providers. New consumes
-// published root v1.2.2 Event/interfaces, not local root-v2 nominal types. Call
+// root v3 Event and instrumentation interfaces. Call
 // the returned finish callback to end the span; providers must bound calls and
 // support concurrency. Panic containment does not interrupt blocking providers.
 package authotel

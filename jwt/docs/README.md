@@ -9,7 +9,7 @@
 
 ## API reference
 
-- [Go package documentation](https://pkg.go.dev/github.com/faustbrian/go-authentication/jwt)
+- [Go package documentation](https://pkg.go.dev/github.com/faustbrian/go-authentication/jwt/v2)
 - [Api](api.md)
 - [Hardening](hardening.md)
 - [Specification Decisions](specification-decisions.md)

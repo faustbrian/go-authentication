@@ -33,8 +33,8 @@ Root v3 uses the `/v3` module/import suffix and removes the deprecated
 facades and legacy instrumentation contract. The published root v2 release
 used the `/v2` suffix for its narrower Principal and static-credential
 admission contract. Root v1 and v2 remain
-published but receive no further releases; optional modules retain their
-existing nominal APIs until their own major migration. The active root
+published but receive no further releases; the `jwt/v2`, `oidc/v2` and
+`adapters/otel/v2` optional modules bind root v3. The active root
 baseline is `api/root-v3.txt`; `api/root.txt` and `api/root-v2.txt` record
 the published v1 and v2 roots.
 

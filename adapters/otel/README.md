@@ -1,7 +1,7 @@
 # authentication OpenTelemetry adapter
 
 `adapters/otel` is the preferred optional OpenTelemetry adapter for
-[`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication).
+[`authentication`](https://pkg.go.dev/github.com/faustbrian/go-authentication/v3).
 It turns completed authentication attempts into bounded traces and metrics. It
 does not authenticate credentials, make authorization decisions, configure an
 SDK, or own exporters.
@@ -66,9 +66,9 @@ additional guarantees beyond the documented module boundary.
 
 - [Documentation index](docs/README.md)
 - [Complete technical guide](docs/reference.md)
-- [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel)
+- [Go API reference](https://pkg.go.dev/github.com/faustbrian/go-authentication/adapters/otel/v2)
 - [FAQ and troubleshooting](docs/reference.md#faq-and-troubleshooting)
-- [Testing helpers](https://pkg.go.dev/github.com/faustbrian/go-authentication/authtest)
+- [Testing helpers](https://pkg.go.dev/github.com/faustbrian/go-authentication/v3/authtest)
 - [Parent package documentation](../../docs/README.md)
 
 ## Compatibility and support

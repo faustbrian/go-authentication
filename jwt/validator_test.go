@@ -441,12 +441,16 @@ func TestValidatorAdmitsPrincipalsUnderRootStringLimit(t *testing.T) {
 		}
 	}
 	atLimit := signedToken(t, signer, jwa.RS256(), claims(strings.Repeat("x", authentication.MaxPrincipalStringBytes)))
-	if _, err := validator.ValidateBearer(context.Background(), atLimit); err != nil {
+	principal, err := validator.ValidateBearer(context.Background(), atLimit)
+	if err != nil {
 		t.Fatalf("ValidateBearer(claim at root string limit) error = %v", err)
 	}
+	if got, _ := principal.Claims()["note"].(string); len(got) != authentication.MaxPrincipalStringBytes {
+		t.Fatalf("retained note claim length = %d, want %d", len(got), authentication.MaxPrincipalStringBytes)
+	}
 	overLimit := signedToken(t, signer, jwa.RS256(), claims(strings.Repeat("x", authentication.MaxPrincipalStringBytes+1)))
-	if _, err := validator.ValidateBearer(context.Background(), overLimit); !errors.Is(err, authentication.ErrCredentialsRejected) && !errors.Is(err, authentication.ErrCredentialsInvalid) {
-		t.Fatalf("ValidateBearer(claim over root string limit) error = %v, want rejected or invalid", err)
+	if _, err := validator.ValidateBearer(context.Background(), overLimit); !errors.Is(err, authentication.ErrCredentialsRejected) {
+		t.Fatalf("ValidateBearer(claim over root string limit) error = %v, want rejected", err)
 	}
 }
 
