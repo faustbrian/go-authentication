@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
@@ -134,16 +134,6 @@ func (i *Instrumenter) Begin(
 		recordDuration(recordingObservers.duration, recordingContext, max(event.Duration.Seconds(), 0), attributes)
 		endSpan(recordingSpan)
 	}
-}
-
-// Start implements the legacy authentication.Instrumenter contract.
-//
-// Deprecated: use Begin in new code.
-func (i *Instrumenter) Start(
-	ctx context.Context,
-	kind authentication.CredentialKind,
-) (context.Context, func(authentication.Event)) {
-	return i.Begin(ctx, kind)
 }
 
 func noopFinish(authentication.Event) {}

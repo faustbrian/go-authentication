@@ -23,7 +23,7 @@ outcomes are `authenticated`, `anonymous`, or `failed`; failure kinds are
 `absent`, `invalid`, `rejected`, `unavailable`, or `ambiguous`. Unrecognized
 values become `unknown`, while an empty failure remains empty, including on
 successful and anonymous attempts. `Begin` projects the credential kind before
-retaining it in the completion callback; `Start` delegates to the same boundary.
+retaining it in the completion callback.
 This changes only the log representation, not authentication inputs, results,
 errors, or contexts. Applications still own logger configuration, handler
 behavior, and any additional attributes they attach outside this adapter.

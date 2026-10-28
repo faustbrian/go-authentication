@@ -12,8 +12,8 @@ import (
 	"time"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 )
 
 func TestClaimStringsAcceptsSupportedShapesAndRejectsHostileValues(t *testing.T) {

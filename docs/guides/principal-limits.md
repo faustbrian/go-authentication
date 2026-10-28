@@ -90,9 +90,9 @@ claim data to make it fit. This behavior belongs in the coordinated major
 release's migration notes.
 
 Root static Basic, API-key, and bearer producers use `NewPrincipal` and
-therefore its defaults. Retained JWT and OIDC modules still use root-v1
-construction; they do not receive these limits until their `/v2` majors on
-root v3 are published. Root callback producers can select smaller limits with
+therefore its defaults. The `jwt/v2` and `oidc/v2` validators also construct
+principals through root v3 and receive these limits; their v1 lines use
+root-v1 construction and do not. Root callback producers can select smaller limits with
 `NewPrincipalWithOptions`. The `adapters/http` middleware keeps the same
 Principal/result/context representation; they do not bypass admission or
 introduce a second Principal policy.

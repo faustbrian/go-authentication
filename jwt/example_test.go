@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/faustbrian/go-authentication/authtest"
-	authjwt "github.com/faustbrian/go-authentication/jwt"
+	authjwt "github.com/faustbrian/go-authentication/jwt/v2"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	upstreamjwt "github.com/lestrrat-go/jwx/v3/jwt"

@@ -25,13 +25,13 @@ api:
     path: api/root-v3.txt
   - module: "adapters/otel"
     mode: apidiff
-    path: adapters/otel/api/baseline.txt
+    path: adapters/otel/api/v2.txt
   - module: "jwt"
     mode: apidiff
-    path: api/jwt.txt
+    path: api/jwt-v2.txt
   - module: "oidc"
     mode: apidiff
-    path: api/oidc.txt
+    path: api/oidc-v2.txt
 operations:
 - module: "jwt"
   gate: local-test

@@ -188,7 +188,7 @@ secret-safe surface.
 
 ## Compatibility and migration
 
-The public Go API is tracked by `api/baseline.txt`. Applications own the
+The public Go API is tracked by `api/v2.txt`; `api/baseline.txt` records v1. Applications own the
 providers, so changing exporters or SDK processors does not require an
 `authotel` migration. When a telemetry convention major version changes,
 migration guidance will identify query, dashboard, alert, and collector changes

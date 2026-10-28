@@ -14,7 +14,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/faustbrian/go-authentication/authtest"
+	"github.com/faustbrian/go-authentication/v3/authtest"
+	clockpkg "github.com/faustbrian/go-clock"
 	jose "github.com/go-jose/go-jose/v4"
 )
 
@@ -467,7 +468,7 @@ func TestRemoteRefreshJitterSpreadsReplicaFleet(t *testing.T) {
 	}
 }
 
-func testRemoteKeySet(t *testing.T, clock Clock, maxWaiters int, transport http.RoundTripper) *remoteKeySet {
+func testRemoteKeySet(t *testing.T, clock clockpkg.Clock, maxWaiters int, transport http.RoundTripper) *remoteKeySet {
 	t.Helper()
 	return &remoteKeySet{
 		url:                "https://issuer.example.test/keys",

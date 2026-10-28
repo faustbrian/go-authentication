@@ -17,8 +17,12 @@ validation are deliberately excluded.
 ## Install
 
 ```sh
-go get github.com/faustbrian/go-authentication/oidc@v1
+go get github.com/faustbrian/go-authentication/oidc/v2@v2.0.0
 ```
+
+Version 2 composes with root v3 (`github.com/faustbrian/go-authentication/v3`) and removed
+the deprecated `Clock` alias; pass a `clock.Clock`. The v1 module remains
+published for root v1 but receives no further releases.
 
 ## Quick start
 

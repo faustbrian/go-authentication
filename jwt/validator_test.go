@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
-	authjwt "github.com/faustbrian/go-authentication/jwt"
+	authjwt "github.com/faustbrian/go-authentication/jwt/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jws"
@@ -422,6 +422,31 @@ func TestValidatorRejectsDuplicateAndOversizedClaims(t *testing.T) {
 				t.Fatalf("Authenticate() error = %v, want rejected or invalid", err)
 			}
 		})
+	}
+}
+
+func TestValidatorAdmitsPrincipalsUnderRootStringLimit(t *testing.T) {
+	t.Parallel()
+
+	keys, signer := rsaKeys(t, "key-1", jwa.RS256())
+	validator := newValidator(t, keys, authjwt.Config{
+		Issuer: "https://issuer.example.test", Audience: "orders",
+		Algorithms: []jwa.SignatureAlgorithm{jwa.RS256()}, Clock: authtest.NewClock(jwtNow),
+		MaxTokenBytes: 64 * 1024,
+	})
+	claims := func(note string) map[string]any {
+		return map[string]any{
+			"sub": "service", "iss": "https://issuer.example.test", "aud": "orders",
+			"iat": jwtNow, "exp": jwtNow.Add(time.Hour), "note": note,
+		}
+	}
+	atLimit := signedToken(t, signer, jwa.RS256(), claims(strings.Repeat("x", authentication.MaxPrincipalStringBytes)))
+	if _, err := validator.ValidateBearer(context.Background(), atLimit); err != nil {
+		t.Fatalf("ValidateBearer(claim at root string limit) error = %v", err)
+	}
+	overLimit := signedToken(t, signer, jwa.RS256(), claims(strings.Repeat("x", authentication.MaxPrincipalStringBytes+1)))
+	if _, err := validator.ValidateBearer(context.Background(), overLimit); !errors.Is(err, authentication.ErrCredentialsRejected) && !errors.Is(err, authentication.ErrCredentialsInvalid) {
+		t.Fatalf("ValidateBearer(claim over root string limit) error = %v, want rejected or invalid", err)
 	}
 }
 

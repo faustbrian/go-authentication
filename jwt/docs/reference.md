@@ -138,8 +138,7 @@ stops that caller waiting and reports the context error; if shutdown did not fin
 `Shutdown` may retry. A concurrent caller with a live context continues any
 cleanup left incomplete by the earlier caller rather than inheriting that
 caller's context error. The caller that creates a `Remote` owns it and must
-shut it down. Deprecated `Close(ctx)` delegates to `Shutdown(ctx)` with
-identical behavior.
+shut it down with `Shutdown(ctx)`.
 
 ## Results and errors
 
@@ -176,8 +175,8 @@ inventorying issuers, audiences, algorithms, key IDs, clock skew, and required
 claims; then configure the narrowest observed policy and reject legacy tokens
 that do not satisfy it.
 
-The module follows stable v1 compatibility. Public API compatibility is checked
-against `api/baseline.txt`; breaking changes require a new major release and
+The module follows stable v2 compatibility. Public API compatibility is checked
+against the repository's `api/jwt-v2.txt`; `api/baseline.txt` records v1; breaking changes require a new major release and
 explicit migration guidance. The package follows the pinned JWX algorithm registry; review that
 dependency and this algorithm list when upgrading it.
 

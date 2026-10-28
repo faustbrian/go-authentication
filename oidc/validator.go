@@ -31,7 +31,7 @@ import (
 	"unicode/utf8"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	clockpkg "github.com/faustbrian/go-clock"
 )
 
@@ -58,14 +58,6 @@ var supportedAlgorithms = map[string]struct{}{
 var registeredClaims = map[string]struct{}{
 	"at_hash": {}, "aud": {}, "auth_time": {}, "azp": {}, "c_hash": {}, "exp": {},
 	"iat": {}, "iss": {}, "jti": {}, "nbf": {}, "nonce": {}, "sub": {},
-}
-
-// Clock supplies validation time and permits deterministic tests.
-//
-// Deprecated: depend on clock.Clock in new code. This named compatibility
-// contract remains available throughout v1.
-type Clock interface {
-	clockpkg.Clock
 }
 
 // NonceValidator validates the per-authentication-flow OIDC nonce.
@@ -106,7 +98,7 @@ type Config struct {
 	// Algorithms is an explicit unique allowlist of supported RSA/PSS/ECDSA/EdDSA names; no unsigned or symmetric tokens are supported.
 	Algorithms []string
 	// Clock is required borrowed validation/cache time state; nonblocking, nonpanicking and concurrent-safe calls are caller obligations.
-	Clock Clock
+	Clock clockpkg.Clock
 	// ClockSkew defaults to five minutes when zero; accepted values are nonnegative and at most 24 hours.
 	ClockSkew time.Duration
 	// NonceValidator is optional borrowed per-flow policy; omission adds no replay protection and a typed-nil provider rejects configuration.
@@ -147,7 +139,7 @@ type Validator struct {
 	clientID         string
 	trustedAudiences map[string]struct{}
 	algorithms       map[string]struct{}
-	clock            Clock
+	clock            clockpkg.Clock
 	clockSkew        time.Duration
 	nonceValidator   NonceValidator
 	maxTokenBytes    int

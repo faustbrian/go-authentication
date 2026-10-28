@@ -1,9 +1,9 @@
-module github.com/faustbrian/go-authentication/jwt
+module github.com/faustbrian/go-authentication/jwt/v2
 
 go 1.27.0
 
 require (
-	github.com/faustbrian/go-authentication v1.2.2
+	github.com/faustbrian/go-authentication/v3 v3.0.0
 	github.com/faustbrian/go-clock v1.2.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/lestrrat-go/httprc/v3 v3.0.6

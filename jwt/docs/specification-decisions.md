@@ -254,7 +254,7 @@ Normative rationale: The cited authority leaves this boundary ambiguous or incom
 | Security and resource consequences | At most one remote fetch proceeds per provider and admitted operation count is bounded, preventing refresh herds and shutdown leaks. Cancellation cannot silently abandon owned goroutines. |
 | Compatibility and wire consequences | No JWT or HTTP wire bytes change. Callers must explicitly shut down providers and must not assume canceling the constructor context destroys a successfully returned provider. Deprecated `Close` remains an equivalent delegation throughout the v1 compatibility interval. |
 | Executable evidence | `TestRemoteRefreshWaitersShareResultAndHonorCancellation`, `TestRemoteSerializesAutomaticAndExplicitRefreshWork`, `TestRemoteLifetimeIsOwnedByShutdown`, `TestRemoteShutdownOwnsCompleteBoundedCleanup`, `TestRemoteConcurrentShutdownCallerContinuesCleanupAfterPriorCallerCancellation`, `TestRemoteShutdownReportsCanceledJoin`, and `TestRemoteShutdownDeadlineIsNotBlockedByRefreshLock` |
-| Public surface | `NewRemote`, `Remote.Refresh`, `Remote.KeySet`, `Remote.Shutdown`, and deprecated `Remote.Close` |
+| Public surface | `NewRemote`, `Remote.Refresh`, `Remote.KeySet`, and `Remote.Shutdown` |
 | Upstream record | This is a Go lifecycle contract layered over standards-defined messages; no upstream protocol erratum controls it. |
 | Reconsider when | The underlying cache exposes a stronger lifecycle contract that can replace this wrapper without observable cancellation or ownership regression. |
 

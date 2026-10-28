@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	upstreamjwt "github.com/lestrrat-go/jwx/v3/jwt"

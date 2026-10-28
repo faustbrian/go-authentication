@@ -14,11 +14,13 @@ credentials out of URLs: `BearerQuery` and `APIKeyQuery` are removed, so use
 the Authorization header, named headers or explicit cookies. The `authotel`
 module receives no further releases.
 
-The `jwt`, `oidc` and `adapters/otel` modules still require root v1, so they do
-not accept root v3 types. Root v3 has no OpenTelemetry adapter, JWT validator or
-OIDC validator until their `/v2` majors on root v3 are published; a service that
-needs them stays on its current root until then and receives no root
-security fixes in the meantime.
+Move the optional modules together with the root: their v1 lines bind root v1
+and do not accept root v3 types. Use `jwt/v2`, `oidc/v2` and
+`adapters/otel/v2`, which removed the deprecated `Clock` alias,
+`Remote.Close` and the OpenTelemetry `Start` method; pass a `clock.Clock`,
+call `Remote.Shutdown` and call `Begin`. The OpenTelemetry instrumentation
+scope is unchanged. JWT and OIDC principals are admitted under the root v3
+limits, so tokens whose claims exceed them are rejected.
 
 ## Root v2 import identity
 

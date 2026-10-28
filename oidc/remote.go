@@ -25,7 +25,7 @@ import (
 	"time"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	clockpkg "github.com/faustbrian/go-clock"
 	jose "github.com/go-jose/go-jose/v4"
 )
@@ -327,7 +327,7 @@ type remoteKeySet struct {
 	maxBodyBytes       int64
 	maxKeys            int
 	jitter             uint64
-	clock              Clock
+	clock              clockpkg.Clock
 	minRefreshInterval time.Duration
 	maxRefreshInterval time.Duration
 	waiters            chan struct{}

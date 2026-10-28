@@ -2,7 +2,22 @@
 
 All notable changes to this module are documented here.
 
-## Unreleased
+## 2.0.0 - 2026-10-28
+
+### Changed
+
+- Move the module to `github.com/faustbrian/go-authentication/oidc/v2` on root
+  `github.com/faustbrian/go-authentication/v3`, so validators return root v3
+  principals and failures. Principals are now admitted under the root v3
+  default limits on per-string and total string bytes, identity entries and
+  claim nodes, so tokens whose claims exceed them are rejected. Only the latest
+  major receives security fixes.
+
+### Removed
+
+- Remove the deprecated `Clock` alias; pass a `clock.Clock`.
+
+## 1.1.0 - 2026-10-22
 
 ### Changed
 
@@ -157,5 +172,4 @@ All notable changes to this module are documented here.
 - Refreshed the canonical authentication checksum after its API compatibility
   baseline was normalized to the module boundary.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/oidc/v1.0.2...HEAD
 [1.0.2]: https://github.com/faustbrian/go-authentication/compare/oidc/v1.0.1...oidc/v1.0.2

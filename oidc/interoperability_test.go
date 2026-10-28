@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
-	authoidc "github.com/faustbrian/go-authentication/oidc"
+	authoidc "github.com/faustbrian/go-authentication/oidc/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	jose "github.com/go-jose/go-jose/v4"
 )
 

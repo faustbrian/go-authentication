@@ -20,7 +20,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"github.com/lestrrat-go/httprc/v3"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 )
@@ -593,14 +593,6 @@ beginClose:
 	}
 	r.finishClose(done, err)
 	return err
-}
-
-// Close performs the same context-aware cleanup as Shutdown.
-//
-// Deprecated: use Shutdown. Close remains available throughout the v1
-// compatibility interval.
-func (r *Remote) Close(ctx context.Context) error {
-	return r.Shutdown(ctx)
 }
 
 func (r *Remote) beginOperation(ctx context.Context) (context.Context, *jwk.Cache, uint64, error) {

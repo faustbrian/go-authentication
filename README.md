@@ -37,15 +37,13 @@ published:
 go get github.com/faustbrian/go-authentication/v3@v3.0.0
 ```
 
-The independently published optional modules below still consume root v1.
-They do not implement the root v3 nominal contracts; do not combine their v1
-authenticators or instrumentation with root v3. Their own major adoptions
-follow publication of the root. Install these only for retained root v1 routes:
+The independently versioned optional modules compose with root v3 from their
+`/v2` majors; their v1 lines bind root v1 and must not be combined with root v3:
 
 ```sh
-go get github.com/faustbrian/go-authentication/jwt
-go get github.com/faustbrian/go-authentication/oidc
-go get github.com/faustbrian/go-authentication/adapters/otel
+go get github.com/faustbrian/go-authentication/jwt/v2@v2.0.0
+go get github.com/faustbrian/go-authentication/oidc/v2@v2.0.0
+go get github.com/faustbrian/go-authentication/adapters/otel/v2@v2.0.0
 ```
 
 ## Five-minute quickstart

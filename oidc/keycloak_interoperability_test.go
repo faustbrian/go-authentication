@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	authoidc "github.com/faustbrian/go-authentication/oidc"
+	authoidc "github.com/faustbrian/go-authentication/oidc/v2"
 	clockpkg "github.com/faustbrian/go-clock"
 )
 

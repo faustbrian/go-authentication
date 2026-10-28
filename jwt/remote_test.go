@@ -18,9 +18,9 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
-	authjwt "github.com/faustbrian/go-authentication/jwt"
+	authjwt "github.com/faustbrian/go-authentication/jwt/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 )
@@ -46,8 +46,8 @@ func TestRemoteJWKRotationAndIssuerOutage(t *testing.T) {
 		t.Fatalf("NewRemote() error = %v", err)
 	}
 	t.Cleanup(func() {
-		if err := closeRemote(t, remote); err != nil {
-			t.Errorf("Close() error = %v", err)
+		if err := shutdownRemote(t, remote); err != nil {
+			t.Errorf("Shutdown() error = %v", err)
 		}
 	})
 	validator, err := authjwt.New(authjwt.Config{
@@ -131,8 +131,8 @@ func TestRemoteRefreshAndAuthenticationAreRaceSafe(t *testing.T) {
 		t.Fatalf("NewRemote() error = %v", err)
 	}
 	t.Cleanup(func() {
-		if err := closeRemote(t, remote); err != nil {
-			t.Errorf("Close() error = %v", err)
+		if err := shutdownRemote(t, remote); err != nil {
+			t.Errorf("Shutdown() error = %v", err)
 		}
 	})
 	validator, err := authjwt.New(authjwt.Config{
@@ -237,8 +237,8 @@ func TestRemoteSerializesAutomaticAndExplicitRefreshWork(t *testing.T) {
 	if overlapped {
 		t.Fatalf("automatic and explicit refresh performed overlapping remote work after %d requests", requests.Load())
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close() error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown() error = %v", err)
 	}
 }
 
@@ -256,7 +256,7 @@ func TestRemoteDoesNotTransferCachedKeyOwnership(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewRemote() error = %v", err)
 	}
-	t.Cleanup(func() { _ = closeRemote(t, remote) })
+	t.Cleanup(func() { _ = shutdownRemote(t, remote) })
 
 	first, err := remote.KeySet(context.Background())
 	if err != nil {
@@ -384,7 +384,7 @@ func TestRemoteRejectsHostileJWKResponsesAtInitialization(t *testing.T) {
 			)
 			if remote != nil || !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
 				if remote != nil {
-					_ = closeRemote(t, remote)
+					_ = shutdownRemote(t, remote)
 				}
 				t.Fatalf("NewRemote() = %v, %v; want unavailable", remote, err)
 			}
@@ -488,11 +488,11 @@ func TestRemoteLifecycleRejectsClosedAndCanceledOperations(t *testing.T) {
 	if err := remote.Refresh(canceled); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
 		t.Fatalf("Refresh(canceled) error = %v", err)
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close() error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown() error = %v", err)
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close(second) error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown(second) error = %v", err)
 	}
 	if _, err := remote.KeySet(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
 		t.Fatalf("KeySet(closed) error = %v", err)
@@ -528,9 +528,6 @@ func TestRemoteShutdownOwnsCompleteBoundedCleanup(t *testing.T) {
 	if _, err := remote.KeySet(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
 		t.Fatalf("KeySet(after shutdown) error = %v", err)
 	}
-	if err := remote.Close(ctx); err != nil {
-		t.Fatalf("Close(after shutdown) error = %v", err)
-	}
 }
 
 func TestRemoteRegistrationIsInitializationBounded(t *testing.T) {
@@ -554,8 +551,8 @@ func TestRemoteRegistrationIsInitializationBounded(t *testing.T) {
 	if got := requests.Load(); got != 1 {
 		t.Fatalf("NewRemote() requests = %d, want 1", got)
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close() error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown() error = %v", err)
 	}
 }
 
@@ -602,8 +599,8 @@ func TestRemoteShutdownReportsCanceledJoin(t *testing.T) {
 	if err := remote.Refresh(context.Background()); !errors.Is(err, authentication.ErrAuthenticationUnavailable) {
 		t.Fatalf("Refresh(after canceled shutdown) error = %v", err)
 	}
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close(cleanup) error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown(cleanup) error = %v", err)
 	}
 }
 
@@ -666,8 +663,8 @@ func TestRemoteShutdownDeadlineIsNotBlockedByRefreshLock(t *testing.T) {
 	}
 	releaseOnce.Do(func() { close(release) })
 	waitForRemoteSignal(t, refreshDone, "refresh completion")
-	if err := closeRemote(t, remote); err != nil {
-		t.Fatalf("Close(cleanup) error = %v", err)
+	if err := shutdownRemote(t, remote); err != nil {
+		t.Fatalf("Shutdown(cleanup) error = %v", err)
 	}
 }
 
@@ -747,12 +744,12 @@ func TestRemoteLifetimeIsOwnedByShutdown(t *testing.T) {
 	}
 }
 
-func closeRemote(t *testing.T, remote *authjwt.Remote) error {
+func shutdownRemote(t *testing.T, remote *authjwt.Remote) error {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	return remote.Close(ctx)
+	return remote.Shutdown(ctx)
 }
 
 type jwkServerState struct {

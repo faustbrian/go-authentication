@@ -8,13 +8,13 @@ providers, issue tokens, manage sessions, or make authorization decisions.
 ## Install
 
 ```sh
-go get github.com/faustbrian/go-authentication/jwt@v1
+go get github.com/faustbrian/go-authentication/jwt/v2@v2.0.0
 ```
 
-The `v1.1.4` patch candidate keeps the existing JWT import path and published
-root-v1 principal types. Once published, update this independent nested module
-with `go get github.com/faustbrian/go-authentication/jwt@v1.1.4`; adopting this
-patch does not require a root-v2 or OIDC upgrade. Preparation is not publication.
+Version 2 composes with root v3 (`github.com/faustbrian/go-authentication/v3`).
+It removed the deprecated `Clock` alias and `Remote.Close`; pass a
+`clock.Clock` and call `Remote.Shutdown`. The v1 module remains published for
+root v1 but receives no further releases.
 
 Failed remote initialization can take one additional initialization-timeout
 interval for cleanup; transports must cooperate with cancellation. The
@@ -38,8 +38,7 @@ principal, err := validator.ValidateBearer(ctx, compactToken)
 ```
 
 When using remote keys, the caller owns the returned `Remote` and must call
-`Shutdown(ctx)` with a bounded context. Deprecated `Close(ctx)` delegates to
-the same complete cleanup operation.
+`Shutdown(ctx)` with a bounded context.
 
 The compiling examples in this module contain complete imports and setup.
 

@@ -14,41 +14,41 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"github.com/lestrrat-go/httprc/v3"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 )
 
-func TestConcurrentCloseStateHonorsCompletionAndCancellation(t *testing.T) {
+func TestConcurrentShutdownStateHonorsCompletionAndCancellation(t *testing.T) {
 	waiting := &Remote{closing: true, closeDone: make(chan struct{})}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if err := waiting.Close(ctx); !errors.Is(err, context.Canceled) {
-		t.Fatalf("Close(canceled waiter) error = %v", err)
+	if err := waiting.Shutdown(ctx); !errors.Is(err, context.Canceled) {
+		t.Fatalf("Shutdown(canceled waiter) error = %v", err)
 	}
 
 	completed := &Remote{closing: true, closeDone: make(chan struct{})}
 	close(completed.closeDone)
 	completedResult := make(chan error, 1)
 	go func() {
-		completedResult <- completed.Close(completedCanceledContext{Context: context.Background()})
+		completedResult <- completed.Shutdown(completedCanceledContext{Context: context.Background()})
 	}()
 	select {
 	case err := <-completedResult:
 		if !errors.Is(err, context.Canceled) {
-			t.Fatalf("Close(completed waiter with canceled context) error = %v", err)
+			t.Fatalf("Shutdown(completed waiter with canceled context) error = %v", err)
 		}
 	case <-time.After(time.Second):
-		t.Fatal("Close ignored cancellation after the active closer completed")
+		t.Fatal("Shutdown ignored cancellation after the active closer completed")
 	}
 
 	busy := &Remote{operations: map[uint64]context.CancelFunc{1: func() {}}}
 	deadline, deadlineCancel := context.WithTimeout(context.Background(), time.Nanosecond)
 	defer deadlineCancel()
 	<-deadline.Done()
-	if err := busy.Close(deadline); !errors.Is(err, context.DeadlineExceeded) {
-		t.Fatalf("Close(active operation deadline) error = %v", err)
+	if err := busy.Shutdown(deadline); !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("Shutdown(active operation deadline) error = %v", err)
 	}
 }
 

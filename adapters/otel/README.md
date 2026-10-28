@@ -18,8 +18,13 @@ concurrent use and owns no goroutine, exporter, provider, or shutdown work.
 ## Install
 
 ```sh
-go get github.com/faustbrian/go-authentication/adapters/otel@v1
+go get github.com/faustbrian/go-authentication/adapters/otel/v2@v2.0.0
 ```
+
+Version 2 composes with root v3 (`github.com/faustbrian/go-authentication/v3`) and removed
+the deprecated `Start` method; call `Begin`. The instrumentation scope stays
+`github.com/faustbrian/go-authentication/adapters/otel`, so dashboards keep matching. The v1 module remains
+published for root v1 but receives no further releases.
 
 ## Quick start
 
@@ -71,13 +76,11 @@ additional guarantees beyond the documented module boundary.
 This module follows Semantic Versioning. Report vulnerabilities through the
 [parent security policy](../../SECURITY.md).
 
-The released `github.com/faustbrian/go-authentication/authotel` module remains
-supported for the longer of 180 days and two published stable minor releases
-after this successor is publicly consumable, and retains its original telemetry
-scope. Removal additionally requires an authorized next-major release.
-Migrating to this module preserves signal names, units, attributes, provider
-ownership, and completion behavior, while the instrumentation scope changes to
-this module's target-oriented import path. See the
+The released `github.com/faustbrian/go-authentication/authotel` module receives
+no further releases. Migrating from it preserves signal names, units,
+attributes, provider ownership, and completion behavior, while the
+instrumentation scope changes to this module's target-oriented import path. See
+the
 [changelog](CHANGELOG.md), [support policy](../../SUPPORT.md), and
 [migration guidance](docs/reference.md#compatibility-and-migration).
 

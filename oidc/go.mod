@@ -1,10 +1,10 @@
-module github.com/faustbrian/go-authentication/oidc
+module github.com/faustbrian/go-authentication/oidc/v2
 
 go 1.27.0
 
 require (
 	github.com/coreos/go-oidc/v3 v3.21.0
-	github.com/faustbrian/go-authentication v1.2.2
+	github.com/faustbrian/go-authentication/v3 v3.0.0
 	github.com/faustbrian/go-clock v1.2.0
 	github.com/go-jose/go-jose/v4 v4.1.4
 )

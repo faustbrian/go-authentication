@@ -2,7 +2,20 @@
 
 All notable changes to this module are documented here.
 
-## [Unreleased]
+## 2.0.0 - 2026-10-28
+
+### Changed
+
+- Move the module to `github.com/faustbrian/go-authentication/adapters/otel/v2`
+  on root `github.com/faustbrian/go-authentication/v3`. The instrumentation
+  scope, signal names, units and attributes are unchanged. Only the latest
+  major receives security fixes.
+
+### Removed
+
+- Remove the deprecated `Start` method; call `Begin`.
+
+## 1.1.0 - 2026-10-22
 
 ### Documentation
 
@@ -48,5 +61,4 @@ All notable changes to this module are documented here.
   The instrumentation scope becomes the successor module path, and deprecated
   `Start` remains available throughout the compatibility interval.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/adapters/otel/v1.0.2...HEAD
 [1.0.2]: https://github.com/faustbrian/go-authentication/compare/adapters/otel/v1.0.1...adapters/otel/v1.0.2

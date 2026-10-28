@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/adapters/otel"
+	"github.com/faustbrian/go-authentication/adapters/otel/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/metric"
@@ -111,7 +111,7 @@ func TestInstrumenterNormalizesInvalidEventsToClosedValues(t *testing.T) {
 	}
 
 	secret := "secret-token-subject-issuer-endpoint"
-	ctx, finish := instrumenter.Start(context.Background(), authentication.CredentialKind(secret))
+	ctx, finish := instrumenter.Begin(context.Background(), authentication.CredentialKind(secret))
 	finish(authentication.Event{
 		Outcome:  authentication.Outcome(secret),
 		Failure:  authentication.FailureKind(secret),
@@ -166,7 +166,7 @@ func TestInstrumenterCompletesExactlyOnceUnderConcurrentUse(t *testing.T) {
 		t.Fatalf("New() error = %v", err)
 	}
 
-	ctx, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	ctx, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	var group sync.WaitGroup
 	for range 32 {
 		group.Add(1)
@@ -219,7 +219,7 @@ func TestDuplicateCompletionDoesNotWaitForBlockingTelemetry(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
-	_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 
 	winnerDone := make(chan struct{})
 	go func() {
@@ -280,7 +280,7 @@ func TestInstrumenterUsesDocumentedClosedAttributeValues(t *testing.T) {
 			if err != nil {
 				t.Fatalf("New() error = %v", err)
 			}
-			_, finish := instrumenter.Start(context.Background(), tt.kind)
+			_, finish := instrumenter.Begin(context.Background(), tt.kind)
 			finish(tt.event)
 			spans := recorder.Ended()
 			if len(spans) != 1 ||
@@ -307,9 +307,9 @@ func TestInstrumenterCompletesCanceledAttempts(t *testing.T) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	next, finish := instrumenter.Start(ctx, authentication.CredentialBearer)
+	next, finish := instrumenter.Begin(ctx, authentication.CredentialBearer)
 	if !errors.Is(next.Err(), context.Canceled) {
-		t.Fatalf("Start() context error = %v, want canceled", next.Err())
+		t.Fatalf("Begin() context error = %v, want canceled", next.Err())
 	}
 	finish(authentication.Event{Outcome: authentication.OutcomeFailed, Failure: authentication.FailureUnavailable})
 
@@ -340,7 +340,7 @@ func TestInstrumenterIsolatesRuntimeObserverPanics(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
-	_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated, Duration: time.Millisecond})
 
 	if got := len(recorder.Ended()); got != 1 {
@@ -371,7 +371,7 @@ func TestInstrumenterIsolatesDurationObserverPanics(t *testing.T) {
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
-	_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated, Duration: time.Millisecond})
 
 	if got := len(recorder.Ended()); got != 1 {
@@ -407,7 +407,7 @@ func TestInstrumenterIsolatesEverySpanObserverPanic(t *testing.T) {
 			if err != nil {
 				t.Fatalf("New() error = %v", err)
 			}
-			_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+			_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 			finish(authentication.Event{
 				Outcome: authentication.OutcomeFailed,
 				Failure: authentication.FailureRejected,
@@ -521,7 +521,7 @@ func TestNewContainsProviderPanicsWithoutDisclosingThem(t *testing.T) {
 	}
 }
 
-func TestStartContainsTracerPanicsAndPreservesContext(t *testing.T) {
+func TestBeginContainsTracerPanicsAndPreservesContext(t *testing.T) {
 	t.Parallel()
 
 	instrumenter, err := authotel.New(authotel.Config{
@@ -533,17 +533,17 @@ func TestStartContainsTracerPanicsAndPreservesContext(t *testing.T) {
 	}
 	type contextKey struct{}
 	ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-	next, finish := instrumenter.Start(ctx, authentication.CredentialBearer)
+	next, finish := instrumenter.Begin(ctx, authentication.CredentialBearer)
 	if next.Value(contextKey{}) != "preserved" {
-		t.Fatal("Start() did not preserve context after tracer panic")
+		t.Fatal("Begin() did not preserve context after tracer panic")
 	}
 	if finish == nil {
-		t.Fatal("Start() returned nil completion after tracer panic")
+		t.Fatal("Begin() returned nil completion after tracer panic")
 	}
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 }
 
-func TestStartPreservesContextWhenTracerReturnsNil(t *testing.T) {
+func TestBeginPreservesContextWhenTracerReturnsNil(t *testing.T) {
 	t.Parallel()
 
 	instrumenter, err := authotel.New(authotel.Config{
@@ -555,9 +555,9 @@ func TestStartPreservesContextWhenTracerReturnsNil(t *testing.T) {
 	}
 	type contextKey struct{}
 	ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-	next, finish := instrumenter.Start(ctx, authentication.CredentialBearer)
+	next, finish := instrumenter.Begin(ctx, authentication.CredentialBearer)
 	if next == nil || next.Value(contextKey{}) != "preserved" {
-		t.Fatal("Start() did not preserve context after a hostile tracer returned nil")
+		t.Fatal("Begin() did not preserve context after a hostile tracer returned nil")
 	}
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 }
@@ -593,15 +593,15 @@ func FuzzInstrumenterLifecycle(f *testing.F) {
 			contextKey{},
 			expectedContextValue,
 		)
-		next, finish := instrumenter.Start(
+		next, finish := instrumenter.Begin(
 			ctx,
 			authentication.CredentialKind(kind),
 		)
 		if next == nil || next.Value(contextKey{}) != expectedContextValue {
-			t.Fatal("Start() did not preserve the caller context")
+			t.Fatal("Begin() did not preserve the caller context")
 		}
 		if finish == nil {
-			t.Fatal("Start() returned a nil completion callback")
+			t.Fatal("Begin() returned a nil completion callback")
 		}
 		finish(authentication.Event{
 			Outcome:  authentication.Outcome(outcome),

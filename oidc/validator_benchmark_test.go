@@ -12,8 +12,8 @@ import (
 	"time"
 
 	upstreamoidc "github.com/coreos/go-oidc/v3/oidc"
-	"github.com/faustbrian/go-authentication/authtest"
-	authoidc "github.com/faustbrian/go-authentication/oidc"
+	authoidc "github.com/faustbrian/go-authentication/oidc/v2"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 )
 
 // BenchmarkValidateBearer measures static RSA token verification; key generation/signing

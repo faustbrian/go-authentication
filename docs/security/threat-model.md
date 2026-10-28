@@ -5,8 +5,8 @@
 Model version: 1. Reviewed: 2026-10-07. Owner: repository maintainer.
 Scope: the root authentication contract and its HTTP, JWT, OIDC and telemetry
 adapters. Published major lines retain their own admission guarantees; this
-model does not attribute root v3 limits to optional modules that still
-require root v1.
+model does not attribute root v3 limits to the v1 optional modules, which bind
+root v1.
 
 This library authenticates credentials and constructs immutable principals. It
 does not authorize actions. Credentials, tokens, claims, key sets, issuer

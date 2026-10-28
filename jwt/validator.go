@@ -23,7 +23,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	authentication "github.com/faustbrian/go-authentication"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	clockpkg "github.com/faustbrian/go-clock"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
@@ -51,14 +51,6 @@ var prohibitedKeyReferenceHeaders = []string{"jku", "jwk", "x5c", "x5t", "x5t#S2
 // ErrKeyProviderUnavailable is the redacted cause for key-provider failures.
 var ErrKeyProviderUnavailable = errors.New("jwt: key provider unavailable")
 
-// Clock supplies validation time and permits deterministic tests.
-//
-// Deprecated: depend on clock.Clock in new code. This named compatibility
-// contract remains available throughout v1.
-type Clock interface {
-	clockpkg.Clock
-}
-
 // Config defines a strict JWT trust boundary.
 type Config struct {
 	// Issuer is required exact issuer text; New does not validate its URL or normalize it.
@@ -72,7 +64,7 @@ type Config struct {
 	// Provider is a borrowed dynamic source whose returned sets are copied/revalidated per attempt; its IO/lifetime are caller-owned.
 	Provider KeyProvider
 	// Clock is required borrowed time state; concurrent safety and prompt, nonpanicking Now calls remain provider obligations.
-	Clock Clock
+	Clock clockpkg.Clock
 	// Skew is nonnegative acceptable time skew, default zero.
 	Skew time.Duration
 	// MaxTokenBytes is a positive compact-token byte bound, default 16 KiB; it is not a provider-set serialization budget.
@@ -100,7 +92,7 @@ type Validator struct {
 	algorithms     map[string]struct{}
 	keys           jwk.Set
 	provider       KeyProvider
-	clock          Clock
+	clock          clockpkg.Clock
 	skew           time.Duration
 	maxTokenBytes  int
 	maxClaims      int

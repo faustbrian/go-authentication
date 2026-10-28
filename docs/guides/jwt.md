@@ -5,7 +5,7 @@
 Install the optional module:
 
 ```sh
-go get github.com/faustbrian/go-authentication/jwt
+go get github.com/faustbrian/go-authentication/jwt/v2@v2.0.0
 ```
 
 `jwt.New` requires one issuer, one audience, an explicit algorithm allow-list,

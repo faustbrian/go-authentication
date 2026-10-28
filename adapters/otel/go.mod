@@ -1,9 +1,9 @@
-module github.com/faustbrian/go-authentication/adapters/otel
+module github.com/faustbrian/go-authentication/adapters/otel/v2
 
 go 1.27.0
 
 require (
-	github.com/faustbrian/go-authentication v1.2.2
+	github.com/faustbrian/go-authentication/v3 v3.0.0
 	go.opentelemetry.io/otel v1.47.0
 	go.opentelemetry.io/otel/metric v1.47.0
 	go.opentelemetry.io/otel/sdk v1.47.0

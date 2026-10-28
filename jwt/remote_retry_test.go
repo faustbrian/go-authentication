@@ -11,9 +11,9 @@ import (
 	"testing/synctest"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/authtest"
-	authjwt "github.com/faustbrian/go-authentication/jwt"
+	authjwt "github.com/faustbrian/go-authentication/jwt/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 )
 

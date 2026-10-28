@@ -485,7 +485,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`NewRemote`, `Remote.Refresh`, `Remote.KeySet`, `Remote.Shutdown`, and deprecated `Remote.Close`"
+        "`NewRemote`, `Remote.Refresh`, `Remote.KeySet`, and `Remote.Shutdown`"
       ],
       "documentation": [
         "jwt/docs/specification-decisions.md"

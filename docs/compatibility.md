@@ -40,8 +40,8 @@ the published v1 and v2 roots.
 
 Root v3 removed the Start-named `Instrumenter`, `NewInstrumented` and
 `Clock`; implement `BeginInstrumenter.Begin`, use `NewInstrumentedWithBegin`
-and pass a `clock.Clock`. JWT `Remote.Close(ctx)` remains available and
-delegates to the preferred `Remote.Shutdown(ctx)` lifecycle name.
+and pass a `clock.Clock`. `jwt/v2` removed `Remote.Close(ctx)`; call
+`Remote.Shutdown(ctx)`.
 
 Root v3 removed its deprecated paths in a major release without waiting out
 the former deprecation window; see [DEPRECATION.md](../DEPRECATION.md).

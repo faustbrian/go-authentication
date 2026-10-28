@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/faustbrian/go-authentication/authtest"
-	authjwt "github.com/faustbrian/go-authentication/jwt"
+	authjwt "github.com/faustbrian/go-authentication/jwt/v2"
+	"github.com/faustbrian/go-authentication/v3/authtest"
 	"github.com/lestrrat-go/jwx/v3/jwa"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	upstreamjwt "github.com/lestrrat-go/jwx/v3/jwt"
@@ -172,7 +172,7 @@ func benchmarkRemoteValidator(b *testing.B) (*authjwt.Validator, *authjwt.Remote
 	cleanup := func() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
-		_ = remote.Close(ctx)
+		_ = remote.Shutdown(ctx)
 		server.Close()
 	}
 	return validator, remote, cleanup

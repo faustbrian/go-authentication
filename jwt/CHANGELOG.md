@@ -2,7 +2,21 @@
 
 All notable changes to this module are documented here.
 
-## [Unreleased]
+## 2.0.0 - 2026-10-28
+
+### Changed
+
+- Move the module to `github.com/faustbrian/go-authentication/jwt/v2` on root
+  `github.com/faustbrian/go-authentication/v3`, so validators return root v3
+  principals and failures. Principals are now admitted under the root v3
+  default limits on per-string and total string bytes, identity entries and
+  claim nodes, so tokens whose claims exceed them are rejected. Only the latest
+  major receives security fixes.
+
+### Removed
+
+- Remove the deprecated `Clock` alias and `Remote.Close`; pass a
+  `clock.Clock` and call `Remote.Shutdown`.
 
 ## [1.1.4] - 2026-10-13
 
@@ -187,7 +201,6 @@ All notable changes to this module are documented here.
 - Refreshed the canonical authentication checksum after its API compatibility
   baseline was normalized to the module boundary.
 
-[Unreleased]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.4...HEAD
 [1.1.4]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.3...jwt/v1.1.4
 [1.1.3]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.2...jwt/v1.1.3
 [1.1.2]: https://github.com/faustbrian/go-authentication/compare/jwt/v1.1.1...jwt/v1.1.2

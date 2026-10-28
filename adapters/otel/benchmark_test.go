@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/adapters/otel"
+	"github.com/faustbrian/go-authentication/adapters/otel/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"go.opentelemetry.io/otel/metric"
 	metricnoop "go.opentelemetry.io/otel/metric/noop"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"

@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	authentication "github.com/faustbrian/go-authentication"
-	"github.com/faustbrian/go-authentication/adapters/otel"
+	"github.com/faustbrian/go-authentication/adapters/otel/v2"
+	authentication "github.com/faustbrian/go-authentication/v3"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	metricnoop "go.opentelemetry.io/otel/metric/noop"
@@ -128,7 +128,7 @@ func completedCallbackWithRequestState(
 	state := &requestState{}
 	runtime.AddCleanup(state, func(done chan<- struct{}) { close(done) }, requestReleased)
 	ctx := context.WithValue(context.Background(), contextKey{}, state)
-	_, finish := instrumenter.Start(ctx, authentication.CredentialBearer)
+	_, finish := instrumenter.Begin(ctx, authentication.CredentialBearer)
 	finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 	runtime.KeepAlive(state)
 	runtime.KeepAlive(instrumenter)
@@ -190,7 +190,7 @@ func TestCapturedTelemetryExcludesAuthenticationMaterialAndFailureText(t *testin
 	if err != nil {
 		t.Fatalf("New(panic provider) error = %v", err)
 	}
-	_, finish := panicInstrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, finish := panicInstrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	finish(authentication.Event{Outcome: authentication.OutcomeFailed})
 
 	var data metricdata.ResourceMetrics
@@ -232,7 +232,7 @@ func TestHighConcurrencyKeepsMetricCardinalityAndCompletionBounded(t *testing.T)
 				outcome = authentication.OutcomeFailed
 				failure = authentication.FailureRejected
 			}
-			_, finish := instrumenter.Start(context.Background(), kind)
+			_, finish := instrumenter.Begin(context.Background(), kind)
 			finish(authentication.Event{Outcome: outcome, Failure: failure, Duration: time.Duration(index)})
 			finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 		}()
@@ -287,7 +287,7 @@ func TestBoundedBatchExporterBackpressureDoesNotBlockCompletion(t *testing.T) {
 		t.Fatalf("New() error = %v", err)
 	}
 
-	_, firstFinish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+	_, firstFinish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 	firstFinish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 	select {
 	case <-exporter.entered:
@@ -299,7 +299,7 @@ func TestBoundedBatchExporterBackpressureDoesNotBlockCompletion(t *testing.T) {
 	go func() {
 		defer close(done)
 		for range 1024 {
-			_, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+			_, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 			finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 		}
 	}()
@@ -331,9 +331,9 @@ func TestAdapterRemainsBoundedAfterCallerShutsDownSDKs(t *testing.T) {
 
 	started := time.Now()
 	for range 1024 {
-		next, finish := instrumenter.Start(context.Background(), authentication.CredentialBearer)
+		next, finish := instrumenter.Begin(context.Background(), authentication.CredentialBearer)
 		if next == nil || finish == nil {
-			t.Fatal("Start() returned nil after caller-owned shutdown")
+			t.Fatal("Begin() returned nil after caller-owned shutdown")
 		}
 		finish(authentication.Event{Outcome: authentication.OutcomeAuthenticated})
 	}
@@ -396,7 +396,7 @@ func FuzzInstrumenterWithHostileProviders(f *testing.F) {
 		}
 		type contextKey struct{}
 		ctx := context.WithValue(context.Background(), contextKey{}, "preserved")
-		next, finish := instrumenter.Start(ctx, authentication.CredentialKind(kind))
+		next, finish := instrumenter.Begin(ctx, authentication.CredentialKind(kind))
 		if next == nil || next.Value(contextKey{}) != "preserved" || finish == nil {
 			t.Fatal("hostile provider changed the caller context or callback contract")
 		}
