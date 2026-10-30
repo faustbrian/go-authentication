@@ -103,6 +103,8 @@ func (t Token) Format(state fmt.State, verb rune) {
 // FailureRejected for an unknown or refused token; bearer.New reports other
 // errors as unavailable.
 type Resolver interface {
+	// ResolveSanctumToken borrows a non-nil context and a parsed token and
+	// returns the token owner's principal with Method bearer.
 	ResolveSanctumToken(context.Context, Token) (authentication.Principal, error)
 }
 

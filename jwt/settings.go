@@ -26,8 +26,9 @@ const (
 // their own configuration tags and copy values in; Validate does not retain or
 // modify the Algorithms slice.
 type RemoteSettings struct {
-	// Issuer and Audience must be non-empty without surrounding whitespace.
-	Issuer   string
+	// Issuer must be non-empty without surrounding whitespace.
+	Issuer string
+	// Audience must be non-empty without surrounding whitespace.
 	Audience string
 	// JWKURL is an absolute https URL with a host and no user information or
 	// fragment. A query is permitted. Plain http requires AllowInsecureHTTP.
@@ -43,8 +44,9 @@ type RemoteSettings struct {
 	MaxJWKBodyBytes int64
 	// InitializationTimeout is positive and at most 30 seconds.
 	InitializationTimeout time.Duration
-	// MinRefresh is positive; MaxRefresh is at least MinRefresh and at most 24 hours.
+	// MinRefresh is positive.
 	MinRefresh time.Duration
+	// MaxRefresh is at least MinRefresh and at most 24 hours.
 	MaxRefresh time.Duration
 	// AllowInsecureHTTP permits a plain-http JWK URL and symmetric algorithms.
 	// It is accepted only when SettingsPolicy.PermitInsecure is true.
