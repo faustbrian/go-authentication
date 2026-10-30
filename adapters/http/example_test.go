@@ -64,3 +64,27 @@ func ExampleAPIKeySingleHeader() {
 	// <nil> true opaque-key
 	// authentication: ambiguous credentials
 }
+
+func ExampleWithFailureWriter() {
+	challenge, _ := authentication.NewChallenge("Bearer", map[string]string{"realm": "api"})
+	extractor, _ := authhttp.NewExtractor(authhttp.BearerAuthorization())
+	authenticator, _ := bearer.New(bearer.ValidatorFunc(
+		func(context.Context, string) (authentication.Principal, error) {
+			return authentication.Principal{}, authentication.NewFailure(authentication.FailureRejected)
+		},
+	))
+	middleware, _ := authhttp.NewMiddleware(extractor, authenticator,
+		authhttp.WithChallenges(challenge),
+		authhttp.WithFailureWriter(func(writer http.ResponseWriter, _ *http.Request, status int, _ error) {
+			writer.Header().Set("Content-Type", "application/json")
+			writer.WriteHeader(status)
+			_, _ = writer.Write([]byte(`{"message":"Unauthenticated."}`))
+		}),
+	)
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	request.Header.Set("Authorization", "Bearer unknown")
+	recorder := httptest.NewRecorder()
+	middleware(http.NotFoundHandler()).ServeHTTP(recorder, request)
+	fmt.Println(recorder.Code, recorder.Header().Get("WWW-Authenticate"), recorder.Body.String())
+	// Output: 401 Bearer realm="api" {"message":"Unauthenticated."}
+}

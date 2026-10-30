@@ -169,7 +169,9 @@
         "TestOptionalMiddlewareAllowsOnlyAbsentCredentials",
         "TestMiddlewareRejectsInvalidConfigurationAndResult",
         "TestMiddlewarePropagatesRequestCancellation",
-        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable",
+        "TestMiddlewareFailureWriterRendersEveryRefusal",
+        "TestMiddlewareDefaultFailureBodyIsUnchangedPlainText"
       ],
       "fixtures": [],
       "fuzz": [

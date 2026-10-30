@@ -27,8 +27,11 @@ key, and passes the original `http.ResponseWriter`, preserving optional
 interfaces. It returns 401 for credential failures and 503 for unavailable or
 unclassified failures. A credential failure without a valid failure-specific or
 fallback challenge also returns 503 because RFC 9110 forbids a bare 401.
-Configure fallback challenges with `WithChallenges`. Challenges are sorted and
-quoted safely.
+Configure fallback challenges with `WithChallenges`. The default failure body
+is fixed `text/plain`; pass `WithFailureWriter` to render your own body, such
+as JSON. The writer receives the selected status, with any challenges already
+set, and must write exactly that status without echoing the failure error.
+Challenges are sorted and quoted safely.
 
 The middleware does not authorize. See `authenticationhttp.ExampleNewMiddleware`.
 

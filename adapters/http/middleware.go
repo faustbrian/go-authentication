@@ -21,6 +21,27 @@ type CredentialExtractor interface {
 type middlewareConfig struct {
 	optional   bool
 	challenges []string
+	failure    FailureWriter
+}
+
+// FailureWriter renders a refused request. The middleware has already chosen
+// status, 401 or 503, and added the WWW-Authenticate challenges a 401 carries;
+// the writer must write exactly that status and its own body. err is the
+// extraction or authentication failure and may wrap a provider cause, so a
+// writer must not echo it. Writer panics propagate.
+type FailureWriter func(writer http.ResponseWriter, request *http.Request, status int, err error)
+
+// WithFailureWriter replaces the default fixed text/plain failure body, for
+// example with a JSON document. Status selection and challenges are unchanged.
+// A nil writer is invalid configuration.
+func WithFailureWriter(failure FailureWriter) MiddlewareOption {
+	return func(configuration *middlewareConfig) error {
+		if failure == nil {
+			return fmt.Errorf("%w: HTTP failure writer", authentication.ErrInvalidConfiguration)
+		}
+		configuration.failure = failure
+		return nil
+	}
 }
 
 // MiddlewareOption configures HTTP authentication middleware.
@@ -78,19 +99,19 @@ func NewMiddleware(extractor CredentialExtractor, authenticator authentication.A
 					next.ServeHTTP(writer, request.WithContext(ctx))
 					return
 				}
-				writeFailure(writer, err, configuration.challenges)
+				writeFailure(writer, request, err, configuration)
 				return
 			}
 
 			result, err := authenticator.Authenticate(request.Context(), credential)
 			if err != nil {
-				writeFailure(writer, err, configuration.challenges)
+				writeFailure(writer, request, err, configuration)
 				return
 			}
 			principal, ok := result.Principal()
 			if !ok {
-				writeFailure(writer, authentication.NewFailure(authentication.FailureUnavailable,
-					authentication.WithFailureCause(authentication.ErrInvalidConfiguration)), configuration.challenges)
+				writeFailure(writer, request, authentication.NewFailure(authentication.FailureUnavailable,
+					authentication.WithFailureCause(authentication.ErrInvalidConfiguration)), configuration)
 				return
 			}
 
@@ -100,7 +121,7 @@ func NewMiddleware(extractor CredentialExtractor, authenticator authentication.A
 	}, nil
 }
 
-func writeFailure(writer http.ResponseWriter, err error, fallbackChallenges []string) {
+func writeFailure(writer http.ResponseWriter, request *http.Request, err error, configuration middlewareConfig) {
 	status := http.StatusUnauthorized
 	message := "authentication failed"
 	if errors.Is(err, authentication.ErrAuthenticationUnavailable) || !classifiedHTTPFailure(err) {
@@ -111,7 +132,7 @@ func writeFailure(writer http.ResponseWriter, err error, fallbackChallenges []st
 	if status == http.StatusUnauthorized {
 		challenges := failureChallenges(err)
 		if len(challenges) == 0 {
-			challenges = fallbackChallenges
+			challenges = configuration.challenges
 		}
 		if len(challenges) == 0 {
 			status = http.StatusServiceUnavailable
@@ -121,6 +142,10 @@ func writeFailure(writer http.ResponseWriter, err error, fallbackChallenges []st
 				writer.Header().Add("WWW-Authenticate", challenge)
 			}
 		}
+	}
+	if configuration.failure != nil {
+		configuration.failure(writer, request, status, err)
+		return
 	}
 	http.Error(writer, message, status)
 }

@@ -336,14 +336,16 @@
       "rationale": "The cited protocol text does not fully determine the transport mapping, so the package records the mapping separately from base-protocol conformance.",
       "security_consequences": "Optional routes cannot be downgraded by malformed credentials. Provider details, tokens, and causes never enter the response body. Unavailability is distinguishable for retries and operations.",
       "resource_consequences": "Optional routes cannot be downgraded by malformed credentials. Provider details, tokens, and causes never enter the response body. Unavailability is distinguishable for retries and operations.",
-      "compatibility_consequences": "Clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. Authorization middleware remains responsible for 403.",
-      "wire_consequences": "Clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. Authorization middleware remains responsible for 403.",
+      "compatibility_consequences": "By default clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. `WithFailureWriter` replaces only that body; the status and challenges stay as selected here. Authorization middleware remains responsible for 403.",
+      "wire_consequences": "By default clients receive `authentication failed` for challenged credential failures and `authentication unavailable` for server-side inability to complete a conforming decision. `WithFailureWriter` replaces only that body; the status and challenges stay as selected here. Authorization middleware remains responsible for 403.",
       "executable_evidence": [
         "TestMiddlewareFailsClosedWithChallengesAndRedaction",
         "TestOptionalMiddlewareAllowsOnlyAbsentCredentials",
         "TestMiddlewareRejectsInvalidConfigurationAndResult",
         "TestMiddlewarePropagatesRequestCancellation",
-        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable"
+        "TestMiddlewareTreatsMissingOrInvalidFailureChallengesAsUnavailable",
+        "TestMiddlewareFailureWriterRendersEveryRefusal",
+        "TestMiddlewareDefaultFailureBodyIsUnchangedPlainText"
       ],
       "fixture_evidence": [],
       "fuzz_evidence": [
@@ -351,7 +353,7 @@
       ],
       "interoperability_evidence": [],
       "public_apis": [
-        "`FailureKind`, exported sentinel errors, `authenticationhttp.WithOptionalAnonymous`, `authenticationhttp.NewMiddleware`, and HTTP response behavior"
+        "`FailureKind`, exported sentinel errors, `authenticationhttp.WithOptionalAnonymous`, `authenticationhttp.WithFailureWriter`, `authenticationhttp.NewMiddleware`, and HTTP response behavior"
       ],
       "documentation": [
         "docs/specification-decisions.md"

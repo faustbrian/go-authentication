@@ -14,6 +14,10 @@ this project follows Semantic Versioning.
   with an empty key ID, which `apikey.New` and `apikey.NewStatic` still refuse.
 - Add `authenticationhttp.WithAPIKeyRejectAuthorization`, which makes a present
   API key ambiguous when the request also carries any `Authorization` field.
+- Add `authenticationhttp.WithFailureWriter` so services render their own
+  401 and 503 bodies, such as JSON documents. The middleware still selects the
+  status and adds challenges; without the option the fixed text/plain body is
+  unchanged.
 - Add the `adapters/laravelsanctum` Laravel compatibility adapter for Sanctum
   personal access tokens. `ParseToken` splits `id|secret` at the first pipe,
   admits only positive signed 64-bit IDs with leading zeros dropped, and hashes
@@ -24,9 +28,11 @@ this project follows Semantic Versioning.
 ### Documentation
 
 - Record AUTH-DEC-013 for the key-only header profile and AUTH-DEC-014 for
-  Sanctum compatibility, and point AUTH-DEC-005 at AUTH-DEC-013 for key-only
-  headers. Their content identities are preserved below.
+  Sanctum compatibility, point AUTH-DEC-005 at AUTH-DEC-013 for key-only
+  headers, and note in AUTH-DEC-008 that `WithFailureWriter` replaces only the
+  failure body. Their content identities are preserved below.
 - `AUTH-DEC-005` sha256:33c5e380ed356c2d8997056916ae99be20692850c92d5e09666259a6dee7e3bf
+- `AUTH-DEC-008` sha256:ddad1d3b5200ecca9395685ac2e0f945dfe3a45c85055476d1c1a555633779d8
 - `AUTH-DEC-013` sha256:2f5c52a6cd6d6e3352c3fac0a0124b969425986245874a08a905ba6637bfcd91
 - `AUTH-DEC-014` sha256:a0068394ac7d53fd8fa11a107f0ef686dacff17c7da786bb9cadfb411440b39d
 
