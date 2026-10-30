@@ -1,8 +1,9 @@
 // Package laravelsanctum is a Laravel compatibility adapter for Sanctum
 // personal access tokens presented as opaque bearer tokens. It parses the
 // "id|secret" and pipe-free forms into a SHA-256 proof and validates through a
-// caller-owned Resolver. It does not read storage, issue tokens, interpret
-// abilities, or authorize actions. Extract pipe-form tokens with
+// caller-owned Resolver. It does not read storage, issue tokens, or authorize
+// actions. Sanctum abilities are not enforced: the token only authenticates,
+// so the adapter neither loads nor exposes them. Extract pipe-form tokens with
 // authenticationhttp.BearerAuthorization(authenticationhttp.WithBearerPipe())
 // and wrap the Validator with bearer.New. AUTH-DEC-014 records the profile.
 package laravelsanctum
