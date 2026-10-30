@@ -28,8 +28,8 @@ passes a `Token` to your `Resolver`. Look the token up by `Token.ID` when
 present, otherwise by `Token.Digest`, and compare the stored digest with
 `Token.Matches` after decoding Sanctum's hex column. The resolver owns expiry,
 revocation and owner status. Sanctum abilities are not enforced: the token
-only authenticates, so the adapter neither loads nor exposes them. Wrap the validator with `bearer.New`,
-and enable `WithBearerPipe` on the HTTP bearer source. See
-`laravelsanctum.ExampleNewValidator`.
+only authenticates, so the adapter neither loads nor exposes them. Wrap the
+validator with `bearer.New`, and enable `WithBearerPipe` on the HTTP bearer
+source. See `laravelsanctum.ExampleNewValidator`.
 
 Continue with [Exported API map](../api.md).
