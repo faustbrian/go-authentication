@@ -346,6 +346,28 @@ Normative rationale: This preserves RFC 8725 Section 3.1's mandatory algorithm-v
 Machine-auditable bindings: classification `optional behavior`; decision scope `normative`; specification `RFC 7515 JSON Web Signature`; version `RFC 7515`; source authority `rfc7515-source` at `https://www.rfc-editor.org/rfc/rfc7515.txt`; requirement strength `MUST`; fuzz evidence `FuzzInspectCompactJWT`; differential evidence `jwt/specification/interoperability.tsv`; documentation `jwt/docs/specification-decisions.md`.
 Normative rationale: RFC 7515 requires critical extensions to be understood and processed; rejection is the only conforming outcome when this package supports none.
 
+## JWT-DEC-016: Remote deployment settings are bounded and insecure transport needs deployment permission
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication/jwt` maintainers |
+| Source | RFC 8725 [Sections 3.1 and 3.2](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1) and RFC 9110 [Section 4.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-4.2.2) |
+| Classification | omission |
+| Issue | Services configure issuer, audience, JWK URL, algorithms and remote bounds from operator input. The standards do not bound that input or say when plain HTTP and shared-secret algorithms are acceptable, and service copies disagreed on whether the development exception was limited to local and test deployments. |
+| Credible interpretations | Leave settings validation to each service; reject plain HTTP and symmetric algorithms everywhere; or accept them only when the settings ask for insecure mode and the deployment states that it is local or test-only. |
+| Known peer behavior | `NewRemote` and `New` validate their own structural options but accept any positive bound and honor `WithInsecureHTTP` unconditionally; deployment policy was duplicated in each service. |
+| Selected behavior | `RemoteSettings.Validate` requires a trimmed non-empty issuer and audience; an absolute https JWK URL with a host and no user information or fragment; registered, case-sensitive, non-deprecated, non-`none`, unique algorithms; skew from zero to five minutes; token bytes up to 64 KiB; JWK body bytes up to 8 MiB; an initialization timeout up to 30 seconds; and refresh bounds with a positive minimum, a maximum at least the minimum, and at most 24 hours. `AllowInsecureHTTP` permits a plain-http URL and symmetric algorithms only when `SettingsPolicy.PermitInsecure` is true; the zero policy is production. |
+| Security and resource consequences | Security: A production deployment cannot enable plain-http key retrieval or shared-secret algorithms through configuration alone. Errors name the field, never its value. Resource: Ceilings bound token admission, JWK bodies, startup and refresh intervals before any cache or validator is built. |
+| Compatibility and wire consequences | Compatibility: Additive and opt-in. `NewRemote` and `New` are unchanged. Services adopting `Validate` must pass their deployment fact, and settings above the ceilings are refused. Wire: No token or JWKS wire behavior changes; only configuration is admitted or refused. |
+| Executable evidence | `TestRemoteSettingsAcceptInclusiveBounds`, `TestRemoteSettingsRejectIncompleteOrUnboundedTrust`, `TestRemoteSettingsInsecureModeRequiresDeploymentPermission` |
+| Public surface | `RemoteSettings`, `RemoteSettings.Validate`, and `SettingsPolicy`. |
+| Upstream record | No JWT, JWK or HTTP RFC defines deployment configuration ceilings or an environment gate for development transport. |
+| Reconsider when | A required deployment profile sets different ceilings, or services need settings for static key sets or OIDC discovery. |
+
+Machine-auditable bindings: classification `omission`; decision scope `defensive`; specification `RFC 8725 JSON Web Token Best Current Practices`; version `RFC 8725`; source authority `rfc8725-source` at `https://www.rfc-editor.org/rfc/rfc8725.txt`; requirement strength `not specified`; fuzz evidence `FuzzRemoteSettingsValidate`; documentation `jwt/docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.
+Additional authoritative sources: `{"id":"rfc9110-source","version":"RFC 9110","url":"https://www.rfc-editor.org/rfc/rfc9110.txt","specifications":["RFC 9110 HTTP Semantics"]}`.
+
 
 ## Unresolved decisions
 

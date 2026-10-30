@@ -37,7 +37,8 @@
       "id": "AUTH-DEC-005",
       "digests": [
         "b8d53a0e3c0980892e5b161e2e5b2534f635d250e4310757d11d78ff08b773c4",
-        "8ff648ad3b5ee4ac836d966bd0e76d938251a958b5f0cbfa9a03a323f1fe5842"
+        "8ff648ad3b5ee4ac836d966bd0e76d938251a958b5f0cbfa9a03a323f1fe5842",
+        "33c5e380ed356c2d8997056916ae99be20692850c92d5e09666259a6dee7e3bf"
       ]
     },
     {
@@ -87,6 +88,18 @@
       "digests": [
         "9135676640d9c0df84a1b676985d9f5c2512998304591b8809092b50ce0d7884",
         "a579d944c240c12c01090e893d66a061610b3c009cfaeed8c101994a75f652db"
+      ]
+    },
+    {
+      "id": "AUTH-DEC-013",
+      "digests": [
+        "2f5c52a6cd6d6e3352c3fac0a0124b969425986245874a08a905ba6637bfcd91"
+      ]
+    },
+    {
+      "id": "AUTH-DEC-014",
+      "digests": [
+        "a0068394ac7d53fd8fa11a107f0ef686dacff17c7da786bb9cadfb411440b39d"
       ]
     }
   ]

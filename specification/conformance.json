@@ -265,6 +265,50 @@
       "public_behavior": [
         "Middleware generates 401 only when it can emit at least one valid applicable `WWW-Authenticate` challenge. Missing or invalid challenge metadata produces a secret-safe 503 instead of a bare 401."
       ]
+    },
+    {
+      "id": "AUTH-DEC-013",
+      "authoritative_sources": [
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestAPIKeySingleHeaderMatchesNameCaseInsensitivelyAndKeepsBytes",
+        "TestAPIKeySingleHeaderRejectsAmbiguousAndMalformedValues",
+        "TestAPIKeyRejectAuthorizationExcludesEveryAuthorizationField",
+        "TestAPIKeySingleHeaderComposesWithOtherSources"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzAPIKeySingleHeader"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`APIKeySingleHeader` reads one caller-named header, matched case-insensitively across every field spelling, and yields an `APIKeyCredential` with an empty key ID. Absence is absent, more than one value is ambiguous, and an empty, oversized, non-VCHAR or comma-bearing value is invalid. Accepted bytes are not trimmed or normalized. `WithAPIKeyRejectAuthorization` optionally makes a present API key ambiguous when any `Authorization` field is also present. The `apikey` authenticators keep requiring a key ID."
+      ]
+    },
+    {
+      "id": "AUTH-DEC-014",
+      "authoritative_sources": [
+        "rfc6750-source"
+      ],
+      "executable_evidence": [
+        "TestParseTokenSplitsAtFirstPipeAndCanonicalizesID",
+        "TestParseTokenHashesPipeFreeTokenWhole",
+        "TestParseTokenRejectsMalformedLocators",
+        "TestTokenMatchesOnlyTheStoredRawDigest",
+        "TestValidatorRejectsMalformedTokensWithoutResolving",
+        "TestValidatorComposesWithBearerAuthenticatorAndPipeExtraction"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzParseToken"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`ParseToken` hashes a non-empty pipe-free token whole with SHA-256. In the pipe form the text before the first pipe must be ASCII digits naming a positive signed 64-bit ID; leading zeros are dropped and the non-empty remainder, including later pipes, is hashed. Signs, whitespace, zero, overflow, empty parts and non-ASCII digits are malformed. `Validator` rejects a malformed token with `FailureRejected` before any lookup and otherwise returns the caller `Resolver` result unchanged. `Token.Matches` compares a raw 32-byte stored digest in constant time."
+      ]
     }
   ]
 }

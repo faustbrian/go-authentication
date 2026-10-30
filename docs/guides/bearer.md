@@ -19,4 +19,16 @@ and token issuance are outside this project.
 
 See `bearer.ExampleNew`, `bearer.ExampleNewStatic`, and the HTTP quickstart.
 
+## Laravel Sanctum tokens
+
+Services migrated from Laravel use `adapters/laravelsanctum` (AUTH-DEC-014).
+`laravelsanctum.NewValidator` parses `id|secret` and pipe-free tokens the way
+Sanctum's `findToken` does, rejects malformed tokens before any lookup, and
+passes a `Token` to your `Resolver`. Look the token up by `Token.ID` when
+present, otherwise by `Token.Digest`, and compare the stored digest with
+`Token.Matches` after decoding Sanctum's hex column. The resolver owns expiry,
+revocation, owner status and abilities. Wrap the validator with `bearer.New`,
+and enable `WithBearerPipe` on the HTTP bearer source. See
+`laravelsanctum.ExampleNewValidator`.
+
 Continue with [Exported API map](../api.md).

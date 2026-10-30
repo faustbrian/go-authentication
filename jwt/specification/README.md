@@ -57,3 +57,4 @@ freshness behavior and decision bindings remain unchanged.
 | [JWT-DEC-013](../docs/specification-decisions.md) | rfc8725-source | TestValidatorRejectsInvalidJWTTrustDecisions, TestValidatorEnforcesSubjectAndRequiredClaimPolicy, TestValidatorRejectsAlgorithmKeyAndHeaderAttacks |
 | [JWT-DEC-014](../docs/specification-decisions.md) | rfc8725-source | TestSupportedAlgorithmAndKeyMatrix, TestGolangJWTAlgorithmInteroperability, TestValidatorRejectsAlgorithmKeyAndHeaderAttacks |
 | [JWT-DEC-015](../docs/specification-decisions.md) | rfc7515-source | TestValidatorRejectsAlgorithmKeyAndHeaderAttacks, TestInspectCompactJWTRejectsEachBoundary, TestDifferentialValidationKeepsExplicitlyStricterPolicy |
+| [JWT-DEC-016](../docs/specification-decisions.md) | rfc8725-source, rfc9110-source | TestRemoteSettingsAcceptInclusiveBounds, TestRemoteSettingsRejectIncompleteOrUnboundedTrust, TestRemoteSettingsInsecureModeRequiresDeploymentPermission |

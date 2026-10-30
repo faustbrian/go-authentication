@@ -2,6 +2,26 @@
 
 All notable changes to this module are documented here.
 
+## Unreleased
+
+### Added
+
+- Add `RemoteSettings`, `RemoteSettings.Validate` and `SettingsPolicy` so
+  services validate remote-JWKS operator configuration in one place. Validate
+  requires a trimmed issuer and audience, an absolute https JWK URL without
+  user information or fragment, registered non-deprecated unique algorithms
+  other than `none`, and bounded skew, token bytes, JWK body bytes,
+  initialization timeout and refresh interval. `AllowInsecureHTTP`, which
+  permits a plain-http URL and HS* algorithms, is accepted only when
+  `SettingsPolicy.PermitInsecure` reports a local or test deployment.
+  `NewRemote` and `New` are unchanged.
+
+### Documentation
+
+- Record JWT-DEC-016 for remote deployment settings. Its content identity is
+  preserved below.
+- JWT-DEC-016 sha256:b1c10c63fdc44301316742200d25f385ea4ed27b0ac82a901a0b25c340df1a3c
+
 ## 2.0.0 - 2026-10-28
 
 ### Changed

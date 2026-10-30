@@ -7,8 +7,8 @@ and requires exactly one credential. Duplicate Authorization fields, repeated
 cookies, partial API keys, and credentials present in more than one source are
 rejected.
 
-Header sources are `BasicAuthorization`, `BearerAuthorization`, and
-`APIKeyHeader`. Cookie sources exist only through the explicit `BearerCookie`
+Header sources are `BasicAuthorization`, `BearerAuthorization`,
+`APIKeyHeader`, and the key-only `APIKeySingleHeader`. Cookie sources exist only through the explicit `BearerCookie`
 and `APIKeyCookie` constructors. The extractor never reads the URL query or
 the request body.
 

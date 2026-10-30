@@ -120,7 +120,7 @@ Normative rationale: The cited authority leaves this application boundary option
 | Known peer behavior | APIs use proprietary headers, query parameters, cookies, and Authorization schemes with incompatible semantics. OpenAPI descriptions model locations but do not define authentication behavior. |
 | Selected behavior | The package profile uses a non-empty key ID and a separate non-empty secret. Callers explicitly choose and name exactly one header or cookie pair. Partial pairs are invalid; duplicate values are ambiguous. The ID is routing metadata and never authenticates alone. No proprietary Authorization scheme is inferred. |
 | Security and resource consequences | IDs and secrets have independent byte bounds. Static authenticators compare keyed fixed-size digests across the bounded candidate set and never disclose which component mismatched. Cookie risks remain caller-owned as documented for bearer transport; query transport is unsupported. |
-| Compatibility and wire consequences | Integrations can map their existing two-field contract without global names. One-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile. |
+| Compatibility and wire consequences | Integrations can map their existing two-field contract without global names. A key-only header uses `APIKeySingleHeader` under AUTH-DEC-013; other one-field or custom Authorization profiles require a caller-owned `Source` or validator adapter and must not be advertised as this built-in profile. |
 | Executable evidence | `authenticationhttp.TestAPIKeySourcesMustBeExplicitAndRejectDuplicates`, `authenticationhttp.TestAPIKeySourcesRejectMalformedAndBoundedValues`, `apikey.TestStaticAuthenticatesKeyByDeterministicID`, `apikey.TestStaticRotationAtomicallyReplacesActiveKeys`, and `apikey.TestStaticRejectsDuplicateKeyConfiguration` |
 | Public surface | `authenticationhttp.APIKeyHeader`, `authenticationhttp.APIKeyCookie`, `authentication.APIKeyCredential`, `apikey.New`, and `apikey.NewStatic`. |
 | Upstream record | No IANA-registered generic API-key scheme defines this package profile. |
@@ -279,6 +279,48 @@ Normative rationale: This preserves RFC 6750 Section 2's explicit prohibition wi
 
 Machine-auditable bindings: classification `interoperability policy`; decision scope `normative`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `MUST`; fuzz evidence `FuzzChallengeFormatting`; documentation `docs/specification-decisions.md`.
 Normative rationale: This isolates and preserves RFC 9110's mandatory response requirement while leaving challenge serialization and failure mapping in their broader transport-policy decisions.
+
+## AUTH-DEC-013: Key-only API-key header profile
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication` maintainers |
+| Source | RFC 9110 [Sections 5.3 and 5.5](https://www.rfc-editor.org/rfc/rfc9110.html#section-5.3) define field-line combination and field values; no API-key header is standardized |
+| Classification | omission |
+| Issue | Many services send one opaque key without a key ID in a proprietary header. AUTH-DEC-005 left that shape to caller-owned sources, and the copies disagreed on duplicates, combined values and whitespace. |
+| Credible interpretations | Use the first value; trim or split combined values; accept any field-value octets; or require exactly one visible-ASCII value without commas under an explicitly named header. |
+| Known peer behavior | Proprietary headers such as `X-API-Key` carry one opaque key. RFC 9110 lets recipients combine repeated field lines with commas, so a repeated or comma-bearing value cannot be attributed to one key. |
+| Selected behavior | `APIKeySingleHeader` reads one caller-named header, matched case-insensitively across every field spelling, and yields an `APIKeyCredential` with an empty key ID. Absence is absent, more than one value is ambiguous, and an empty, oversized, non-VCHAR or comma-bearing value is invalid. Accepted bytes are not trimmed or normalized. `WithAPIKeyRejectAuthorization` optionally makes a present API key ambiguous when any `Authorization` field is also present. The `apikey` authenticators keep requiring a key ID. |
+| Security and resource consequences | Security: Rejecting repeated, combined and whitespace-bearing values stops intermediaries and parsers from selecting different keys. Failures never include key bytes. Resource: Selected-value admission is bounded by the key byte bound, default 8 KiB, and the case-insensitive scan visits each request field once. |
+| Compatibility and wire consequences | Compatibility: Additive. Two-field sources are unchanged unless they opt into `WithAPIKeyRejectAuthorization`. Key-only credentials need a caller-owned `Authenticator` because `apikey.New` and `apikey.NewStatic` reject an empty key ID. Wire: Clients send exactly one value of visible ASCII without commas. With the option enabled, a request that also carries `Authorization` is ambiguous. |
+| Executable evidence | `authenticationhttp.TestAPIKeySingleHeaderMatchesNameCaseInsensitivelyAndKeepsBytes`, `authenticationhttp.TestAPIKeySingleHeaderRejectsAmbiguousAndMalformedValues`, `authenticationhttp.TestAPIKeyRejectAuthorizationExcludesEveryAuthorizationField`, `authenticationhttp.TestAPIKeySingleHeaderComposesWithOtherSources` |
+| Public surface | `authenticationhttp.APIKeySingleHeader`, `authenticationhttp.WithAPIKeyRejectAuthorization`, and `authentication.APIKeyCredential`. |
+| Upstream record | No IANA-registered API-key header or authentication scheme defines this profile. |
+| Reconsider when | A standard defines a single-field API-key header, or the `apikey` authenticators gain a key-only profile. |
+
+Machine-auditable bindings: classification `omission`; decision scope `application-policy`; specification `RFC 9110 HTTP Authentication Framework`; version `RFC 9110`; source authority `rfc9110-source` at `https://www.rfc-editor.org/rfc/rfc9110.txt`; requirement strength `not specified`; fuzz evidence `FuzzAPIKeySingleHeader`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
+
+## AUTH-DEC-014: Laravel Sanctum personal access token compatibility
+
+| Field | Decision |
+| --- | --- |
+| Status and owner | `resolved`; `authentication` maintainers |
+| Source | RFC 6750 [Section 2.1](https://www.rfc-editor.org/rfc/rfc6750.html#section-2.1) defines bearer transport only; the Sanctum token structure is a Laravel convention |
+| Classification | optional behavior |
+| Issue | Services migrated from Laravel must keep accepting Sanctum `id|secret` tokens and legacy pipe-free tokens. Two service copies drifted on zero and overflowing IDs and on the failure class of malformed tokens. |
+| Credible interpretations | Treat any decimal prefix as an ID, keep zero and overflowing IDs for a lookup that cannot match, and report malformed tokens as invalid; or admit only positive signed 64-bit IDs, drop leading zeros, and reject malformed tokens like unknown ones. |
+| Known peer behavior | Sanctum's `PersonalAccessToken::findToken` hashes a pipe-free token whole. Otherwise it splits at the first pipe, finds the bigint primary key, and compares `hash('sha256', secret)` with `hash_equals`; anything that does not match finds no token. |
+| Selected behavior | `ParseToken` hashes a non-empty pipe-free token whole with SHA-256. In the pipe form the text before the first pipe must be ASCII digits naming a positive signed 64-bit ID; leading zeros are dropped and the non-empty remainder, including later pipes, is hashed. Signs, whitespace, zero, overflow, empty parts and non-ASCII digits are malformed. `Validator` rejects a malformed token with `FailureRejected` before any lookup and otherwise returns the caller `Resolver` result unchanged. `Token.Matches` compares a raw 32-byte stored digest in constant time. |
+| Security and resource consequences | Security: The plaintext is not retained, formatted tokens are redacted, and digest comparison is constant time. A malformed token is indistinguishable from an unknown token. Resource: Parsing is linear in the token and allocates only the canonical ID. Token size stays bounded by `bearer.New`, default 8 KiB. |
+| Compatibility and wire consequences | Compatibility: Additive. Malformed pipe-form tokens are rejected rather than invalid, so a `Composite` can fall through to another authenticator, and zero or overflowing IDs never reach storage. Stores that keep Sanctum's hex column must decode it before `Matches`. Wire: Pipe-form bearer tokens need `WithBearerPipe` on the extractor. The accepted tokens are the ones Sanctum would find for positive bigint IDs. |
+| Executable evidence | `laravelsanctum.TestParseTokenSplitsAtFirstPipeAndCanonicalizesID`, `laravelsanctum.TestParseTokenHashesPipeFreeTokenWhole`, `laravelsanctum.TestParseTokenRejectsMalformedLocators`, `laravelsanctum.TestTokenMatchesOnlyTheStoredRawDigest`, `laravelsanctum.TestValidatorRejectsMalformedTokensWithoutResolving`, `laravelsanctum.TestValidatorComposesWithBearerAuthenticatorAndPipeExtraction` |
+| Public surface | `laravelsanctum.ParseToken`, `laravelsanctum.Token`, `laravelsanctum.Resolver`, and `laravelsanctum.NewValidator`. |
+| Upstream record | Laravel Sanctum defines the token format in application code; no specification or registry governs it. |
+| Reconsider when | Sanctum changes its token format or lookup, or a supported deployment stores token IDs outside the signed 64-bit range. |
+
+Machine-auditable bindings: classification `optional behavior`; decision scope `application-policy`; specification `RFC 6750 OAuth 2.0 Bearer Token Usage`; version `RFC 6750`; source authority `rfc6750-source` at `https://www.rfc-editor.org/rfc/rfc6750.txt`; requirement strength `not specified`; fuzz evidence `FuzzParseToken`; documentation `docs/specification-decisions.md`.
+Normative rationale: The cited authority leaves this application boundary optional or undefined, so the package records a stable caller-facing policy without presenting it as specification-mandated.
 
 
 ## Unresolved decisions

@@ -97,6 +97,7 @@ it deliberately performs no role, permission, ownership, or policy checks.
 | `bearer` | Callback and interface adapters for opaque tokens |
 | `apikey` | Callback and atomically rotatable static API keys |
 | `adapters/http` (`authenticationhttp`) | Strict extraction, challenges, and authentication-only middleware |
+| `adapters/laravelsanctum` | Laravel Sanctum personal-access-token compatibility over a caller-owned store |
 | `adapters/slog` (`authenticationslog`) | Secret-safe standard `log/slog` instrumentation |
 | `authtest` | Deterministic principals, clocks, authenticators, HTTP fixtures, assertions |
 | `jwt` | Optional strict JWT/JWK validation and owned remote cache |

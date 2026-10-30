@@ -254,12 +254,22 @@ func WithAPIKeyMaxBytes(maximum int) APIKeyOption {
 	return func(source *apiKeySource) { source.maxKeyBytes = maximum }
 }
 
+// WithAPIKeyRejectAuthorization makes a present API key ambiguous when the
+// request also carries any Authorization field, whatever its scheme or
+// spelling. Authorization alone leaves the API-key source absent, so other
+// enabled sources still apply.
+func WithAPIKeyRejectAuthorization() APIKeyOption {
+	return func(source *apiKeySource) { source.rejectAuthorization = true }
+}
+
 type apiKeySource struct {
-	location    sourceLocation
-	idName      string
-	keyName     string
-	maxIDBytes  int
-	maxKeyBytes int
+	location            sourceLocation
+	single              bool
+	idName              string
+	keyName             string
+	maxIDBytes          int
+	maxKeyBytes         int
+	rejectAuthorization bool
 }
 
 // APIKeyHeader explicitly enables API-key extraction from two headers.
@@ -267,12 +277,25 @@ func APIKeyHeader(idHeader, keyHeader string, options ...APIKeyOption) Source {
 	return newAPIKeySource(locationHeader, idHeader, keyHeader, options)
 }
 
+// APIKeySingleHeader explicitly enables key-only extraction from one header,
+// producing an APIKeyCredential with an empty key ID. The name matches
+// case-insensitively across every field spelling, and more than one value is
+// ambiguous. The value must be non-empty visible ASCII without commas within the
+// key byte bound (default 8 KiB); it is never trimmed or normalized. apikey.New
+// and apikey.NewStatic require a key ID, so key-only credentials need a
+// caller-owned Authenticator.
+func APIKeySingleHeader(header string, options ...APIKeyOption) Source {
+	source := newAPIKeySource(locationHeader, "", header, options)
+	source.single = true
+	return source
+}
+
 // APIKeyCookie explicitly enables API-key extraction from two cookies.
 func APIKeyCookie(idCookie, keyCookie string, options ...APIKeyOption) Source {
 	return newAPIKeySource(locationCookie, idCookie, keyCookie, options)
 }
 
-func newAPIKeySource(location sourceLocation, idName, keyName string, options []APIKeyOption) Source {
+func newAPIKeySource(location sourceLocation, idName, keyName string, options []APIKeyOption) apiKeySource {
 	source := apiKeySource{
 		location: location,
 		idName:   idName, keyName: keyName,
@@ -287,6 +310,12 @@ func newAPIKeySource(location sourceLocation, idName, keyName string, options []
 }
 
 func (s apiKeySource) validate() error {
+	if s.single {
+		if !validName(s.keyName) || s.maxKeyBytes <= 0 || s.location != locationHeader {
+			return fmt.Errorf("%w: API-key source", authentication.ErrInvalidConfiguration)
+		}
+		return nil
+	}
 	if !validName(s.idName) || !validName(s.keyName) || s.idName == s.keyName ||
 		s.maxIDBytes <= 0 || s.maxKeyBytes <= 0 || s.location > locationCookie {
 		return fmt.Errorf("%w: API-key source", authentication.ErrInvalidConfiguration)
@@ -295,6 +324,20 @@ func (s apiKeySource) validate() error {
 }
 
 func (s apiKeySource) extract(request *http.Request) (authentication.Credential, bool, error) {
+	credential, present, err := s.extractKey(request)
+	if err != nil || !present || !s.rejectAuthorization {
+		return credential, present, err
+	}
+	if len(headerValuesFold(request.Header, "Authorization")) != 0 {
+		return nil, false, authentication.NewFailure(authentication.FailureAmbiguous)
+	}
+	return credential, true, nil
+}
+
+func (s apiKeySource) extractKey(request *http.Request) (authentication.Credential, bool, error) {
+	if s.single {
+		return s.extractSingle(request)
+	}
 	ids, err := namedValues(request, s.location, s.idName)
 	if err != nil {
 		return nil, false, err
@@ -318,6 +361,46 @@ func (s apiKeySource) extract(request *http.Request) (authentication.Credential,
 		return nil, false, authentication.NewFailure(authentication.FailureInvalid)
 	}
 	return authentication.NewAPIKeyCredential(ids[0], keys[0]), true, nil
+}
+
+// extractSingle scans every field spelling rather than the canonical key alone,
+// so differently cased duplicates in a hand-built header map stay ambiguous.
+func (s apiKeySource) extractSingle(request *http.Request) (authentication.Credential, bool, error) {
+	values := headerValuesFold(request.Header, s.keyName)
+	if len(values) == 0 {
+		return nil, false, nil
+	}
+	if len(values) != 1 {
+		return nil, false, authentication.NewFailure(authentication.FailureAmbiguous)
+	}
+	if !validSingleAPIKey(values[0], s.maxKeyBytes) {
+		return nil, false, authentication.NewFailure(authentication.FailureInvalid)
+	}
+	return authentication.NewAPIKeyCredential("", values[0]), true, nil
+}
+
+// validSingleAPIKey admits RFC 9110 VCHAR octets except the comma, which
+// separates combined field-line values and would make one key ambiguous.
+func validSingleAPIKey(value string, maximum int) bool {
+	if value == "" || len(value) > maximum {
+		return false
+	}
+	for _, character := range []byte(value) {
+		if character <= 0x20 || character >= 0x7f || character == ',' {
+			return false
+		}
+	}
+	return true
+}
+
+func headerValuesFold(header http.Header, name string) []string {
+	var values []string
+	for field, fieldValues := range header {
+		if strings.EqualFold(field, name) {
+			values = append(values, fieldValues...)
+		}
+	}
+	return values
 }
 
 type sourceLocation uint8

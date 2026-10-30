@@ -41,3 +41,21 @@ func ExampleNew() {
 	fmt.Println(err, principal.Subject())
 	// Output: <nil> service
 }
+
+func ExampleRemoteSettings_Validate() {
+	settings := authjwt.RemoteSettings{
+		Issuer: "https://identity.example", Audience: "service",
+		JWKURL: "https://identity.example/jwks", Algorithms: []string{"RS256"},
+		Skew: 30 * time.Second, MaxTokenBytes: 16 << 10, MaxJWKBodyBytes: 1 << 20,
+		InitializationTimeout: 5 * time.Second, MinRefresh: time.Minute, MaxRefresh: time.Hour,
+	}
+	fmt.Println(settings.Validate(authjwt.SettingsPolicy{}))
+
+	settings.AllowInsecureHTTP = true
+	fmt.Println(settings.Validate(authjwt.SettingsPolicy{}))
+	fmt.Println(settings.Validate(authjwt.SettingsPolicy{PermitInsecure: true}))
+	// Output:
+	// <nil>
+	// authentication: invalid configuration: JWT remote settings AllowInsecureHTTP
+	// <nil>
+}

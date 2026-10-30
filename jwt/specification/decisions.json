@@ -669,6 +669,48 @@
       ],
       "upstream_status": "RFC 7515 requires recipients to understand and process every listed critical extension; Appendix E requires rejection when they cannot.",
       "reconsider_when": "The package implements a specific critical extension with complete parsing, processing, security, and interoperability evidence."
+    },
+    {
+      "id": "JWT-DEC-016",
+      "title": "Remote deployment settings are bounded and insecure transport needs deployment permission",
+      "status": "resolved",
+      "owner": "`authentication/jwt` maintainers",
+      "classification": "omission",
+      "decision_scope": "defensive",
+      "specification": "RFC 8725 JSON Web Token Best Current Practices",
+      "version": "RFC 8725",
+      "source_authority": "rfc8725-source",
+      "section": "RFC 8725 [Sections 3.1 and 3.2](https://www.rfc-editor.org/rfc/rfc8725.html#section-3.1) and RFC 9110 [Section 4.2.2](https://www.rfc-editor.org/rfc/rfc9110.html#section-4.2.2)",
+      "requirement_strength": "not specified",
+      "issue": "Services configure issuer, audience, JWK URL, algorithms and remote bounds from operator input. The standards do not bound that input or say when plain HTTP and shared-secret algorithms are acceptable, and service copies disagreed on whether the development exception was limited to local and test deployments.",
+      "interpretations": [
+        "Leave settings validation to each service; reject plain HTTP and symmetric algorithms everywhere; or accept them only when the settings ask for insecure mode and the deployment states that it is local or test-only."
+      ],
+      "peer_behavior": "`NewRemote` and `New` validate their own structural options but accept any positive bound and honor `WithInsecureHTTP` unconditionally; deployment policy was duplicated in each service.",
+      "selected_behavior": "`RemoteSettings.Validate` requires a trimmed non-empty issuer and audience; an absolute https JWK URL with a host and no user information or fragment; registered, case-sensitive, non-deprecated, non-`none`, unique algorithms; skew from zero to five minutes; token bytes up to 64 KiB; JWK body bytes up to 8 MiB; an initialization timeout up to 30 seconds; and refresh bounds with a positive minimum, a maximum at least the minimum, and at most 24 hours. `AllowInsecureHTTP` permits a plain-http URL and symmetric algorithms only when `SettingsPolicy.PermitInsecure` is true; the zero policy is production.",
+      "rationale": "The cited authority leaves this boundary ambiguous or incomplete, so the selected fail-closed behavior is documented as package hardening rather than a specification requirement.",
+      "security_consequences": "A production deployment cannot enable plain-http key retrieval or shared-secret algorithms through configuration alone. Errors name the field, never its value.",
+      "resource_consequences": "Ceilings bound token admission, JWK bodies, startup and refresh intervals before any cache or validator is built.",
+      "compatibility_consequences": "Additive and opt-in. `NewRemote` and `New` are unchanged. Services adopting `Validate` must pass their deployment fact, and settings above the ceilings are refused.",
+      "wire_consequences": "No token or JWKS wire behavior changes; only configuration is admitted or refused.",
+      "executable_evidence": [
+        "TestRemoteSettingsAcceptInclusiveBounds",
+        "TestRemoteSettingsRejectIncompleteOrUnboundedTrust",
+        "TestRemoteSettingsInsecureModeRequiresDeploymentPermission"
+      ],
+      "fixture_evidence": [],
+      "fuzz_evidence": [
+        "FuzzRemoteSettingsValidate"
+      ],
+      "interoperability_evidence": [],
+      "public_apis": [
+        "`RemoteSettings`, `RemoteSettings.Validate`, and `SettingsPolicy`"
+      ],
+      "documentation": [
+        "jwt/docs/specification-decisions.md"
+      ],
+      "upstream_status": "No JWT, JWK or HTTP RFC defines deployment configuration ceilings or an environment gate for development transport.",
+      "reconsider_when": "A required deployment profile sets different ceilings, or services need settings for static key sets or OIDC discovery."
     }
   ]
 }

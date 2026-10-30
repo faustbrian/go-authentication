@@ -339,6 +339,27 @@
       "public_behavior": [
         "This package implements no critical JOSE extensions, so every token containing `crit` is rejected. It never treats a successfully verified signature as sufficient when declared critical semantics are unsupported."
       ]
+    },
+    {
+      "id": "JWT-DEC-016",
+      "authoritative_sources": [
+        "rfc8725-source",
+        "rfc9110-source"
+      ],
+      "executable_evidence": [
+        "TestRemoteSettingsAcceptInclusiveBounds",
+        "TestRemoteSettingsRejectIncompleteOrUnboundedTrust",
+        "TestRemoteSettingsInsecureModeRequiresDeploymentPermission"
+      ],
+      "fixtures": [],
+      "fuzz": [
+        "FuzzRemoteSettingsValidate"
+      ],
+      "differential_evidence": [],
+      "differential_classification": "not assessed",
+      "public_behavior": [
+        "`RemoteSettings.Validate` requires a trimmed non-empty issuer and audience; an absolute https JWK URL with a host and no user information or fragment; registered, case-sensitive, non-deprecated, non-`none`, unique algorithms; skew from zero to five minutes; token bytes up to 64 KiB; JWK body bytes up to 8 MiB; an initialization timeout up to 30 seconds; and refresh bounds with a positive minimum, a maximum at least the minimum, and at most 24 hours. `AllowInsecureHTTP` permits a plain-http URL and symmetric algorithms only when `SettingsPolicy.PermitInsecure` is true; the zero policy is production."
+      ]
     }
   ]
 }

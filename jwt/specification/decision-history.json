@@ -99,6 +99,12 @@
       "digests": [
         "be343023ac0ba642b4d7775a190bb8e31489f545db7ee0395c8ff94f5651c9b5"
       ]
+    },
+    {
+      "id": "JWT-DEC-016",
+      "digests": [
+        "b1c10c63fdc44301316742200d25f385ea4ed27b0ac82a901a0b25c340df1a3c"
+      ]
     }
   ]
 }

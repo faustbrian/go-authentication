@@ -46,6 +46,18 @@
         },
         {
           "module_directory": ".",
+          "directory": "adapters/laravelsanctum",
+          "name": "laravelsanctum",
+          "import_path": "github.com/faustbrian/go-authentication/v3/adapters/laravelsanctum",
+          "kind": "public",
+          "production": true,
+          "executable": true,
+          "coverage_required": true,
+          "build_required": true,
+          "build_tags": []
+        },
+        {
+          "module_directory": ".",
           "directory": "adapters/slog",
           "name": "authenticationslog",
           "import_path": "github.com/faustbrian/go-authentication/v3/adapters/slog",
@@ -123,6 +135,7 @@
           "github.com/faustbrian/go-authentication/v3": "Use for immutable principals, typed redacted credentials, stable failures, composition, and instrumentation contracts.",
           "github.com/faustbrian/go-authentication/v3/apikey": "Use for callback-backed or atomically rotatable static API-key authentication.",
           "github.com/faustbrian/go-authentication/v3/adapters/http": "Use for strict HTTP credential extraction, challenges, and authentication-only middleware.",
+          "github.com/faustbrian/go-authentication/v3/adapters/laravelsanctum": "Use only to validate migrated Laravel Sanctum personal access tokens through a caller-owned token store.",
           "github.com/faustbrian/go-authentication/v3/adapters/slog": "Use to emit bounded secret-safe authentication observations through log/slog.",
           "github.com/faustbrian/go-authentication/v3/authtest": "Use only in tests for deterministic principals, clocks, authenticators, fixtures, and assertions.",
           "github.com/faustbrian/go-authentication/v3/basic": "Use for constant-work static Basic authentication.",
@@ -150,6 +163,7 @@
         "adapters": [
           "github.com/faustbrian/go-authentication/adapters/otel/v2",
           "github.com/faustbrian/go-authentication/v3/adapters/http",
+          "github.com/faustbrian/go-authentication/v3/adapters/laravelsanctum",
           "github.com/faustbrian/go-authentication/v3/adapters/slog"
         ],
         "companions": [

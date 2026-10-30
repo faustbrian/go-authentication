@@ -73,6 +73,20 @@ may be retried. Concurrent callers use their own contexts; a waiter whose
 context remains live continues any cleanup left incomplete by an earlier
 canceled attempt.
 
+## Remote deployment settings
+
+`RemoteSettings` holds operator configuration for a remote-JWKS validator:
+issuer, audience, JWK URL, algorithm names, skew, token and JWK body bounds,
+initialization timeout, refresh bounds and `AllowInsecureHTTP`.
+`RemoteSettings.Validate(SettingsPolicy)` refuses the first invalid field with
+`authentication.ErrInvalidConfiguration`, naming the field but never its value
+(JWT-DEC-016). Ceilings are five minutes of skew, 64 KiB tokens, 8 MiB JWK
+bodies, a 30-second initialization timeout and a 24-hour maximum refresh.
+`AllowInsecureHTTP` permits a plain-http JWK URL and HS* algorithms only when
+`SettingsPolicy.PermitInsecure` is true; set it only for local or test
+deployments. Validation does not build a validator: map the settings to
+`NewRemote` options and `Config` yourself. See `ExampleRemoteSettings_Validate`.
+
 ## Errors
 
 All failures support `errors.Is` and `errors.As` through

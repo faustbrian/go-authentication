@@ -46,3 +46,21 @@ func ExampleWithOptionalAnonymous() {
 	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/", nil))
 	// Output: true true
 }
+
+func ExampleAPIKeySingleHeader() {
+	extractor, _ := authhttp.NewExtractor(authhttp.APIKeySingleHeader(
+		"X-Api-Key", authhttp.WithAPIKeyMaxBytes(4096), authhttp.WithAPIKeyRejectAuthorization(),
+	))
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	request.Header.Set("X-Api-Key", "opaque-key")
+	credential, err := extractor.Extract(request)
+	apiKey := credential.(authentication.APIKeyCredential)
+	fmt.Println(err, apiKey.KeyID() == "", apiKey.Key())
+
+	request.Header.Set("Authorization", "Bearer other")
+	_, err = extractor.Extract(request)
+	fmt.Println(err)
+	// Output:
+	// <nil> true opaque-key
+	// authentication: ambiguous credentials
+}

@@ -15,11 +15,13 @@ checked in CI. Use `go doc` for signatures and contracts.
   bounds.
 - `adapters/http` (`authenticationhttp`): explicit sources, bearer compatibility options, extractor,
   challenge formatting, and middleware policies.
+- `adapters/laravelsanctum`: Laravel Sanctum token parsing, raw-digest
+  matching, resolver interface, and `bearer.Validator` adapter.
 - `adapters/slog` (`authenticationslog`): standard `slog` instrumenter.
 - `authtest`: deterministic principals, results, clock, scripted authenticator,
   HTTP fixture, and assertions.
-- `jwt`: strict config, validator, provider adapters, and owned remote JWK
-  lifecycle.
+- `jwt`: strict config, validator, provider adapters, owned remote JWK
+  lifecycle, and remote deployment settings validation.
 - `oidc`: discovery/static-key config, validator, and nonce interface.
 - `adapters/otel`: OpenTelemetry provider config and instrumenter.
 
