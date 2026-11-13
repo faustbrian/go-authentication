@@ -2,6 +2,16 @@
 
 All notable changes to this module are documented here.
 
+## Unreleased
+
+### Added
+
+- Explicit Google Accounts discovery-backed and caller-keyed constructors that
+  accept only Google's two documented signed ID-token issuer forms and project
+  one canonical issuer/subject identity. Existing constructors remain strict;
+  signature/claims/nonce/hash checks and discovery/key/resource policy are
+  unchanged. This is issuer compatibility, not a Google OAuth flow or catalog.
+
 ## 2.0.0 - 2026-10-28
 
 ### Changed

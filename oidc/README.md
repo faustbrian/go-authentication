@@ -14,6 +14,12 @@ Symmetric client-secret signatures, encrypted ID tokens, distributed claims,
 OAuth flow execution, UserInfo, logout, dynamic registration, and access-token
 validation are deliberately excluded.
 
+Google's two documented ID-token issuer forms are available only through the
+explicit `NewGoogleAccounts` or `NewGoogleAccountsWithKeySet` constructors.
+They preserve strict canonical HTTPS configuration/discovery and project one
+canonical issuer after full original-token validation. Existing constructors
+remain strict. See the [selected Google issuer policy](docs/google-accounts.md).
+
 ## Install
 
 ```sh

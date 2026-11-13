@@ -8,6 +8,12 @@ The final OpenID Connect Core 1.0 and Discovery 1.0 publications incorporating
 errata set 2 remain authoritative. Pinned fixtures and provider evidence are
 documented in [`../specification/`](../specification/README.md).
 
+The issuer-matching decisions below describe the generic `New` and
+`NewWithKeySet` contracts, which remain strict. The additive named
+[Google Accounts policy](google-accounts.md) accepts only Google's two documented
+signed token issuer forms while keeping configuration and discovery canonical.
+It neither changes these default decisions nor creates generic alias support.
+
 ## Authority review history
 
 | Reviewed | Authority movement | Monitoring digest | Disposition | Decision impact |

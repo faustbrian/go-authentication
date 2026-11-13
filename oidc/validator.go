@@ -136,6 +136,7 @@ type Config struct {
 type Validator struct {
 	verifier         *upstreamoidc.IDTokenVerifier
 	issuer           string
+	googleAccounts   bool
 	clientID         string
 	trustedAudiences map[string]struct{}
 	algorithms       map[string]struct{}
@@ -343,7 +344,14 @@ func validTokenHash(algorithm, value, expected string) bool {
 
 func (v *Validator) principal(ctx context.Context, token *upstreamoidc.IDToken) (authentication.Principal, error) {
 	now := v.clock.Now()
-	if token.Issuer != v.issuer {
+	issuer := token.Issuer
+	// Google's named profile accepts exactly its documented legacy token issuer.
+	// Canonicalize only the admitted principal namespace, never the signed token
+	// or discovery/key origin (Google OpenID Connect, ID-token validation).
+	if v.googleAccounts && issuer == googleAccountsLegacyIssuer {
+		issuer = googleAccountsIssuer
+	}
+	if issuer != v.issuer {
 		return authentication.Principal{}, authentication.ErrInvalidPrincipal
 	}
 	if !validSubject(token.Subject) {
@@ -428,7 +436,7 @@ func (v *Validator) principal(ctx context.Context, token *upstreamoidc.IDToken) 
 	}
 
 	principal, err := authentication.NewPrincipal(authentication.PrincipalSpec{
-		Subject: token.Subject, Method: "oidc", Issuer: token.Issuer,
+		Subject: token.Subject, Method: "oidc", Issuer: issuer,
 		Audiences: token.Audience, TenantHints: tenants, Scopes: scopes,
 		Claims: claims, AuthenticatedAt: authenticatedAt,
 	})

@@ -21,6 +21,12 @@ register links every observable interpretation and defensive policy to that
 evidence. This directory pins source provenance; the register owns rationale,
 consequences, and reconsideration conditions.
 
+The additive [Google Accounts issuer policy](../docs/google-accounts.md) is an
+explicit provider compatibility selection, separate from the generic strict
+issuer decisions. It reuses the pinned Google discovery snapshot and existing
+bounded discovery/JWKS and full signed-token validation. Its tests use locally
+signed tokens, not live Google-issued credentials or certification evidence.
+
 Provider interoperability tests use minimal standards-compliant metadata
 shapes representative of Google, Keycloak, and Dex. They are compatibility
 profiles, not copied provider snapshots or claims of certification against a

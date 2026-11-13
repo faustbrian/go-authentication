@@ -9,6 +9,11 @@ named.
 Observable ambiguities and package-owned policy choices are maintained in the
 [specification decision register](specification-decisions.md).
 
+The issuer rows below describe generic strict constructors. The separately
+selected [Google Accounts issuer policy](google-accounts.md) retains the same
+signature, claim, HTTP and resource owners, with only its two documented signed
+token issuer forms admitted into one canonical identity namespace.
+
 ## Discovery and provider metadata
 
 | Boundary | Accepted contract | Rejected or unavailable contract | Primary evidence |

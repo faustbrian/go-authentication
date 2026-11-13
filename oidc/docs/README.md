@@ -6,6 +6,7 @@
 
 - [Package overview](../README.md)
 - [Complete technical guide](reference.md)
+- [Explicit Google Accounts issuer policy](google-accounts.md)
 
 ## API reference
 
