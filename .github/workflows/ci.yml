@@ -48,9 +48,9 @@ jobs:
 
   ci:
     needs: qualification-inputs
-    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@ef9ae418c61b6b92d8d93c03d71694031ec47ed8 # v2.5.2
+    uses: faustbrian/go-library-tools/.github/workflows/library-ci.yml@db2cb6e7bb3b2fcaf6591bec9f5e8be958fa5296
     with:
-      tooling_sha: ef9ae418c61b6b92d8d93c03d71694031ec47ed8
+      tooling_sha: db2cb6e7bb3b2fcaf6591bec9f5e8be958fa5296
       source_bootstrap: false
       source_documentation: check
       public_dependencies: true
